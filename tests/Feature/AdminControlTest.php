@@ -101,14 +101,35 @@ final class AdminControlTest extends TestCase
         $this->assertSame('1', DB::table('site_settings')->where('key', 'seo.index_public_pages')->value('value'));
     }
 
-    public function test_current_session_cannot_be_revoked_by_session_id_endpoint(): void
+    public function test_session_revoke_endpoint_is_scoped_to_the_authenticated_user(): void
     {
         $owner = $this->owner();
-        $this->actingAs($owner);
-        $sessionId = $this->app['session']->getId();
+        $other = User::query()->create([
+            'name' => 'Other Admin',
+            'email' => 'other@example.test',
+            'password' => 'correct-horse-battery-staple',
+            'email_verified_at' => now(),
+            'is_admin' => true,
+            'role' => 'admin',
+        ]);
 
-        $this->delete("/secure-control/sessions/{$sessionId}")
-            ->assertStatus(422);
+        DB::table('sessions')->insert([
+            'id' => 'other-user-session',
+            'user_id' => $other->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Test Browser',
+            'payload' => '',
+            'last_activity' => time(),
+        ]);
+
+        $this->actingAs($owner)
+            ->delete('/secure-control/sessions/other-user-session')
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('sessions', [
+            'id' => 'other-user-session',
+            'user_id' => $other->id,
+        ]);
     }
 
     public function test_passkey_and_totp_management_routes_are_registered(): void
