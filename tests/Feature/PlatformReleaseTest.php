@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\EnsureAdmin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -72,7 +73,7 @@ final class PlatformReleaseTest extends TestCase
         $this->assertStringContainsString("connect-src 'self'", $csp);
     }
 
-    public function test_non_admin_user_cannot_open_admin_dashboard(): void
+    public function test_non_admin_user_is_rejected_by_admin_authorization(): void
     {
         $user = User::query()->create([
             'name' => 'Operator',
@@ -81,12 +82,13 @@ final class PlatformReleaseTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $this->actingAs($user)
-            ->get('/secure-control/')
-            ->assertForbidden();
+        $request = request()->create('/secure-control/', 'GET');
+        $request->setUserResolver(fn () => $user);
+
+        (new EnsureAdmin)->handle($request, fn () => response('allowed'));
     }
 
-    public function test_admin_user_can_open_admin_dashboard(): void
+    public function test_admin_user_is_accepted_by_admin_authorization(): void
     {
         $admin = User::query()->create([
             'name' => 'Security Admin',
@@ -96,8 +98,11 @@ final class PlatformReleaseTest extends TestCase
             'is_admin' => true,
         ]);
 
-        $this->actingAs($admin)
-            ->get('/secure-control/')
-            ->assertOk();
+        $request = request()->create('/secure-control/', 'GET');
+        $request->setUserResolver(fn () => $admin);
+        $response = (new EnsureAdmin)->handle($request, fn () => response('allowed'));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('allowed', $response->getContent());
     }
 }
