@@ -32,6 +32,18 @@ Route::get('/robots.txt', function (): Response {
     return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');
 
+Route::get('/.well-known/security.txt', function (): Response {
+    $body = implode("\n", [
+        'Contact: mailto:info@nexvary.com',
+        'Canonical: https://nexvary.com/.well-known/security.txt',
+        'Preferred-Languages: en, ar',
+        'Policy: https://nexvary.com/about',
+        '',
+    ]);
+
+    return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('security.txt');
+
 Route::get('/sitemap.xml', function (): Response {
     $urls = ['/', '/services', '/apps', '/safescan', '/about'];
     $items = collect($urls)->map(fn (string $path): string => '<url><loc>'.e('https://nexvary.com'.$path).'</loc></url>')->implode('');
@@ -41,7 +53,7 @@ Route::get('/sitemap.xml', function (): Response {
 })->name('sitemap');
 
 Route::prefix(config('nexvary.admin_prefix'))
-    ->middleware(['auth', 'verified', 'admin', 'throttle:admin'])
+    ->middleware(['auth', 'verified', 'admin', 'throttle:admin', 'audit.admin'])
     ->group(function (): void {
         Route::get('/', fn () => Inertia::render('admin/dashboard'))->name('admin.dashboard');
     });
