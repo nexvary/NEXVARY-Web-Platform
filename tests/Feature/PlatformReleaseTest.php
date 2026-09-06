@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 final class PlatformReleaseTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -56,5 +60,44 @@ final class PlatformReleaseTest extends TestCase
         $this->assertStringContainsString('no-store', $cacheControl);
         $this->assertStringContainsString('private', $cacheControl);
         $this->assertStringContainsString('max-age=0', $cacheControl);
+    }
+
+    public function test_csp_uses_nonce_and_disallows_unsafe_inline(): void
+    {
+        $csp = (string) $this->get('/')->headers->get('Content-Security-Policy');
+
+        $this->assertStringContainsString("script-src 'self' 'nonce-", $csp);
+        $this->assertStringContainsString("style-src 'self' 'nonce-", $csp);
+        $this->assertStringNotContainsString("'unsafe-inline'", $csp);
+        $this->assertStringContainsString("connect-src 'self'", $csp);
+    }
+
+    public function test_non_admin_user_cannot_open_admin_dashboard(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Operator',
+            'email' => 'operator@example.test',
+            'password' => 'correct-horse-battery-staple',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get('/secure-control')
+            ->assertForbidden();
+    }
+
+    public function test_admin_user_can_open_admin_dashboard(): void
+    {
+        $admin = User::query()->create([
+            'name' => 'Security Admin',
+            'email' => 'admin@example.test',
+            'password' => 'correct-horse-battery-staple',
+            'email_verified_at' => now(),
+            'is_admin' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/secure-control')
+            ->assertOk();
     }
 }
