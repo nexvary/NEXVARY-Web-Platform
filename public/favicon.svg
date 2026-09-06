@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NEXVARY security shield">
+  <defs>
+    <linearGradient id="g" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d8fbff"/>
+      <stop offset=".45" stop-color="#35d8ff"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#020817"/>
+  <path d="M32 6 53 14v15c0 14-8.8 24.2-21 29C19.8 53.2 11 43 11 29V14L32 6Z" fill="none" stroke="url(#g)" stroke-width="4"/>
+  <circle cx="32" cy="31" r="12" fill="none" stroke="#63e7ff" stroke-opacity=".45" stroke-width="2"/>
+  <circle cx="32" cy="31" r="5" fill="#63e7ff"/>
+  <path d="M32 31 44 22" stroke="#ff334f" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M18 31h28M32 17v28" stroke="#63e7ff" stroke-opacity=".22"/>
+</svg>
