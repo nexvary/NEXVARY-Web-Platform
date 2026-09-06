@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Http\Middleware\EnsureAdmin;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 final class PlatformReleaseTest extends TestCase
@@ -85,7 +86,12 @@ final class PlatformReleaseTest extends TestCase
         $request = request()->create('/secure-control/', 'GET');
         $request->setUserResolver(fn () => $user);
 
-        (new EnsureAdmin)->handle($request, fn () => response('allowed'));
+        try {
+            (new EnsureAdmin)->handle($request, fn () => response('allowed'));
+            $this->fail('Non-admin request was unexpectedly allowed.');
+        } catch (HttpException $exception) {
+            $this->assertSame(403, $exception->getStatusCode());
+        }
     }
 
     public function test_admin_user_is_accepted_by_admin_authorization(): void
