@@ -11,6 +11,12 @@ final class SetLocale
     public function handle(Request $request, Closure $next): Response
     {
         $allowed = config('nexvary.languages', ['en']);
+        $requested = (string) $request->query('lang', '');
+
+        if ($requested !== '' && in_array($requested, $allowed, true)) {
+            $request->session()->put('locale', $requested);
+        }
+
         $locale = (string) $request->session()->get('locale', config('app.locale', 'en'));
 
         if (! in_array($locale, $allowed, true)) {
