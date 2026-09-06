@@ -15,16 +15,16 @@ final class SecurityHeaders
         $response = $next($request);
 
         $policy = implode('; ', [
-            "default-src 'self'",
-            "base-uri 'self'",
-            "object-src 'none'",
-            "frame-ancestors 'none'",
-            "form-action 'self'",
-            "img-src 'self' data: https:",
-            "font-src 'self' data:",
-            "style-src 'self' 'unsafe-inline'",
-            "script-src 'self'",
-            "connect-src 'self' https://www.virustotal.com",
+            'default-src \'self\'',
+            'base-uri \'self\'',
+            'object-src \'none\'',
+            'frame-ancestors \'none\'',
+            'form-action \'self\'',
+            'img-src \'self\' data: https:',
+            'font-src \'self\' data:',
+            'style-src \'self\' \'unsafe-inline\'',
+            'script-src \'self\'',
+            'connect-src \'self\' https://www.virustotal.com',
             'upgrade-insecure-requests',
         ]);
 
