@@ -55,6 +55,7 @@ jobs:
       - name: Prepare Laravel runtime
         run: |
           cp .env.example .env
+          printf '\nCACHE_STORE=array\nQUEUE_CONNECTION=sync\n' >> .env
           php artisan key:generate
           touch database/database.sqlite
           php artisan migrate --force
