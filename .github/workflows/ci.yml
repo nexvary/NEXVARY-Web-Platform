@@ -52,7 +52,12 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: cp .env.example .env && php artisan key:generate
+      - name: Prepare Laravel runtime
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --force
       - name: Start Laravel
         run: php artisan serve --host=127.0.0.1 --port=8000 > /tmp/nexvary-laravel.log 2>&1 &
       - name: Wait for application
@@ -68,7 +73,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: stage-080-ui-screenshots
+          name: stage-160-ui-screenshots
           path: |
             artifacts/screenshots
             playwright-report
