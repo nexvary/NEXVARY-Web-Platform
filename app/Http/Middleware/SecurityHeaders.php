@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -11,8 +13,6 @@ final class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        $nonce = base64_encode(random_bytes(18));
-        $request->attributes->set('csp_nonce', $nonce);
 
         $policy = implode('; ', [
             "default-src 'self'",
@@ -25,7 +25,7 @@ final class SecurityHeaders
             "style-src 'self' 'unsafe-inline'",
             "script-src 'self'",
             "connect-src 'self' https://www.virustotal.com",
-            "upgrade-insecure-requests",
+            'upgrade-insecure-requests',
         ]);
 
         $response->headers->set('Content-Security-Policy', $policy);
@@ -35,9 +35,10 @@ final class SecurityHeaders
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
+        $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
 
         if ($request->isSecure()) {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
 
         return $response;
