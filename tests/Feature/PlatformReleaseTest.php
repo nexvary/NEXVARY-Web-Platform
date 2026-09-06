@@ -82,7 +82,7 @@ final class PlatformReleaseTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->get('/secure-control')
+            ->get('/secure-control/')
             ->assertForbidden();
     }
 
@@ -97,7 +97,7 @@ final class PlatformReleaseTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get('/secure-control')
+            ->get('/secure-control/')
             ->assertOk();
     }
 }
