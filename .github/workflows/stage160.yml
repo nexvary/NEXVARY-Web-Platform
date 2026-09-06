@@ -1,0 +1,104 @@
+name: Stage 160 Release Gate
+
+on:
+  push:
+    branches: ['integration/stage160-security']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: touch database/database.sqlite
+      - run: php artisan migrate --force
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+      - run: composer audit
+      - run: vendor/bin/pint --test
+      - run: php artisan test
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+
+  frontend:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npm run types:check
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  secret-scan:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reject common secret patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git grep -nE '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{20,})' -- . ':!*.lock'
+
+  visual-release-gate:
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend, secret-scan]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm install
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: cp .env.example .env && php artisan key:generate
+      - run: touch database/database.sqlite
+      - run: php artisan migrate --force
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+      - name: Start Laravel
+        run: php artisan serve --host=127.0.0.1 --port=8000 > /tmp/nexvary-stage160.log 2>&1 &
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+      - name: Wait for application
+        shell: bash
+        run: |
+          for i in {1..40}; do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/nexvary-stage160.log
+          exit 1
+      - run: npm run visual:test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stage-160-ui-screenshots
+          path: |
+            artifacts/screenshots
+            playwright-report
+          if-no-files-found: warn
+          retention-days: 14
