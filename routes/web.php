@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -55,5 +57,33 @@ Route::get('/sitemap.xml', function (): Response {
 Route::prefix(config('nexvary.admin_prefix'))
     ->middleware(['auth', 'verified', 'admin', 'throttle:admin', 'audit.admin'])
     ->group(function (): void {
-        Route::get('/', fn () => Inertia::render('admin/dashboard'))->name('admin.dashboard');
+        Route::get('/', function (Request $request) {
+            $hasAuditTable = Schema::hasTable('security_audit_events');
+            $auditCount = $hasAuditTable ? DB::table('security_audit_events')->count() : 0;
+            $recentAudit = $hasAuditTable
+                ? DB::table('security_audit_events')
+                    ->latest('created_at')
+                    ->limit(8)
+                    ->get(['id', 'event', 'method', 'route', 'created_at'])
+                    ->map(fn (object $row): array => [
+                        'id' => (string) $row->id,
+                        'event' => (string) $row->event,
+                        'method' => (string) $row->method,
+                        'route' => (string) $row->route,
+                        'created_at' => (string) $row->created_at,
+                    ])
+                : collect();
+
+            return Inertia::render('admin/dashboard', [
+                'security' => [
+                    'mfa_enabled' => filled($request->user()?->two_factor_secret),
+                    'email_verified' => $request->user()?->hasVerifiedEmail() ?? false,
+                    'audit_events' => $auditCount,
+                    'csp_nonce' => true,
+                    'private_cache_control' => true,
+                    'shared_hosting_mode' => true,
+                ],
+                'recentAudit' => $recentAudit,
+            ]);
+        })->name('admin.dashboard');
     });
