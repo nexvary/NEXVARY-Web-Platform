@@ -8,6 +8,12 @@ use Tests\TestCase;
 
 final class PlatformReleaseTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     public function test_public_platform_routes_are_available(): void
     {
         foreach (['/', '/services', '/apps', '/safescan', '/about'] as $path) {
