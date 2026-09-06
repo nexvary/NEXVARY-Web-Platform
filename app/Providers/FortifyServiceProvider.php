@@ -18,6 +18,7 @@ final class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::loginView(fn () => Inertia::render('auth/login'));
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));
+        Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
 
         RateLimiter::for('login', function (Request $request): Limit {
             $key = Str::transliterate(Str::lower((string) $request->input(Fortify::username())).'|'.$request->ip());
