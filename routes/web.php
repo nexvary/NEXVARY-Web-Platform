@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Support\ReleaseUpdater;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -223,6 +224,42 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             return back();
         })->name('admin.safescan.update');
+
+        Route::get('/updates', function (Request $request, ReleaseUpdater $updater) {
+            return Inertia::render('admin/updates', [
+                'status' => $updater->status(),
+                'checked' => $request->session()->get('update.checked'),
+                'result' => $request->session()->get('update.result'),
+                'error' => $request->session()->get('update.error'),
+            ]);
+        })->name('admin.updates');
+
+        Route::post('/updates/check', function (Request $request, ReleaseUpdater $updater): RedirectResponse {
+            abort_unless($request->user()?->role === 'owner', 403);
+
+            try {
+                return back()->with('update.checked', $updater->check());
+            } catch (\Throwable $exception) {
+                report($exception);
+
+                return back()->with('update.error', 'Unable to verify the update source. Check the configured release channel and try again.');
+            }
+        })->name('admin.updates.check');
+
+        Route::post('/updates/install', function (Request $request, ReleaseUpdater $updater): RedirectResponse {
+            abort_unless($request->user()?->role === 'owner', 403);
+
+            try {
+                $manifest = $updater->check();
+                $result = $updater->install($manifest);
+
+                return back()->with('update.result', $result);
+            } catch (\Throwable $exception) {
+                report($exception);
+
+                return back()->with('update.error', 'Update installation failed safely. The site was returned from maintenance mode; review the logs before retrying.');
+            }
+        })->middleware('password.confirm')->name('admin.updates.install');
 
         Route::get('/settings', function () {
             $settings = DB::table('site_settings')->pluck('value', 'key');
