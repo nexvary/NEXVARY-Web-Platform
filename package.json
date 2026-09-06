@@ -7,10 +7,12 @@
     "dev": "vite",
     "lint:check": "eslint .",
     "format:check": "prettier --check resources/",
-    "types:check": "tsc --noEmit"
+    "types:check": "tsc --noEmit",
+    "visual:test": "playwright test tests/visual"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@playwright/test": "^1.55.0",
     "@types/node": "^22.13.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
