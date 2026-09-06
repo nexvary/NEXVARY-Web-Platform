@@ -1,19 +1,20 @@
 import { Head } from '@inertiajs/react';
+import { Facebook, Fingerprint, Globe2, Mail, Microscope, ShieldCheck, Youtube } from 'lucide-react';
 import SiteShell from '../components/site-shell';
 
 const links = [
-  ['Website', 'https://nexvary.com/'],
-  ['Facebook', 'https://www.facebook.com/share/14p9krEn5ij/'],
-  ['Email', 'mailto:info@nexvary.com'],
-  ['YouTube', 'https://www.youtube.com/@NexvaryInc'],
-  ['X', 'https://x.com/Nexvary'],
+  { label: 'Website', href: 'https://nexvary.com/', icon: Globe2 },
+  { label: 'Facebook', href: 'https://www.facebook.com/share/14p9krEn5ij/', icon: Facebook },
+  { label: 'Email', href: 'mailto:info@nexvary.com', icon: Mail },
+  { label: 'YouTube', href: 'https://www.youtube.com/@NexvaryInc', icon: Youtube },
+  { label: 'X', href: 'https://x.com/Nexvary', icon: null },
 ];
 
 const pillars = [
-  ['01', 'Cybersecurity', 'Reducing attack surface and strengthening systems before incidents happen.'],
-  ['02', 'Counter-Surveillance', 'Technical inspection and awareness for environments where confidentiality matters.'],
-  ['03', 'Digital Forensics', 'Structured investigation and evidence handling with repeatable workflows.'],
-  ['04', 'Privacy Technology', 'Tools and architecture that minimize unnecessary data exposure by design.'],
+  { title: 'Cybersecurity', text: 'Reducing attack surface and strengthening systems before incidents happen.', icon: ShieldCheck },
+  { title: 'Counter-Surveillance', text: 'Technical inspection and awareness for environments where confidentiality matters.', icon: Fingerprint },
+  { title: 'Digital Forensics', text: 'Structured investigation and evidence handling with repeatable workflows.', icon: Microscope },
+  { title: 'Privacy Technology', text: 'Tools and architecture that minimize unnecessary data exposure by design.', icon: Globe2 },
 ];
 
 export default function About() {
@@ -36,15 +37,20 @@ export default function About() {
         </section>
 
         <div className="nx-grid nx-about-grid">
-          {pillars.map(([code, title, text]) => (
-            <article className="nx-card" key={code}><div className="nx-icon">{code}</div><h2>{title}</h2><p>{text}</p></article>
+          {pillars.map(({ title, text, icon: Icon }) => (
+            <article className="nx-card" key={title}><div className="nx-icon" aria-hidden="true"><Icon /></div><h2>{title}</h2><p>{text}</p></article>
           ))}
         </div>
 
         <section className="nx-contact-panel">
           <div><p className="nx-kicker">CONNECT</p><h2>{ar ? 'روابط NEXVARY الرسمية' : 'Official NEXVARY channels'}</h2></div>
           <div className="nx-social-grid">
-            {links.map(([label, href]) => <a key={label} href={href} rel="noreferrer" target={href.startsWith('mailto:') ? undefined : '_blank'}><span>{label}</span><small>{href.replace('mailto:', '')}</small></a>)}
+            {links.map(({ label, href, icon: Icon }) => (
+              <a key={label} href={href} rel="noreferrer" target={href.startsWith('mailto:') ? undefined : '_blank'}>
+                <span className="inline-flex items-center gap-2">{Icon ? <Icon size={18} aria-hidden="true" /> : <span aria-hidden="true" className="nx-x-icon">X</span>}{label}</span>
+                <small>{href.replace('mailto:', '')}</small>
+              </a>
+            ))}
           </div>
         </section>
       </main>
