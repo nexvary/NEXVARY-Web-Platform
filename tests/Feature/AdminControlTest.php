@@ -31,6 +31,29 @@ final class AdminControlTest extends TestCase
         ]);
     }
 
+    public function test_every_admin_tab_is_connected_and_opens_for_owner(): void
+    {
+        $owner = $this->owner();
+
+        foreach ([
+            '/secure-control/',
+            '/secure-control/audit',
+            '/secure-control/content',
+            '/secure-control/languages',
+            '/secure-control/users',
+            '/secure-control/sessions',
+            '/secure-control/security',
+            '/secure-control/safescan',
+            '/secure-control/updates',
+            '/secure-control/settings',
+        ] as $path) {
+            $this->actingAs($owner)
+                ->get($path)
+                ->assertOk()
+                ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+        }
+    }
+
     public function test_owner_can_promote_user_to_admin_role(): void
     {
         $owner = $this->owner();
