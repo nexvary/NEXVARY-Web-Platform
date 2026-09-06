@@ -19,10 +19,10 @@ Route::post('/locale/{locale}', function (Request $request, string $locale): Red
     $request->session()->put('locale', $locale);
 
     return back();
-})->middleware('throttle:30,1')->name('locale.update');
+})->middleware('throttle:locale')->name('locale.update');
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']))
-    ->middleware('throttle:30,1')
+    ->middleware('throttle:public-health')
     ->name('health.public');
 
 Route::get('/robots.txt', function (): Response {
@@ -41,7 +41,7 @@ Route::get('/sitemap.xml', function (): Response {
 })->name('sitemap');
 
 Route::prefix(config('nexvary.admin_prefix'))
-    ->middleware(['auth', 'verified', 'throttle:60,1'])
+    ->middleware(['auth', 'verified', 'admin', 'throttle:admin'])
     ->group(function (): void {
         Route::get('/', fn () => Inertia::render('admin/dashboard'))->name('admin.dashboard');
     });
