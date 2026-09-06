@@ -30,7 +30,10 @@ Route::get('/health', fn () => response()->json(['status' => 'ok']))
 
 Route::get('/robots.txt', function (): Response {
     $admin = trim((string) config('nexvary.admin_prefix'), '/');
-    $body = "User-agent: *\nDisallow: /{$admin}/\nDisallow: /health\nSitemap: https://nexvary.com/sitemap.xml\n";
+    $allowIndexing = ! Schema::hasTable('site_settings') || DB::table('site_settings')->where('key', 'seo.index_public_pages')->value('value') !== '0';
+    $body = $allowIndexing
+        ? "User-agent: *\nDisallow: /{$admin}/\nDisallow: /health\nSitemap: https://nexvary.com/sitemap.xml\n"
+        : "User-agent: *\nDisallow: /\n";
 
     return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');
@@ -117,13 +120,7 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             DB::table('content_blocks')->updateOrInsert(
                 ['key' => $validated['key'], 'locale' => $validated['locale']],
-                [
-                    'title' => $validated['title'] ?? null,
-                    'body' => $validated['body'] ?? null,
-                    'is_published' => $validated['is_published'],
-                    'updated_at' => now(),
-                    'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)'),
-                ],
+                ['title' => $validated['title'] ?? null, 'body' => $validated['body'] ?? null, 'is_published' => $validated['is_published'], 'updated_at' => now(), 'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)')],
             );
 
             return back();
@@ -139,17 +136,126 @@ Route::prefix(config('nexvary.admin_prefix'))
 
         Route::post('/languages/{locale}', function (Request $request, string $locale): RedirectResponse {
             abort_unless(in_array($locale, config('nexvary.languages', ['en']), true), 404);
-            $validated = $request->validate([
-                'is_enabled' => ['required', 'boolean'],
-                'completion_percent' => ['required', 'integer', 'between:0,100'],
-            ]);
-
-            DB::table('language_settings')->where('locale', $locale)->update([
-                'is_enabled' => $validated['is_enabled'],
-                'completion_percent' => $validated['completion_percent'],
-                'updated_at' => now(),
-            ]);
+            $validated = $request->validate(['is_enabled' => ['required', 'boolean'], 'completion_percent' => ['required', 'integer', 'between:0,100']]);
+            DB::table('language_settings')->where('locale', $locale)->update(['is_enabled' => $validated['is_enabled'], 'completion_percent' => $validated['completion_percent'], 'updated_at' => now()]);
 
             return back();
         })->name('admin.languages.update');
+
+        Route::get('/users', function (Request $request) {
+            $users = DB::table('users')->orderBy('id')->get(['id', 'name', 'email', 'role', 'is_admin', 'email_verified_at', 'two_factor_confirmed_at', 'created_at'])->map(fn (object $user): array => [
+                'id' => (int) $user->id,
+                'name' => (string) $user->name,
+                'email' => (string) $user->email,
+                'role' => (string) $user->role,
+                'is_admin' => (bool) $user->is_admin,
+                'email_verified' => $user->email_verified_at !== null,
+                'mfa_enabled' => $user->two_factor_confirmed_at !== null,
+                'created_at' => (string) $user->created_at,
+            ]);
+
+            return Inertia::render('admin/users', ['users' => $users, 'currentUserId' => (int) $request->user()->id]);
+        })->name('admin.users');
+
+        Route::post('/users/{user}/role', function (Request $request, int $user): RedirectResponse {
+            abort_unless($request->user()?->role === 'owner', 403);
+            $validated = $request->validate(['role' => ['required', Rule::in(['viewer', 'editor', 'security', 'admin', 'owner'])]]);
+            $target = DB::table('users')->where('id', $user)->first(['id', 'role']);
+            abort_if($target === null, 404);
+            abort_if((int) $target->id === (int) $request->user()->id && $target->role === 'owner' && $validated['role'] !== 'owner', 422, 'The active owner cannot demote their own account.');
+            if ($target->role === 'owner' && $validated['role'] !== 'owner') {
+                abort_if(DB::table('users')->where('role', 'owner')->count() <= 1, 422, 'At least one owner is required.');
+            }
+            $isAdmin = in_array($validated['role'], ['security', 'admin', 'owner'], true);
+            DB::table('users')->where('id', $user)->update(['role' => $validated['role'], 'is_admin' => $isAdmin, 'updated_at' => now()]);
+
+            return back();
+        })->name('admin.users.role');
+
+        Route::get('/sessions', function (Request $request) {
+            $sessionId = $request->session()->getId();
+            $sessions = DB::table('sessions')->where('user_id', $request->user()->id)->orderByDesc('last_activity')->get(['id', 'ip_address', 'user_agent', 'last_activity'])->map(fn (object $session): array => [
+                'id' => (string) $session->id,
+                'ip_address' => $session->ip_address ? (string) $session->ip_address : null,
+                'user_agent' => $session->user_agent ? (string) $session->user_agent : null,
+                'last_activity' => date(DATE_ATOM, (int) $session->last_activity),
+                'current' => hash_equals($sessionId, (string) $session->id),
+            ]);
+
+            return Inertia::render('admin/sessions', ['sessions' => $sessions]);
+        })->name('admin.sessions');
+
+        Route::delete('/sessions/{session}', function (Request $request, string $session): RedirectResponse {
+            abort_if(hash_equals($request->session()->getId(), $session), 422, 'The current session cannot be revoked here.');
+            DB::table('sessions')->where('id', $session)->where('user_id', $request->user()->id)->delete();
+
+            return back();
+        })->name('admin.sessions.destroy');
+
+        Route::delete('/sessions', function (Request $request): RedirectResponse {
+            DB::table('sessions')->where('user_id', $request->user()->id)->where('id', '!=', $request->session()->getId())->delete();
+
+            return back();
+        })->name('admin.sessions.destroy-others');
+
+        Route::get('/security', function (Request $request) {
+            $passkeys = Schema::hasTable('passkeys')
+                ? DB::table('passkeys')->where('user_id', $request->user()->id)->latest('created_at')->get(['id', 'name', 'last_used_at', 'created_at'])
+                : collect();
+
+            return Inertia::render('admin/security', [
+                'mfaEnabled' => filled($request->user()->two_factor_secret),
+                'mfaConfirmed' => filled($request->user()->two_factor_confirmed_at),
+                'passkeys' => $passkeys,
+                'authPrefix' => trim((string) config('fortify.prefix'), '/'),
+            ]);
+        })->name('admin.security');
+
+        Route::get('/safescan', function () {
+            $settings = DB::table('safescan_settings')->first(['max_file_mb', 'reputation_lookup_enabled', 'store_raw_files', 'privacy_mode']);
+
+            return Inertia::render('admin/safescan', ['settings' => $settings]);
+        })->name('admin.safescan');
+
+        Route::post('/safescan', function (Request $request): RedirectResponse {
+            $validated = $request->validate(['max_file_mb' => ['required', 'integer', 'between:1,512'], 'reputation_lookup_enabled' => ['required', 'boolean']]);
+            DB::table('safescan_settings')->updateOrInsert(['id' => 1], ['max_file_mb' => $validated['max_file_mb'], 'reputation_lookup_enabled' => $validated['reputation_lookup_enabled'], 'store_raw_files' => false, 'privacy_mode' => 'zero-storage', 'updated_at' => now(), 'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)')]);
+
+            return back();
+        })->name('admin.safescan.update');
+
+        Route::get('/settings', function () {
+            $settings = DB::table('site_settings')->pluck('value', 'key');
+
+            return Inertia::render('admin/settings', ['settings' => $settings]);
+        })->name('admin.settings');
+
+        Route::post('/settings', function (Request $request): RedirectResponse {
+            abort_unless(in_array($request->user()?->role, ['admin', 'owner'], true), 403);
+            $validated = $request->validate([
+                'website_url' => ['required', 'url:https', 'max:255'],
+                'contact_email' => ['required', 'email', 'max:255'],
+                'facebook' => ['required', 'url:https', 'max:255'],
+                'youtube' => ['required', 'url:https', 'max:255'],
+                'x' => ['required', 'url:https', 'max:255'],
+                'seo_title' => ['required', 'string', 'max:70'],
+                'seo_description' => ['required', 'string', 'max:180'],
+                'index_public_pages' => ['required', 'boolean'],
+            ]);
+            $pairs = [
+                'site.url' => $validated['website_url'],
+                'contact.email' => $validated['contact_email'],
+                'social.facebook' => $validated['facebook'],
+                'social.youtube' => $validated['youtube'],
+                'social.x' => $validated['x'],
+                'seo.default_title' => $validated['seo_title'],
+                'seo.default_description' => $validated['seo_description'],
+                'seo.index_public_pages' => $validated['index_public_pages'] ? '1' : '0',
+            ];
+            foreach ($pairs as $key => $value) {
+                DB::table('site_settings')->updateOrInsert(['key' => $key], ['value' => $value, 'is_secret' => false, 'updated_at' => now(), 'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)')]);
+            }
+
+            return back();
+        })->name('admin.settings.update');
     });
