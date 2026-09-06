@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Activity, FileText, Fingerprint, Gauge, Languages, MonitorSmartphone, Search, Settings, ShieldCheck, Users } from 'lucide-react';
+import { Activity, DownloadCloud, FileText, Fingerprint, Gauge, Languages, MonitorSmartphone, Search, Settings, ShieldCheck, Users } from 'lucide-react';
 
 const items = [
   { label: 'Overview', href: '/secure-control/', icon: Gauge },
@@ -10,6 +10,7 @@ const items = [
   { label: 'Sessions', href: '/secure-control/sessions', icon: MonitorSmartphone },
   { label: 'Security', href: '/secure-control/security', icon: Fingerprint },
   { label: 'SafeScan', href: '/secure-control/safescan', icon: Search },
+  { label: 'Updates', href: '/secure-control/updates', icon: DownloadCloud },
   { label: 'Settings', href: '/secure-control/settings', icon: Settings },
 ];
 
