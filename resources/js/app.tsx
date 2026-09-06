@@ -1,5 +1,6 @@
 import '../css/app.css';
 import '../css/stage160.css';
+import '../css/auth.css';
 import { createInertiaApp } from '@inertiajs/react';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
