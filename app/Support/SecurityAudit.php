@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 final class SecurityAudit
 {
     /**
-     * @param array<string, mixed> $metadata
+     * @param  array<string, mixed>  $metadata
      */
     public static function record(Request $request, string $event, array $metadata = []): void
     {
