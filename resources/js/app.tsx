@@ -7,14 +7,17 @@ import { createRoot } from 'react-dom/client';
 
 createInertiaApp({
   resolve: (name) => {
-    const pages = import.meta.glob<{ default: ComponentType }>('./pages/**/*.tsx', { eager: true });
+    const pages = import.meta.glob('./pages/**/*.tsx', { eager: true }) as Record<
+      string,
+      { default: ComponentType<any> }
+    >;
     const page = pages[`./pages/${name}.tsx`];
 
     if (!page) {
       throw new Error(`Unknown Inertia page: ${name}`);
     }
 
-    return page.default;
+    return page;
   },
   setup({ el, App, props }) {
     createRoot(el).render(<App {...props} />);
