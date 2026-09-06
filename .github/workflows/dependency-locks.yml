@@ -1,0 +1,44 @@
+name: Dependency Locks
+
+on:
+  push:
+    branches: ['foundation/**']
+    paths:
+      - 'composer.json'
+      - 'package.json'
+      - '.github/workflows/dependency-locks.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate Composer lock
+        run: composer update --lock --no-interaction --prefer-dist
+      - name: Generate npm lock
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Commit lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'nexvary-ci'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add composer.lock package-lock.json
+          if git diff --cached --quiet; then
+            echo 'Lockfiles are already current.'
+            exit 0
+          fi
+          git commit -m 'build: lock PHP and Node dependencies'
+          git push origin HEAD:${GITHUB_REF_NAME}
