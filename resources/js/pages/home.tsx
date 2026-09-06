@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
+import SiteShell from '../components/site-shell';
 
-const services = [
+const capabilities = [
   ['TSCM', 'RF & counter-surveillance operations'],
   ['Cybersecurity', 'Hardening, assessment and incident response'],
   ['SafeScan', 'Zero-storage browser-side file inspection'],
@@ -10,40 +11,30 @@ const services = [
 ];
 
 export default function Home() {
-  const isArabic = document.documentElement.lang.startsWith('ar');
+  const ar = document.documentElement.lang.startsWith('ar');
 
   return (
-    <>
-      <Head title="Security Beyond the Visible" />
-      <main className="nx-page">
-        <header className="nx-topbar">
-          <Link className="nx-brand" href="/" aria-label="NEXVARY home">
-            <span className="nx-brand-mark">N</span>
-            <span>NEXVARY</span>
-          </Link>
-          <nav className="nx-nav" aria-label="Primary navigation">
-            <Link href="/about">{isArabic ? 'عنّا' : 'About'}</Link>
-            <Link href="/apps">{isArabic ? 'التطبيقات' : 'Apps'}</Link>
-            <Link href="/safescan">SafeScan</Link>
-            <a href="https://nexvary.com/">nexvary.com</a>
-          </nav>
-        </header>
-
+    <SiteShell>
+      <Head title={ar ? 'NEXVARY — الأمن أبعد مما تراه' : 'NEXVARY — Security Beyond the Visible'}>
+        <meta name="description" content="NEXVARY cybersecurity, counter-surveillance, digital forensics and privacy technology platform." />
+        <link rel="canonical" href="https://nexvary.com/" />
+      </Head>
+      <main>
         <section className="nx-hero">
           <div className="nx-hero-copy">
-            <p className="nx-kicker">NEXVARY SECURITY PLATFORM · STAGE 080</p>
-            <h1>{isArabic ? 'الأمن أبعد مما تراه.' : 'Security Beyond the Visible.'}</h1>
+            <p className="nx-kicker">NEXVARY SECURITY PLATFORM · STAGE 160</p>
+            <h1>{ar ? 'الأمن أبعد مما تراه.' : 'Security Beyond the Visible.'}</h1>
             <p className="nx-lead">
-              {isArabic
-                ? 'منصة أمنية حديثة تجمع الأمن السيبراني، مكافحة التجسس، التحليل الجنائي الرقمي وأدوات الخصوصية داخل تجربة تقنية موحدة.'
-                : 'A modern security platform unifying cybersecurity, counter-surveillance, digital forensics and privacy tooling in one controlled experience.'}
+              {ar
+                ? 'منصة أمنية حديثة تجمع الأمن السيبراني، مكافحة التجسس، التحليل الجنائي الرقمي وأدوات الخصوصية داخل تجربة موحدة مبنية على اختبارات إصدار صارمة.'
+                : 'A security platform unifying cybersecurity, counter-surveillance, digital forensics and privacy tooling behind a strict release-gated engineering process.'}
             </p>
             <div className="nx-actions">
-              <Link className="nx-btn nx-btn-primary" href="/apps">{isArabic ? 'استكشف المنصة' : 'Explore platform'}</Link>
-              <Link className="nx-btn" href="/about">{isArabic ? 'عن NEXVARY' : 'About NEXVARY'}</Link>
+              <Link className="nx-btn nx-btn-primary" href="/services">{ar ? 'استكشف الخدمات' : 'Explore services'}</Link>
+              <Link className="nx-btn" href="/apps">{ar ? 'التطبيقات' : 'Applications'}</Link>
             </div>
-            <div className="nx-trust-row">
-              <span>Laravel 13</span><span>React 19</span><span>Inertia 3</span><span>TypeScript</span><span>Zero-Storage</span>
+            <div className="nx-trust-row" aria-label="Platform technologies">
+              <span>Laravel 13</span><span>React 19</span><span>Inertia 3</span><span>TypeScript</span><span>Zero-Storage</span><span>Release Gate</span>
             </div>
           </div>
 
@@ -54,17 +45,17 @@ export default function Home() {
               <div className="nx-core">N</div>
             </div>
             <div className="nx-command-meta">
-              <span><b>SECURE</b> release-gated development</span>
-              <span><b>RTL</b> Arabic-first layout support</span>
-              <span><b>CI</b> security + visual validation</span>
+              <span><b>SECURE</b>{ar ? 'بوابات إصدار واختبارات أمنية' : 'release-gated engineering'}</span>
+              <span><b>RTL</b>{ar ? 'واجهة عربية أصلية' : 'native Arabic layout support'}</span>
+              <span><b>VISUAL</b>{ar ? 'فحص مرئي آلي' : 'automated visual QA'}</span>
             </div>
           </div>
         </section>
 
         <section className="nx-section">
-          <div className="nx-section-title"><p>CAPABILITIES</p><h2>{isArabic ? 'منظومة أمنية متعددة الطبقات' : 'Multi-layer security capability'}</h2></div>
+          <div className="nx-section-title"><p>CAPABILITIES</p><h2>{ar ? 'منظومة أمنية متعددة الطبقات' : 'A multi-layer security capability'}</h2></div>
           <div className="nx-grid">
-            {services.map(([title, desc], index) => (
+            {capabilities.map(([title, desc], index) => (
               <article className="nx-card" key={title}>
                 <div className="nx-icon" aria-hidden="true">{String(index + 1).padStart(2, '0')}</div>
                 <h3>{title}</h3><p>{desc}</p>
@@ -72,12 +63,7 @@ export default function Home() {
             ))}
           </div>
         </section>
-
-        <footer className="nx-footer">
-          <span>© NEXVARY</span>
-          <div><a href="mailto:info@nexvary.com">info@nexvary.com</a><a href="https://x.com/Nexvary">X</a><a href="https://www.youtube.com/@NexvaryInc">YouTube</a><a href="https://www.facebook.com/share/14p9krEn5ij/">Facebook</a></div>
-        </footer>
       </main>
-    </>
+    </SiteShell>
   );
 }
