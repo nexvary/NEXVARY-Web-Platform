@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
@@ -27,7 +28,7 @@ Artisan::command('security:audit-verify', function (): int {
             'user_agent_hash' => $row->user_agent_hash,
             'metadata' => json_decode((string) $row->metadata, true, flags: JSON_THROW_ON_ERROR),
             'previous_hash' => $row->previous_hash,
-            'created_at' => \Illuminate\Support\Carbon::parse($row->created_at)->toISOString(),
+            'created_at' => Carbon::parse($row->created_at)->toISOString(),
         ];
 
         $expectedHash = hash_hmac('sha256', json_encode($payload, JSON_THROW_ON_ERROR), $key);
