@@ -17,11 +17,10 @@ jobs:
         with:
           php-version: '8.4'
           coverage: none
+      - run: composer validate --strict
       - run: composer install --no-interaction --prefer-dist
       - run: cp .env.example .env && php artisan key:generate
-      - run: touch database/database.sqlite
-      - run: php artisan migrate --force
-      - run: composer audit --locked || composer audit
+      - run: composer audit
       - run: vendor/bin/pint --test
       - run: php artisan test
 
@@ -32,7 +31,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
       - run: npm install
       - run: npm run types:check
       - run: npm run build
