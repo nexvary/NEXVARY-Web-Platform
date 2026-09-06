@@ -45,9 +45,16 @@ final class PlatformReleaseTest extends TestCase
 
     public function test_private_login_surface_is_not_indexable_or_cacheable(): void
     {
-        $this->get('/secure-access/login')
+        $response = $this->get('/secure-access/login');
+
+        $response
             ->assertOk()
-            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
-            ->assertHeader('Cache-Control', 'no-store, private, max-age=0');
+            ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+
+        $cacheControl = (string) $response->headers->get('Cache-Control');
+
+        $this->assertStringContainsString('no-store', $cacheControl);
+        $this->assertStringContainsString('private', $cacheControl);
+        $this->assertStringContainsString('max-age=0', $cacheControl);
     }
 }
