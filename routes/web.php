@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -61,17 +62,13 @@ Route::prefix(config('nexvary.admin_prefix'))
             $hasAuditTable = Schema::hasTable('security_audit_events');
             $auditCount = $hasAuditTable ? DB::table('security_audit_events')->count() : 0;
             $recentAudit = $hasAuditTable
-                ? DB::table('security_audit_events')
-                    ->latest('created_at')
-                    ->limit(8)
-                    ->get(['id', 'event', 'method', 'route', 'created_at'])
-                    ->map(fn (object $row): array => [
-                        'id' => (string) $row->id,
-                        'event' => (string) $row->event,
-                        'method' => (string) $row->method,
-                        'route' => (string) $row->route,
-                        'created_at' => (string) $row->created_at,
-                    ])
+                ? DB::table('security_audit_events')->latest('created_at')->limit(8)->get(['id', 'event', 'method', 'route', 'created_at'])->map(fn (object $row): array => [
+                    'id' => (string) $row->id,
+                    'event' => (string) $row->event,
+                    'method' => (string) $row->method,
+                    'route' => (string) $row->route,
+                    'created_at' => (string) $row->created_at,
+                ])
                 : collect();
 
             return Inertia::render('admin/dashboard', [
@@ -86,4 +83,73 @@ Route::prefix(config('nexvary.admin_prefix'))
                 'recentAudit' => $recentAudit,
             ]);
         })->name('admin.dashboard');
+
+        Route::get('/audit', function () {
+            $events = Schema::hasTable('security_audit_events')
+                ? DB::table('security_audit_events')->latest('created_at')->limit(100)->get(['id', 'event', 'method', 'route', 'created_at'])->map(fn (object $row): array => [
+                    'id' => (string) $row->id,
+                    'event' => (string) $row->event,
+                    'method' => (string) $row->method,
+                    'route' => (string) $row->route,
+                    'created_at' => (string) $row->created_at,
+                ])
+                : collect();
+
+            return Inertia::render('admin/audit', ['events' => $events]);
+        })->name('admin.audit');
+
+        Route::get('/content', function () {
+            $blocks = Schema::hasTable('content_blocks')
+                ? DB::table('content_blocks')->orderBy('key')->orderBy('locale')->get(['key', 'locale', 'title', 'body', 'is_published'])
+                : collect();
+
+            return Inertia::render('admin/content', ['blocks' => $blocks]);
+        })->name('admin.content');
+
+        Route::post('/content', function (Request $request): RedirectResponse {
+            $validated = $request->validate([
+                'key' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9._-]+$/'],
+                'locale' => ['required', 'string', Rule::in(config('nexvary.languages', ['en']))],
+                'title' => ['nullable', 'string', 'max:255'],
+                'body' => ['nullable', 'string', 'max:20000'],
+                'is_published' => ['required', 'boolean'],
+            ]);
+
+            DB::table('content_blocks')->updateOrInsert(
+                ['key' => $validated['key'], 'locale' => $validated['locale']],
+                [
+                    'title' => $validated['title'] ?? null,
+                    'body' => $validated['body'] ?? null,
+                    'is_published' => $validated['is_published'],
+                    'updated_at' => now(),
+                    'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)'),
+                ],
+            );
+
+            return back();
+        })->name('admin.content.save');
+
+        Route::get('/languages', function () {
+            $languages = Schema::hasTable('language_settings')
+                ? DB::table('language_settings')->orderBy('id')->get(['locale', 'label', 'is_rtl', 'is_enabled', 'completion_percent'])
+                : collect();
+
+            return Inertia::render('admin/languages', ['languages' => $languages]);
+        })->name('admin.languages');
+
+        Route::post('/languages/{locale}', function (Request $request, string $locale): RedirectResponse {
+            abort_unless(in_array($locale, config('nexvary.languages', ['en']), true), 404);
+            $validated = $request->validate([
+                'is_enabled' => ['required', 'boolean'],
+                'completion_percent' => ['required', 'integer', 'between:0,100'],
+            ]);
+
+            DB::table('language_settings')->where('locale', $locale)->update([
+                'is_enabled' => $validated['is_enabled'],
+                'completion_percent' => $validated['completion_percent'],
+                'updated_at' => now(),
+            ]);
+
+            return back();
+        })->name('admin.languages.update');
     });
