@@ -37,6 +37,16 @@ final class SecurityHeaders
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
 
+        $adminPrefix = trim((string) config('nexvary.admin_prefix'), '/');
+        $authPrefix = trim((string) config('fortify.prefix', 'secure-access'), '/');
+        $isPrivateSurface = $request->is($adminPrefix, $adminPrefix.'/*', $authPrefix, $authPrefix.'/*');
+
+        if ($isPrivateSurface) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet');
+            $response->headers->set('Cache-Control', 'no-store, private, max-age=0');
+            $response->headers->set('Pragma', 'no-cache');
+        }
+
         if ($request->isSecure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         }
