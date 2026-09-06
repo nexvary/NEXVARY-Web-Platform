@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Vite;
 use Symfony\Component\HttpFoundation\Response;
 
 final class SecurityHeaders
@@ -13,18 +14,21 @@ final class SecurityHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
+        $nonce = Vite::cspNonce();
 
         $policy = implode('; ', [
-            'default-src \'self\'',
-            'base-uri \'self\'',
-            'object-src \'none\'',
-            'frame-ancestors \'none\'',
-            'form-action \'self\'',
-            'img-src \'self\' data: https:',
-            'font-src \'self\' data:',
-            'style-src \'self\' \'unsafe-inline\'',
-            'script-src \'self\'',
-            'connect-src \'self\' https://www.virustotal.com',
+            "default-src 'self'",
+            "base-uri 'self'",
+            "object-src 'none'",
+            "frame-ancestors 'none'",
+            "form-action 'self'",
+            "img-src 'self' data: https:",
+            "font-src 'self' data:",
+            "style-src 'self' 'nonce-{$nonce}'",
+            "script-src 'self' 'nonce-{$nonce}'",
+            "connect-src 'self'",
+            "manifest-src 'self'",
+            "worker-src 'self' blob:",
             'upgrade-insecure-requests',
         ]);
 
@@ -32,10 +36,11 @@ final class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()');
         $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
+        $response->headers->set('X-DNS-Prefetch-Control', 'off');
 
         $adminPrefix = trim((string) config('nexvary.admin_prefix'), '/');
         $authPrefix = trim((string) config('fortify.prefix', 'secure-access'), '/');
