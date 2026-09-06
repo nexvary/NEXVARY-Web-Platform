@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('home'))->name('home');
-
 Route::get('/about', fn () => Inertia::render('about'))->name('about');
+Route::get('/apps', fn () => Inertia::render('apps'))->name('apps');
+Route::get('/safescan', fn () => Inertia::render('safescan'))->name('safescan');
 
 Route::get('/health', fn () => response()->json(['status' => 'ok']))
     ->middleware('throttle:30,1')
