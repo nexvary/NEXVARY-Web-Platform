@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Middleware\AdminAudit;
+use App\Http\Middleware\AdminPrivacyHeaders;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -14,7 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [SetLocale::class, SecurityHeaders::class]);
+        $middleware->alias([
+            'admin.audit' => AdminAudit::class,
+            'admin.privacy' => AdminPrivacyHeaders::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Central exception reporting hooks are added in the observability phase.
+        // Central reporting hooks are intentionally isolated from public responses.
     })->create();

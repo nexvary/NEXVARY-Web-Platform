@@ -1,15 +1,2 @@
 import { Head } from '@inertiajs/react';
-
-export default function Dashboard() {
-  return (
-    <>
-      <Head title="Secure Control" />
-      <main className="min-h-screen bg-slate-950 p-8 text-white">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-sm tracking-[0.3em] text-cyan-300">PRIVATE ADMINISTRATION</p>
-          <h1 className="mt-3 text-4xl font-black">NEXVARY Command Center</h1>
-        </div>
-      </main>
-    </>
-  );
-}
+export default function Dashboard(){return <main className="admin-shell"><Head title="Security Operations Console"/><header className="admin-top"><div><p className="nx-kicker">NEXVARY PRIVATE CONTROL PLANE</p><h1>Security Operations Console</h1></div><span className="status-chip">Authenticated</span></header><section className="admin-grid"><article className="nx-card"><h2>Release posture</h2><strong>Stage 160</strong><p>CI, dependency audit, secret scan, PHPUnit and visual release gates.</p></article><article className="nx-card"><h2>Identity</h2><strong>MFA-ready</strong><p>Fortify-backed login, email verification and two-factor challenge.</p></article><article className="nx-card"><h2>Audit</h2><strong>Privacy-aware</strong><p>Administrative activity records hash network identifiers before persistence.</p></article><article className="nx-card"><h2>SafeScan</h2><strong>Zero-storage</strong><p>File bytes remain client-side.</p></article></section></main>}

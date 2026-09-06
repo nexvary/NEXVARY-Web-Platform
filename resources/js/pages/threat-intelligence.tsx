@@ -1,0 +1,5 @@
+import { Head } from '@inertiajs/react';
+import SiteShell from '../components/site-shell';
+
+const channels=[['CIS advisories','Defensive advisories cached from a fixed allow-listed feed.'],['Google Threat Intelligence','Threat research and defensive intelligence.'],['Google TAG','Threat Analysis Group reporting.'],['OpenAI News','AI platform developments relevant to the intelligence dashboard.'],['Google AI','AI research and product developments.']];
+export default function ThreatIntelligence(){return <SiteShell><Head title="Threat Intelligence"/><main className="nx-section nx-stack"><p className="nx-kicker">THREAT INTELLIGENCE</p><h1>Curated signals, bounded ingestion.</h1><p className="nx-lead">The platform accepts only configured HTTPS sources, caches results, limits XML size and does not provide an arbitrary URL fetcher.</p><div className="nx-card-grid">{channels.map(([title,body])=><article className="nx-card" key={title}><span className="nx-live-dot"/><h2>{title}</h2><p>{body}</p></article>)}</div></main></SiteShell>}
