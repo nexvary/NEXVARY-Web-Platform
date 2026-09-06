@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AuditAdminActivity;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'audit.admin' => AuditAdminActivity::class,
         ]);
 
         $middleware->web(append: [
