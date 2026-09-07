@@ -10,10 +10,13 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
+$distributionModes = ['download', 'showcase', 'request', 'internal', 'coming_soon'];
+
 Route::get('/our-work', function () {
     $apps = Schema::hasTable('portfolio_apps')
         ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get([
             'slug', 'name', 'tagline', 'summary', 'platform', 'category', 'version', 'icon_url', 'downloads', 'published_at',
+            'distribution_mode', 'download_enabled', 'availability_note',
         ])
         : collect();
 
@@ -27,14 +30,24 @@ Route::get('/our-work/{slug}', function (string $slug) {
 
     $app->screenshots = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string) ($app->screenshots ?? '')) ?: [])));
     $app->features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string) ($app->features ?? '')) ?: [])));
+    $app->can_download = $app->distribution_mode === 'download' && (bool) $app->download_enabled && filled($app->apk_url);
 
     return Inertia::render('our-work/show', ['app' => $app]);
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/our-work/{slug}/download', function (string $slug): RedirectResponse {
     abort_unless(Schema::hasTable('portfolio_apps'), 404);
-    $app = DB::table('portfolio_apps')->where('slug', $slug)->where('is_published', true)->first(['id', 'apk_url']);
-    abort_if($app === null || blank($app->apk_url), 404);
+    $app = DB::table('portfolio_apps')->where('slug', $slug)->where('is_published', true)->first([
+        'id', 'apk_url', 'distribution_mode', 'download_enabled',
+    ]);
+
+    abort_if(
+        $app === null
+        || $app->distribution_mode !== 'download'
+        || (bool) $app->download_enabled !== true
+        || blank($app->apk_url),
+        404,
+    );
 
     DB::table('portfolio_apps')->where('id', $app->id)->increment('downloads');
 
@@ -43,7 +56,7 @@ Route::get('/our-work/{slug}/download', function (string $slug): RedirectRespons
 
 Route::prefix(config('nexvary.admin_prefix'))
     ->middleware(['auth', 'verified', 'admin', 'throttle:admin', 'audit.admin'])
-    ->group(function (): void {
+    ->group(function () use ($distributionModes): void {
         Route::get('/our-work', function () {
             $apps = Schema::hasTable('portfolio_apps')
                 ? DB::table('portfolio_apps')->orderByDesc('id')->get()
@@ -52,7 +65,7 @@ Route::prefix(config('nexvary.admin_prefix'))
             return Inertia::render('admin/our-work', ['apps' => $apps]);
         })->name('admin.our-work');
 
-        Route::post('/our-work', function (Request $request): RedirectResponse {
+        Route::post('/our-work', function (Request $request) use ($distributionModes): RedirectResponse {
             abort_unless(in_array($request->user()?->role, ['admin', 'owner'], true), 403);
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:180'],
@@ -70,8 +83,16 @@ Route::prefix(config('nexvary.admin_prefix'))
                 'screenshots' => ['nullable', 'string', 'max:8000'],
                 'features' => ['nullable', 'string', 'max:12000'],
                 'changelog' => ['nullable', 'string', 'max:12000'],
+                'distribution_mode' => ['required', Rule::in($distributionModes)],
+                'download_enabled' => ['required', 'boolean'],
+                'request_url' => ['nullable', 'url:https', 'max:500'],
+                'availability_note' => ['nullable', 'string', 'max:500'],
                 'is_published' => ['required', 'boolean'],
             ]);
+
+            if ($validated['distribution_mode'] !== 'download') {
+                $validated['download_enabled'] = false;
+            }
 
             $validated['published_at'] = $validated['is_published'] ? now() : null;
             $validated['created_at'] = now();
@@ -81,7 +102,7 @@ Route::prefix(config('nexvary.admin_prefix'))
             return back()->with('success', 'Application page created.');
         })->name('admin.our-work.store');
 
-        Route::post('/our-work/{app}', function (Request $request, int $app): RedirectResponse {
+        Route::post('/our-work/{app}', function (Request $request, int $app) use ($distributionModes): RedirectResponse {
             abort_unless(in_array($request->user()?->role, ['admin', 'owner'], true), 403);
             $existing = DB::table('portfolio_apps')->where('id', $app)->first(['id', 'slug', 'published_at']);
             abort_if($existing === null, 404);
@@ -102,8 +123,16 @@ Route::prefix(config('nexvary.admin_prefix'))
                 'screenshots' => ['nullable', 'string', 'max:8000'],
                 'features' => ['nullable', 'string', 'max:12000'],
                 'changelog' => ['nullable', 'string', 'max:12000'],
+                'distribution_mode' => ['required', Rule::in($distributionModes)],
+                'download_enabled' => ['required', 'boolean'],
+                'request_url' => ['nullable', 'url:https', 'max:500'],
+                'availability_note' => ['nullable', 'string', 'max:500'],
                 'is_published' => ['required', 'boolean'],
             ]);
+
+            if ($validated['distribution_mode'] !== 'download') {
+                $validated['download_enabled'] = false;
+            }
 
             $validated['published_at'] = $validated['is_published'] ? ($existing->published_at ?: now()) : null;
             $validated['updated_at'] = now();
