@@ -38,6 +38,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
           <Link href="/apps">{ar ? 'التطبيقات' : 'Apps'}</Link>
           <Link href="/safescan">SafeScan</Link>
           <Link href="/about">{ar ? 'عنّا' : 'About'}</Link>
+          <Link href="/contact">{ar ? 'تواصل معنا' : 'Contact'}</Link>
         </nav>
         <label className="nx-language">
           <span className="sr-only">Language</span>
