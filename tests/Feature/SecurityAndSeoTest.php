@@ -19,7 +19,7 @@ final class SecurityAndSeoTest extends TestCase
 
     public function test_private_admin_redirects_unauthenticated_users(): void
     {
-        $this->get('/'.trim((string) config('nexvary.admin_prefix'), '/'))->assertRedirect('/login');
+        $this->get('/'.trim((string) config('nexvary.admin_prefix'), '/'))->assertRedirect('/secure-access/login');
     }
 
     public function test_robots_sitemap_and_security_txt_render(): void
