@@ -3,9 +3,11 @@ import { expect, test } from '@playwright/test';
 const publicTabs = [
   { href: '/', label: /home|الرئيسية/i },
   { href: '/services', label: /services|الخدمات/i },
+  { href: '/our-work', label: /our work|أعمالنا/i },
   { href: '/apps', label: /apps|التطبيقات/i },
   { href: '/safescan', label: /safescan/i },
   { href: '/about', label: /about|عنّا/i },
+  { href: '/contact', label: /contact|تواصل معنا/i },
 ];
 
 for (const tab of publicTabs) {
