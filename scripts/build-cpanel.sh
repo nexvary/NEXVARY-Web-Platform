@@ -59,10 +59,11 @@ if (is_file($installed)) {{
     exit('NEXVARY is already installed.');
 }}
 
-foreach ([$appDir.'/storage', $appDir.'/storage/framework', $appDir.'/storage/framework/sessions', $appDir.'/bootstrap/cache'] as $writable) {{
-    if (is_dir($writable)) {{
-        @chmod($writable, 0775);
+foreach ([$appDir.'/storage', $appDir.'/storage/framework', $appDir.'/storage/framework/sessions', $appDir.'/storage/framework/cache', $appDir.'/storage/framework/views', $appDir.'/bootstrap/cache'] as $writable) {{
+    if (!is_dir($writable)) {{
+        @mkdir($writable, 0775, true);
     }}
+    @chmod($writable, 0775);
 }}
 
 $db = $appDir.'/database/database.sqlite';
@@ -74,7 +75,6 @@ if (!is_file($db)) {{
 $env = $appDir.'/.env';
 if (!is_file($env)) {{
     $host = preg_replace('/[^A-Za-z0-9.:-]/', '', (string) ($_SERVER['HTTP_HOST'] ?? 'nexvary.com'));
-    $host = preg_replace('/^www\./i', '', $host) ?: 'nexvary.com';
     $url = 'https://'.$host;
     $key = 'base64:'.base64_encode(random_bytes(32));
     $lines = [
@@ -88,15 +88,12 @@ if (!is_file($env)) {{
         'DB_DATABASE='.$db,
         'SESSION_DRIVER=file',
         'SESSION_LIFETIME=120',
-        'SESSION_EXPIRE_ON_CLOSE=false',
         'SESSION_ENCRYPT=true',
-        'SESSION_COOKIE=nexvary_session',
         'SESSION_PATH=/',
-        'SESSION_DOMAIN=.'.$host,
+        'SESSION_DOMAIN=',
         'SESSION_SECURE_COOKIE=true',
         'SESSION_HTTP_ONLY=true',
         'SESSION_SAME_SITE=lax',
-        'SESSION_PARTITIONED_COOKIE=false',
         'CACHE_STORE=file',
         'QUEUE_CONNECTION=sync',
     ];
@@ -110,6 +107,12 @@ $kernel = $app->make(Illuminate\\Contracts\\Console\\Kernel::class);
 $kernel->bootstrap();
 
 try {{
+    $probe = $appDir.'/storage/framework/sessions/.write-test-'.bin2hex(random_bytes(4));
+    if (@file_put_contents($probe, 'ok') === false) {{
+        throw new RuntimeException('Session storage is not writable.');
+    }}
+    @unlink($probe);
+
     $code = $kernel->call('migrate', ['--force' => true]);
     if ($code !== 0) {{
         throw new RuntimeException('Database migration failed.');
