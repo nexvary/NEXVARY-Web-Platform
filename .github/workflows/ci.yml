@@ -1,0 +1,151 @@
+name: Release Gate
+
+on:
+  push:
+    branches: [main, 'foundation/**', 'feature/**', 'security/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-gate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-integrity:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Require reproducible lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s composer.lock
+          test -s package-lock.json
+      - name: Verify manifests match lockfiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -r '$l=json_decode(file_get_contents("composer.lock"), true, flags: JSON_THROW_ON_ERROR); if (!isset($l["content-hash"])) exit(1);'
+          node -e 'const l=require("./package-lock.json"); if(l.lockfileVersion!==3) process.exit(1)'
+
+  backend:
+    runs-on: ubuntu-24.04
+    needs: dependency-integrity
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.4'
+          coverage: none
+      - run: composer validate --strict
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: composer audit
+      - run: vendor/bin/pint --test
+      - run: php artisan test
+      - name: Verify auth route surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          php artisan route:list --path=secure-access | grep -q 'passkeys/login'
+          php artisan route:list --path=secure-access | grep -q 'two-factor-qr-code'
+          php artisan route:list --path=secure-control | grep -q 'admin.security'
+
+  frontend:
+    runs-on: ubuntu-24.04
+    needs: dependency-integrity
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run types:check
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  security-static-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Reject common secret patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git grep -nE '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{20,})' -- . ':!*.lock'
+      - name: Reject dangerous PHP execution primitives
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git grep -nE '\b(eval|exec|shell_exec|passthru|system|proc_open|popen)\s*\(' -- '*.php' ':!vendor/**'
+      - name: Reject accidental debug exposure
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git grep -nE '^APP_DEBUG=true$' -- '.env*'
+      - name: Require zero-storage SafeScan invariant
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "'store_raw_files' => false" routes/web.php
+          grep -q "privacy_mode.*zero-storage" routes/web.php
+
+  visual-release-gate:
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend, security-static-gate]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Prepare Laravel runtime
+        run: |
+          cp .env.example .env
+          printf '\nCACHE_STORE=array\nQUEUE_CONNECTION=sync\n' >> .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --force
+      - name: Start Laravel
+        run: php artisan serve --host=127.0.0.1 --port=8000 > /tmp/nexvary-laravel.log 2>&1 &
+      - name: Wait for application
+        shell: bash
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/nexvary-laravel.log
+          exit 1
+      - name: Security header smoke gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          headers="$(curl -sSI http://127.0.0.1:8000/about | tr -d '\r')"
+          grep -qi '^Content-Security-Policy:' <<< "$headers"
+          grep -qi '^X-Content-Type-Options: nosniff' <<< "$headers"
+          grep -qi '^X-Frame-Options: DENY' <<< "$headers"
+          grep -qi '^Referrer-Policy: strict-origin-when-cross-origin' <<< "$headers"
+      - run: npm run visual:test
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-release-gate-screenshots
+          path: |
+            artifacts/screenshots
+            playwright-report
+          if-no-files-found: warn
+          retention-days: 14
