@@ -31,7 +31,7 @@ Route::get('/health', fn () => response()->json(['status' => 'ok']))
 
 Route::get('/robots.txt', function (): Response {
     $admin = trim((string) config('nexvary.admin_prefix'), '/');
-    $allowIndexing = ! Schema::hasTable('site_settings') || DB::table('site_settings')->where('key', 'seo.index_public_pages')->value('value') !== '0';
+    $allowIndexing = Schema::hasTable('site_settings') === false || DB::table('site_settings')->where('key', 'seo.index_public_pages')->value('value') !== '0';
     $body = $allowIndexing
         ? "User-agent: *\nDisallow: /{$admin}/\nDisallow: /health\nSitemap: https://nexvary.com/sitemap.xml\n"
         : "User-agent: *\nDisallow: /\n";
@@ -239,7 +239,7 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             try {
                 return back()->with('update.checked', $updater->check());
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 report($exception);
 
                 return back()->with('update.error', 'Unable to verify the update source. Check the configured release channel and try again.');
@@ -254,7 +254,7 @@ Route::prefix(config('nexvary.admin_prefix'))
                 $result = $updater->install($manifest);
 
                 return back()->with('update.result', $result);
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 report($exception);
 
                 return back()->with('update.error', 'Update installation failed safely. The site was returned from maintenance mode; review the logs before retrying.');
