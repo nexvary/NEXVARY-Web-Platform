@@ -33,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('locale', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
         RateLimiter::for('public-health', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
 
+        Route::middleware('web')->group(base_path('routes/our-work.php'));
+
         Route::post('/'.trim((string) config('nexvary.admin_prefix'), '/').'/users', function (Request $request): RedirectResponse {
             abort_unless($request->user()?->role === 'owner', 403);
 
