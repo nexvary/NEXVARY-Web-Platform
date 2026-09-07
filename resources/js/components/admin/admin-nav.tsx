@@ -1,11 +1,12 @@
 import { Link } from '@inertiajs/react';
-import { Activity, DownloadCloud, FileText, Fingerprint, Gauge, Languages, MonitorSmartphone, Search, Settings, ShieldCheck, Users } from 'lucide-react';
+import { Activity, DownloadCloud, FileText, Fingerprint, Gauge, Languages, MessageSquareText, MonitorSmartphone, Search, Settings, ShieldCheck, Users } from 'lucide-react';
 
 const items = [
   { label: 'Overview', href: '/secure-control/', icon: Gauge },
   { label: 'Audit', href: '/secure-control/audit', icon: Activity },
   { label: 'Content', href: '/secure-control/content', icon: FileText },
   { label: 'Languages', href: '/secure-control/languages', icon: Languages },
+  { label: 'Contacts', href: '/secure-control/contacts', icon: MessageSquareText },
   { label: 'Users', href: '/secure-control/users', icon: Users },
   { label: 'Sessions', href: '/secure-control/sessions', icon: MonitorSmartphone },
   { label: 'Security', href: '/secure-control/security', icon: Fingerprint },
