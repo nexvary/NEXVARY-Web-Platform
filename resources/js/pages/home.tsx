@@ -36,7 +36,7 @@ export default function Home() {
               <Link className="nx-btn nx-btn-primary" href="/services">{ar ? 'استكشف الخدمات' : 'Explore services'}</Link>
               <Link className="nx-btn" href="/apps">{ar ? 'التطبيقات' : 'Applications'}</Link>
             </div>
-            <div className="nx-status-strip" aria-label="Platform status">
+            <div className="nx-status-strip" aria-label="Platform capability status">
               <span><i /> TSCM</span>
               <span><i /> Cyber Defense</span>
               <span><i /> Digital Forensics</span>
@@ -44,7 +44,30 @@ export default function Home() {
             </div>
           </motion.div>
 
-          <motion.div className="nx-command nx-command-globe" aria-label="Global security visualization" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.45 }}>
+          <motion.div className="nx-command nx-command-globe" aria-label="Decorative global security visualization" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.45 }}>
+            <div className="nx-command-topline" aria-hidden="true">
+              <strong>NEXVARY COMMAND VISUAL</strong>
+              <span>RF AWARENESS LAYER</span>
+            </div>
+
+            <div className="nx-rf-field" aria-hidden="true">
+              <div className="nx-rf-sweep" />
+              <i className="nx-rf-node node-1" />
+              <i className="nx-rf-node node-2" />
+              <i className="nx-rf-node node-3" />
+              <i className="nx-rf-node node-4" />
+            </div>
+
+            <div className="nx-intel-rail nx-intel-left" aria-hidden="true">
+              <div className="nx-intel-chip"><b>TSCM</b><span>{ar ? 'وعي طيفي متعدد الطبقات' : 'multi-layer spectrum awareness'}</span></div>
+              <div className="nx-intel-chip"><b>RF</b><span>{ar ? 'تصور مسح لاسلكي' : 'radio sweep visualization'}</span></div>
+            </div>
+
+            <div className="nx-intel-rail nx-intel-right" aria-hidden="true">
+              <div className="nx-intel-chip"><b>CYBER</b><span>{ar ? 'دفاع رقمي متكامل' : 'integrated cyber defense'}</span></div>
+              <div className="nx-intel-chip"><b>DFIR</b><span>{ar ? 'مسارات أدلة منظمة' : 'structured evidence workflows'}</span></div>
+            </div>
+
             <div className="nx-orbit nx-orbit-a" />
             <div className="nx-orbit nx-orbit-b" />
             <div className="nx-globe-wrap" aria-hidden="true">
@@ -66,7 +89,7 @@ export default function Home() {
             </div>
             <div className="nx-command-meta">
               <span><b>GLOBAL</b>{ar ? 'وعي أمني متعدد الطبقات' : 'multi-layer security awareness'}</span>
-              <span><b>LIVE</b>{ar ? 'تصميم بصري ديناميكي' : 'dynamic intelligence visualization'}</span>
+              <span><b>VISUAL</b>{ar ? 'تصميم بصري ديناميكي' : 'dynamic intelligence visualization'}</span>
               <span><b>SECURE</b>{ar ? 'بوابات إصدار واختبارات' : 'release-gated engineering'}</span>
             </div>
           </motion.div>

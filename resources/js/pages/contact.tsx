@@ -70,7 +70,7 @@ export default function Contact() {
             </div>
           )}
 
-          <form onSubmit={submit} className="grid gap-6 rounded-3xl border border-white/10 bg-slate-950/70 p-5 shadow-2xl shadow-cyan-950/20 sm:p-7" noValidate>
+          <form onSubmit={submit} className="relative grid gap-6 rounded-3xl border border-white/10 bg-slate-950/70 p-5 shadow-2xl shadow-cyan-950/20 sm:p-7" noValidate>
             <div className="grid gap-5 md:grid-cols-2">
               <label className="grid gap-2 text-sm text-slate-200">
                 <span>{ar ? 'الاسم الكامل *' : 'Full name *'}</span>
@@ -131,9 +131,9 @@ export default function Contact() {
               </label>
             </div>
 
-            <label className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+            <label className="pointer-events-none absolute left-0 top-0 h-px w-px overflow-hidden opacity-0" aria-hidden="true">
               Website
-              <input tabIndex={-1} autoComplete="off" value={form.data.website} onChange={(e) => form.setData('website', e.target.value)} />
+              <input className="h-px w-px border-0 p-0" tabIndex={-1} autoComplete="off" value={form.data.website} onChange={(e) => form.setData('website', e.target.value)} />
             </label>
 
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-5">
