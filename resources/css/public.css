@@ -1,0 +1,29 @@
+@import './app.css';
+@import './command-center.css';
+
+.nx-ssr-copy { max-width: 800px; color:#a8bdcf; line-height:1.9; }
+.nx-ssr-copy p { margin:0 0 1rem; }
+.nx-seo-note { margin-top:22px; padding:16px 18px; border:1px solid rgba(99,231,255,.16); border-radius:16px; background:rgba(4,19,35,.72); color:#94afc4; line-height:1.75; }
+.nx-public-form { display:grid; gap:18px; padding:24px; border:1px solid rgba(119,224,255,.2); border-radius:22px; background:linear-gradient(145deg,rgba(8,28,50,.86),rgba(3,14,28,.88)); }
+.nx-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.nx-field { display:grid; gap:7px; min-width:0; color:#d8edf7; font-size:.9rem; }
+.nx-field-full { grid-column:1/-1; }
+.nx-field input,.nx-field select,.nx-field textarea { width:100%; min-height:48px; border:1px solid rgba(135,225,255,.18); border-radius:12px; background:#06111f; color:white; padding:11px 13px; }
+.nx-field textarea { min-height:160px; resize:vertical; }
+.nx-error { color:#fda4af; font-size:.82rem; }
+.nx-success { margin-bottom:18px; padding:14px 16px; border:1px solid rgba(110,231,183,.25); border-radius:14px; background:rgba(16,185,129,.08); color:#d1fae5; }
+.nx-honeypot { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none; }
+.nx-social-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.nx-social-grid a { min-height:64px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 16px; border:1px solid rgba(119,224,255,.16); border-radius:14px; background:rgba(6,22,39,.7); }
+.nx-social-grid small { color:#7891a5; overflow-wrap:anywhere; }
+.nx-product-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.nx-project-meta { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+.nx-project-meta span { padding:6px 9px; border-radius:999px; border:1px solid rgba(99,231,255,.14); color:#8eb2c7; font-size:.76rem; }
+.nx-rich-text { color:#a8bdcf; line-height:1.9; white-space:pre-line; }
+.nx-screen-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:18px; }
+.nx-screen-grid img { width:100%; border-radius:16px; border:1px solid rgba(119,224,255,.15); }
+.nx-locale-select { min-width:76px; border:1px solid rgba(99,231,255,.18); border-radius:11px; background:#06111f; color:white; padding:0 10px; }
+
+@media (max-width: 760px) {
+  .nx-form-grid,.nx-social-grid,.nx-product-list,.nx-screen-grid { grid-template-columns:1fr; }
+}

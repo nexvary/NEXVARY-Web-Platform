@@ -27,6 +27,21 @@ final class PlatformReleaseTest extends TestCase
         }
     }
 
+    public function test_public_pages_ship_crawlable_server_rendered_seo(): void
+    {
+        foreach (['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact'] as $path) {
+            $response = $this->get($path)->assertOk();
+            $html = (string) $response->getContent();
+
+            $this->assertSame(1, preg_match_all('/<h1\b/i', $html), "{$path} must have exactly one raw-HTML H1");
+            $this->assertMatchesRegularExpression('/<title>[^<]{15,65}<\/title>/i', $html, "{$path} needs a descriptive raw-HTML title");
+            $this->assertMatchesRegularExpression('/<meta\s+name="description"\s+content="[^"]{50,170}"/i', $html, "{$path} needs a raw-HTML meta description");
+            $this->assertMatchesRegularExpression('/<link\s+rel="canonical"\s+href="https:\/\/nexvary\.com\//i', $html, "{$path} needs a canonical URL");
+            $this->assertStringContainsString('href="/services"', $html, "{$path} must expose internal links before JavaScript");
+            $this->assertStringNotContainsString('data-page=', $html, "{$path} should not rely on the Inertia client shell for public SEO content");
+        }
+    }
+
     public function test_navigation_targets_have_registered_routes(): void
     {
         foreach (['home', 'services', 'our-work.index', 'apps', 'safescan', 'about', 'contact'] as $routeName) {
@@ -39,7 +54,29 @@ final class PlatformReleaseTest extends TestCase
         $this->get('/?lang=ar')
             ->assertOk()
             ->assertSee('dir="rtl"', false)
-            ->assertSee('lang="ar"', false);
+            ->assertSee('lang="ar"', false)
+            ->assertSee('الرئيسية');
+    }
+
+    public function test_contact_form_persists_valid_request(): void
+    {
+        $this->post('/contact', [
+            'name' => 'Test Client',
+            'email' => 'client@example.test',
+            'phone' => '+201000000000',
+            'company' => 'Example Co',
+            'country' => 'Egypt',
+            'reason' => 'cybersecurity',
+            'preferred_contact' => 'email',
+            'message' => 'We need a security assessment for a controlled test environment.',
+            'website' => '',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('contact_requests', [
+            'email' => 'client@example.test',
+            'reason' => 'cybersecurity',
+            'status' => 'new',
+        ]);
     }
 
     public function test_robots_and_sitemap_only_publish_public_surfaces(): void
@@ -52,6 +89,8 @@ final class PlatformReleaseTest extends TestCase
         $this->get('/sitemap.xml')
             ->assertOk()
             ->assertSee('https://nexvary.com/services', false)
+            ->assertSee('https://nexvary.com/our-work', false)
+            ->assertSee('https://nexvary.com/contact', false)
             ->assertDontSee('secure-control', false)
             ->assertDontSee('secure-access', false);
     }
