@@ -1,0 +1,112 @@
+name: Publish Verified Update
+
+on:
+  workflow_run:
+    workflows: ['Release Gate']
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-verified-update
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      VERSION: 0.1.${{ github.event.workflow_run.run_number }}
+      TAG: v0.1.${{ github.event.workflow_run.run_number }}
+    steps:
+      - name: Checkout verified commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.4'
+          coverage: none
+          ini-file: production
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Build production release
+        shell: bash
+        run: |
+          set -euo pipefail
+          composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+          npm ci
+          npm run build
+
+          rm -rf release-stage
+          mkdir -p release-stage
+          cp artisan composer.json composer.lock package.json package-lock.json release-stage/
+          cp -a app bootstrap config database public resources routes vendor release-stage/
+          printf '{"version":"%s","commit":"%s","channel":"stable"}\n' "$VERSION" "$HEAD_SHA" > release-stage/NEXVARY-RELEASE.json
+          (cd release-stage && zip -qr ../NEXVARY-update.zip .)
+          sha256sum NEXVARY-update.zip | awk '{print $1}' > NEXVARY-update.sha256
+
+      - name: Create GitHub release
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$TAG" \
+            NEXVARY-update.zip \
+            NEXVARY-update.sha256 \
+            --repo "$REPO" \
+            --target "$HEAD_SHA" \
+            --title "NEXVARY $VERSION" \
+            --notes "Verified production update from Release Gate run #${{ github.event.workflow_run.run_number }}."
+
+      - name: Publish update-channel manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          RELEASE_JSON="$(gh api "repos/$REPO/releases/tags/$TAG")"
+          ASSET_URL="$(jq -r '.assets[] | select(.name=="NEXVARY-update.zip") | .url' <<< "$RELEASE_JSON")"
+          SHA256="$(cat NEXVARY-update.sha256)"
+          PUBLISHED_AT="$(jq -r '.published_at' <<< "$RELEASE_JSON")"
+
+          jq -n \
+            --arg version "$VERSION" \
+            --arg download_url "$ASSET_URL" \
+            --arg sha256 "$SHA256" \
+            --arg published_at "$PUBLISHED_AT" \
+            --arg notes "Verified stable release from commit $HEAD_SHA" \
+            '{version:$version,download_url:$download_url,sha256:$sha256,published_at:$published_at,notes:$notes}' \
+            > update-manifest.json
+
+          if ! gh api "repos/$REPO/git/ref/heads/update-channel" >/dev/null 2>&1; then
+            gh api --method POST "repos/$REPO/git/refs" \
+              -f ref='refs/heads/update-channel' \
+              -f sha="$HEAD_SHA" >/dev/null
+          fi
+
+          FILE_SHA="$(gh api "repos/$REPO/contents/update-manifest.json?ref=update-channel" --jq '.sha' 2>/dev/null || true)"
+          CONTENT="$(base64 -w0 update-manifest.json)"
+          if [ -n "$FILE_SHA" ]; then
+            gh api --method PUT "repos/$REPO/contents/update-manifest.json" \
+              -f message="Publish update manifest $VERSION" \
+              -f content="$CONTENT" \
+              -f branch='update-channel' \
+              -f sha="$FILE_SHA" >/dev/null
+          else
+            gh api --method PUT "repos/$REPO/contents/update-manifest.json" \
+              -f message="Publish update manifest $VERSION" \
+              -f content="$CONTENT" \
+              -f branch='update-channel' >/dev/null
+          fi
