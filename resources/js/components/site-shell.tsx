@@ -35,6 +35,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
         <nav className="nx-nav" aria-label={ar ? 'التنقل الرئيسي' : 'Primary navigation'}>
           <Link href="/">{ar ? 'الرئيسية' : 'Home'}</Link>
           <Link href="/services">{ar ? 'الخدمات' : 'Services'}</Link>
+          <Link href="/our-work">{ar ? 'أعمالنا' : 'Our Work'}</Link>
           <Link href="/apps">{ar ? 'التطبيقات' : 'Apps'}</Link>
           <Link href="/safescan">SafeScan</Link>
           <Link href="/about">{ar ? 'عنّا' : 'About'}</Link>
