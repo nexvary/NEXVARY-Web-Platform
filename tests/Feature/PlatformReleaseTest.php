@@ -22,8 +22,15 @@ final class PlatformReleaseTest extends TestCase
 
     public function test_public_platform_routes_are_available(): void
     {
-        foreach (['/', '/services', '/apps', '/safescan', '/about'] as $path) {
+        foreach (['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact'] as $path) {
             $this->get($path)->assertOk();
+        }
+    }
+
+    public function test_navigation_targets_have_registered_routes(): void
+    {
+        foreach (['home', 'services', 'our-work.index', 'apps', 'safescan', 'about', 'contact'] as $routeName) {
+            $this->assertTrue(app('router')->has($routeName), "Missing navigation route: {$routeName}");
         }
     }
 
