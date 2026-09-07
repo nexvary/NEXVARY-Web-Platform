@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
@@ -14,28 +15,36 @@ final class ReleaseUpdater
 {
     public function status(): array
     {
-        $current = (string) config('updates.current_version');
         $manifestUrl = (string) config('updates.manifest_url');
 
         return [
-            'current_version' => $current,
+            'current_version' => $this->installedVersion(),
             'channel' => (string) config('updates.channel'),
             'configured' => $manifestUrl !== '',
             'manifest_url' => $manifestUrl !== '' ? $this->redactUrl($manifestUrl) : null,
+            'private_repo_ready' => filled(config('updates.github_token')),
         ];
     }
 
     public function check(): array
     {
-        $manifestUrl = $this->manifestUrl();
+        $manifestUrl = (string) config('updates.manifest_url');
+        if ($manifestUrl === '') {
+            throw new RuntimeException('Update manifest URL is not configured.');
+        }
+
         $this->assertAllowedHttpsUrl($manifestUrl);
+        $request = $this->request();
+        if (str_starts_with($manifestUrl, 'https://api.github.com/')) {
+            $request = $request->withHeaders([
+                'Accept' => 'application/vnd.github.raw+json',
+                'X-GitHub-Api-Version' => '2022-11-28',
+            ]);
+        } else {
+            $request = $request->acceptJson();
+        }
 
-        $response = Http::timeout((int) config('updates.timeout', 20))
-            ->acceptJson()
-            ->get($manifestUrl)
-            ->throw();
-
-        $manifest = $response->json();
+        $manifest = $request->get($manifestUrl)->throw()->json();
         if (! is_array($manifest)) {
             throw new RuntimeException('Update manifest is invalid.');
         }
@@ -51,13 +60,12 @@ final class ReleaseUpdater
             throw new RuntimeException('Update manifest contains an invalid SHA-256.');
         }
 
-        $current = (string) config('updates.current_version');
-        $available = version_compare($manifest['version'], $current, '>');
+        $current = $this->installedVersion();
 
         return [
             'current_version' => $current,
             'available_version' => $manifest['version'],
-            'update_available' => $available,
+            'update_available' => version_compare($manifest['version'], $current, '>'),
             'notes' => is_string($manifest['notes'] ?? null) ? $manifest['notes'] : null,
             'published_at' => is_string($manifest['published_at'] ?? null) ? $manifest['published_at'] : null,
             'download_url' => $manifest['download_url'],
@@ -80,7 +88,7 @@ final class ReleaseUpdater
 
         $this->downloadArchive((string) $manifest['download_url'], $archivePath);
         $actualHash = hash_file('sha256', $archivePath);
-        if (! hash_equals((string) $manifest['sha256'], $actualHash)) {
+        if (! is_string($actualHash) || ! hash_equals((string) $manifest['sha256'], $actualHash)) {
             File::delete($archivePath);
             throw new RuntimeException('Update archive checksum verification failed.');
         }
@@ -90,15 +98,7 @@ final class ReleaseUpdater
 
         $root = base_path();
         $backupDir = $updatesDir.'/backup-'.date('Ymd-His');
-        File::ensureDirectoryExists($backupDir);
-        foreach (['composer.json', 'composer.lock', 'package.json', 'package-lock.json', 'public/build'] as $path) {
-            $source = $root.'/'.$path;
-            if (File::exists($source)) {
-                $destination = $backupDir.'/'.$path;
-                File::ensureDirectoryExists(dirname($destination));
-                File::isDirectory($source) ? File::copyDirectory($source, $destination) : File::copy($source, $destination);
-            }
-        }
+        $this->backupOverlayTargets($stageDir, $root, $backupDir);
 
         Artisan::call('down', ['--retry' => 30]);
         try {
@@ -108,6 +108,10 @@ final class ReleaseUpdater
             Artisan::call('config:cache');
             Artisan::call('route:cache');
             Artisan::call('view:cache');
+        } catch (\Throwable $exception) {
+            $this->restoreBackup($backupDir, $root);
+            Artisan::call('optimize:clear');
+            throw $exception;
         } finally {
             Artisan::call('up');
             File::delete($archivePath);
@@ -120,14 +124,25 @@ final class ReleaseUpdater
         ];
     }
 
-    private function manifestUrl(): string
+    private function request(): PendingRequest
     {
-        $url = (string) config('updates.manifest_url');
-        if ($url === '') {
-            throw new RuntimeException('Update manifest URL is not configured.');
+        $request = Http::timeout((int) config('updates.timeout', 30));
+        $token = trim((string) config('updates.github_token'));
+
+        return $token !== '' ? $request->withToken($token) : $request;
+    }
+
+    private function installedVersion(): string
+    {
+        $marker = base_path('NEXVARY-RELEASE.json');
+        if (File::exists($marker)) {
+            $decoded = json_decode((string) File::get($marker), true);
+            if (is_array($decoded) && is_string($decoded['version'] ?? null) && $decoded['version'] !== '') {
+                return $decoded['version'];
+            }
         }
 
-        return $url;
+        return (string) config('updates.current_version');
     }
 
     private function assertAllowedHttpsUrl(string $url): void
@@ -147,9 +162,16 @@ final class ReleaseUpdater
     private function downloadArchive(string $url, string $destination): void
     {
         $this->assertAllowedHttpsUrl($url);
-        $response = Http::timeout((int) config('updates.timeout', 20))->get($url)->throw();
-        $body = $response->body();
-        $maxBytes = max(1, (int) config('updates.max_archive_mb', 200)) * 1024 * 1024;
+        $request = $this->request();
+        if (str_starts_with($url, 'https://api.github.com/')) {
+            $request = $request->withHeaders([
+                'Accept' => 'application/octet-stream',
+                'X-GitHub-Api-Version' => '2022-11-28',
+            ]);
+        }
+
+        $body = $request->get($url)->throw()->body();
+        $maxBytes = max(1, (int) config('updates.max_archive_mb', 220)) * 1024 * 1024;
         if (strlen($body) > $maxBytes) {
             throw new RuntimeException('Update archive exceeds configured size limit.');
         }
@@ -187,6 +209,51 @@ final class ReleaseUpdater
         $decoded = json_decode((string) File::get($marker), true);
         if (! is_array($decoded) || ($decoded['version'] ?? null) !== $version) {
             throw new RuntimeException('Release marker version mismatch.');
+        }
+    }
+
+    private function backupOverlayTargets(string $stageDir, string $root, string $backupDir): void
+    {
+        File::ensureDirectoryExists($backupDir);
+        $created = [];
+        foreach (File::allFiles($stageDir, true) as $file) {
+            $relative = $file->getRelativePathname();
+            if ($relative === '.env' || str_starts_with($relative, 'storage/')) {
+                continue;
+            }
+            $target = $root.'/'.$relative;
+            if (File::exists($target)) {
+                $backup = $backupDir.'/files/'.$relative;
+                File::ensureDirectoryExists(dirname($backup));
+                File::copy($target, $backup);
+            } else {
+                $created[] = $relative;
+            }
+        }
+        File::put($backupDir.'/created.json', json_encode($created, JSON_THROW_ON_ERROR));
+    }
+
+    private function restoreBackup(string $backupDir, string $root): void
+    {
+        $filesDir = $backupDir.'/files';
+        if (File::isDirectory($filesDir)) {
+            foreach (File::allFiles($filesDir, true) as $file) {
+                $target = $root.'/'.$file->getRelativePathname();
+                File::ensureDirectoryExists(dirname($target));
+                File::copy($file->getPathname(), $target);
+            }
+        }
+
+        $createdManifest = $backupDir.'/created.json';
+        if (File::exists($createdManifest)) {
+            $created = json_decode((string) File::get($createdManifest), true);
+            if (is_array($created)) {
+                foreach ($created as $relative) {
+                    if (is_string($relative) && $relative !== '') {
+                        File::delete($root.'/'.$relative);
+                    }
+                }
+            }
         }
     }
 
