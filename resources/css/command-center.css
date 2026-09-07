@@ -1,0 +1,182 @@
+/* NEXVARY command-center hero layer. Decorative visualization only; no live telemetry claims. */
+.nx-command-globe {
+  isolation: isolate;
+}
+
+.nx-command-topline {
+  position: absolute;
+  z-index: 6;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.nx-command-topline strong {
+  color: #dffbff;
+  font-size: .72rem;
+  letter-spacing: .18em;
+}
+
+.nx-command-topline span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #82a8bf;
+  font-size: .66rem;
+  letter-spacing: .1em;
+}
+
+.nx-command-topline span::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #66f2ff;
+  box-shadow: 0 0 13px rgba(90, 236, 255, .85);
+}
+
+.nx-rf-field {
+  position: absolute;
+  z-index: 1;
+  width: min(82%, 430px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(102, 231, 255, .13);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, rgba(92, 225, 255, .09) 0 1px, transparent 1px 52px),
+    linear-gradient(90deg, transparent 49.8%, rgba(105, 229, 255, .11) 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, rgba(105, 229, 255, .11) 50%, transparent 50.2%);
+  opacity: .92;
+  pointer-events: none;
+}
+
+.nx-rf-field::before,
+.nx-rf-field::after {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(102, 231, 255, .1);
+  border-radius: 50%;
+}
+
+.nx-rf-field::after {
+  inset: 26%;
+}
+
+.nx-rf-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 316deg, rgba(74, 240, 255, .02) 330deg, rgba(74, 240, 255, .22) 357deg, transparent 360deg);
+  animation: nx-command-sweep 6.8s linear infinite;
+}
+
+.nx-rf-node {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9af8ff;
+  box-shadow: 0 0 0 5px rgba(78, 225, 255, .04), 0 0 16px rgba(79, 226, 255, .95);
+}
+
+.nx-rf-node.node-1 { left: 18%; top: 39%; }
+.nx-rf-node.node-2 { right: 17%; top: 31%; }
+.nx-rf-node.node-3 { right: 23%; bottom: 24%; }
+.nx-rf-node.node-4 { left: 31%; bottom: 15%; }
+
+.nx-intel-rail {
+  position: absolute;
+  z-index: 5;
+  top: 92px;
+  display: grid;
+  gap: 9px;
+  width: 118px;
+  pointer-events: none;
+}
+
+.nx-intel-left { left: 16px; }
+.nx-intel-right { right: 16px; }
+
+.nx-intel-chip {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid rgba(119, 225, 255, .13);
+  border-radius: 11px;
+  background: linear-gradient(145deg, rgba(3, 18, 33, .78), rgba(6, 28, 49, .58));
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 18px rgba(80, 219, 255, .025);
+}
+
+.nx-intel-chip b {
+  display: block;
+  color: #c7f8ff;
+  font-size: .66rem;
+  letter-spacing: .12em;
+  margin-bottom: 3px;
+}
+
+.nx-intel-chip span {
+  display: block;
+  color: #6f96ad;
+  font-size: .6rem;
+  line-height: 1.35;
+}
+
+.nx-globe-wrap {
+  z-index: 3;
+}
+
+.nx-orbit {
+  z-index: 2;
+}
+
+@keyframes nx-command-sweep {
+  to { transform: rotate(360deg); }
+}
+
+html[dir='rtl'] .nx-command-topline {
+  direction: rtl;
+}
+
+@media (max-width: 920px) {
+  .nx-intel-rail {
+    top: 82px;
+    width: 104px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nx-command-topline {
+    top: 14px;
+    left: 14px;
+    right: 14px;
+  }
+
+  .nx-command-topline strong {
+    font-size: .64rem;
+  }
+
+  .nx-command-topline span {
+    font-size: .58rem;
+  }
+
+  .nx-intel-rail {
+    display: none;
+  }
+
+  .nx-rf-field {
+    width: min(88%, 350px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-rf-sweep {
+    animation: none;
+  }
+}
