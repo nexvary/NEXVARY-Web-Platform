@@ -152,6 +152,12 @@ html[dir='rtl'] .nx-command-topline {
 }
 
 @media (max-width: 600px) {
+  /* Keep the premium halo inside the mobile viewport. The negative desktop inset
+     previously increased document.scrollWidth on Android even though it was decorative. */
+  .nx-hero-premium::before {
+    inset: 4% 0 10% 38%;
+  }
+
   .nx-command-topline {
     top: 14px;
     left: 14px;
