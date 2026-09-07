@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const pages = ['/', '/services', '/about', '/apps', '/safescan'];
+const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan'];
 
 for (const path of pages) {
   test(`${path} has no horizontal overflow or clipped controls`, async ({ page }, testInfo) => {
