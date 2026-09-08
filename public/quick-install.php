@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+
 $root = dirname(__DIR__);
 $lockFile = $root.'/storage/app/.nexvary-installed';
 $envFile = $root.'/.env';
@@ -110,18 +113,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         require $root.'/vendor/autoload.php';
         $app = require $root.'/bootstrap/app.php';
-        $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+        $kernel = $app->make(Kernel::class);
         $kernel->bootstrap();
 
-        $exit = Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $exit = Artisan::call('migrate', ['--force' => true]);
         if ($exit !== 0) {
-            throw new RuntimeException('Database migrations failed: '.Illuminate\Support\Facades\Artisan::output());
+            throw new RuntimeException('Database migrations failed: '.Artisan::output());
         }
 
-        Illuminate\Support\Facades\Artisan::call('optimize:clear');
-        Illuminate\Support\Facades\Artisan::call('config:cache');
-        Illuminate\Support\Facades\Artisan::call('route:cache');
-        Illuminate\Support\Facades\Artisan::call('view:cache');
+        Artisan::call('optimize:clear');
+        Artisan::call('config:cache');
+        Artisan::call('route:cache');
+        Artisan::call('view:cache');
 
         $marker = json_encode([
             'installed_at' => gmdate('c'),
@@ -151,30 +154,30 @@ $requirements = [
     ['Application storage', is_writable($root.'/storage') || is_writable($root), (is_writable($root.'/storage') || is_writable($root)) ? 'Writable' : 'Not writable'],
 ];
 $ready = ! in_array(false, array_column($requirements, 1), true);
-?>
-<!doctype html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEXVARY Quick Install</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#020617;color:#e2e8f0;font-family:Inter,system-ui,-apple-system,sans-serif;min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:min(760px,100%);background:linear-gradient(180deg,#0f172a,#07101f);border:1px solid rgba(103,232,249,.2);border-radius:28px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.brand{letter-spacing:.22em;color:#67e8f9;font-weight:800;font-size:12px}.title{font-size:32px;margin:8px 0}.sub{color:#94a3b8;line-height:1.6}.checks{display:grid;gap:10px;margin:24px 0}.row{display:flex;justify-content:space-between;gap:16px;padding:13px 15px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025)}.ok{color:#86efac}.bad{color:#fda4af}.btn{width:100%;min-height:54px;border:1px solid rgba(103,232,249,.35);border-radius:15px;background:rgba(34,211,238,.12);color:#cffafe;font-weight:800;font-size:16px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.note{font-size:13px;color:#64748b;margin-top:15px}.error{padding:12px 14px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:12px;color:#fecdd3;margin:12px 0}.success{padding:22px;border:1px solid rgba(74,222,128,.25);background:rgba(74,222,128,.08);border-radius:18px}.success a{color:#67e8f9;font-weight:700}
-</style>
-</head>
-<body><main class="card">
-<div class="brand">NEXVARY · SECURE DEPLOYMENT</div>
-<h1 class="title">One-click installation</h1>
-<p class="sub">Upload the complete cPanel bundle, open this page, then press the button once. NEXVARY will configure production mode, create the local database, run migrations and optimize the site automatically.</p>
 
-<?php if ($complete): ?>
-<div class="success"><h2>Installation complete ✓</h2><p>The installer is now permanently locked. Future website releases can be installed from the NEXVARY update panel.</p><p><a href="/">Open NEXVARY</a></p></div>
-<?php else: ?>
-<?php foreach ($errors as $error): ?><div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><?php endforeach; ?>
-<div class="checks">
-<?php foreach ($requirements as [$name,$ok,$detail]): ?><div class="row"><span><?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?></span><strong class="<?= $ok ? 'ok' : 'bad' ?>"><?= htmlspecialchars((string) $detail, ENT_QUOTES, 'UTF-8') ?></strong></div><?php endforeach; ?>
-</div>
-<form method="post"><input type="hidden" name="token" value="<?= htmlspecialchars((string) $_SESSION['install_token'], ENT_QUOTES, 'UTF-8') ?>"><button class="btn" type="submit" <?= $ready ? '' : 'disabled' ?>>Install NEXVARY now</button></form>
-<p class="note">For security, this installer can run only once. It writes an installation lock immediately after a successful deployment.</p>
-<?php endif; ?>
-</main></body></html>
+$escape = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+$body = '<div class="brand">NEXVARY · SECURE DEPLOYMENT</div>'
+    .'<h1 class="title">One-click installation</h1>'
+    .'<p class="sub">Upload the complete cPanel bundle, open this page, then press the button once. NEXVARY will configure production mode, create the local database, run migrations and optimize the site automatically.</p>';
+
+if ($complete) {
+    $body .= '<div class="success"><h2>Installation complete ✓</h2><p>The installer is now permanently locked. Future website releases can be installed from the NEXVARY update panel.</p><p><a href="/">Open NEXVARY</a></p></div>';
+} else {
+    foreach ($errors as $error) {
+        $body .= '<div class="error">'.$escape((string) $error).'</div>';
+    }
+
+    $body .= '<div class="checks">';
+    foreach ($requirements as [$name, $ok, $detail]) {
+        $body .= '<div class="row"><span>'.$escape((string) $name).'</span><strong class="'.($ok ? 'ok' : 'bad').'">'.$escape((string) $detail).'</strong></div>';
+    }
+    $body .= '</div>';
+
+    $body .= '<form method="post"><input type="hidden" name="token" value="'.$escape((string) $_SESSION['install_token']).'"><button class="btn" type="submit" '.($ready ? '' : 'disabled').'>Install NEXVARY now</button></form>';
+    $body .= '<p class="note">For security, this installer can run only once. It writes an installation lock immediately after a successful deployment.</p>';
+}
+
+echo '<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEXVARY Quick Install</title><style>'
+    .'*{box-sizing:border-box}body{margin:0;background:#020617;color:#e2e8f0;font-family:Inter,system-ui,-apple-system,sans-serif;min-height:100vh;display:grid;place-items:center;padding:24px}.card{width:min(760px,100%);background:linear-gradient(180deg,#0f172a,#07101f);border:1px solid rgba(103,232,249,.2);border-radius:28px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.45)}.brand{letter-spacing:.22em;color:#67e8f9;font-weight:800;font-size:12px}.title{font-size:32px;margin:8px 0}.sub{color:#94a3b8;line-height:1.6}.checks{display:grid;gap:10px;margin:24px 0}.row{display:flex;justify-content:space-between;gap:16px;padding:13px 15px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025)}.ok{color:#86efac}.bad{color:#fda4af}.btn{width:100%;min-height:54px;border:1px solid rgba(103,232,249,.35);border-radius:15px;background:rgba(34,211,238,.12);color:#cffafe;font-weight:800;font-size:16px;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.note{font-size:13px;color:#64748b;margin-top:15px}.error{padding:12px 14px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:12px;color:#fecdd3;margin:12px 0}.success{padding:22px;border:1px solid rgba(74,222,128,.25);background:rgba(74,222,128,.08);border-radius:18px}.success a{color:#67e8f9;font-weight:700}'
+    .'</style></head><body><main class="card">'.$body.'</main></body></html>';
