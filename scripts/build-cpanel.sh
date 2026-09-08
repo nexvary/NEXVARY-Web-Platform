@@ -12,7 +12,7 @@ rsync -a ./ "$APP/" \
   --exclude='.github' \
   --exclude='node_modules' \
   --exclude='tests' \
-  --exclude='public' \
+  --exclude='/public/' \
   --exclude='.env' \
   --exclude='dist'
 

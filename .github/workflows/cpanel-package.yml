@@ -65,6 +65,22 @@ jobs:
           grep -q 'hash_equals' /tmp/setup-nexvary.php
           grep -q '@unlink(__FILE__)' /tmp/setup-nexvary.php
 
+      - name: Verify public Blade views are packaged
+        run: |
+          for view in \
+            layout.blade.php \
+            home.blade.php \
+            services.blade.php \
+            apps.blade.php \
+            safescan.blade.php \
+            about.blade.php \
+            contact.blade.php; do
+            unzip -l NEXVARY-cPanel-Ready.zip | grep -q "nexvary_app/resources/views/public/$view"
+          done
+          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
+          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/show.blade.php'
+          unzip -p NEXVARY-cPanel-Ready.zip nexvary_app/routes/public-seo.php | grep -q "view('public.home')"
+
       - name: Upload cPanel ready package
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
