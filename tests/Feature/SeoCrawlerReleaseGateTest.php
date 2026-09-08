@@ -70,7 +70,7 @@ final class SeoCrawlerReleaseGateTest extends TestCase
             'https://www.youtube.com/@NexvaryInc',
             'https://x.com/Nexvary',
         ] as $href) {
-            $this->assertStringContainsString('href="'.$href.'"', $html, "Missing official channel: {$href}");
+            $this->assertStringContainsString('href="'.$href.'"', str_replace('\\"', '"', $html), "Missing official channel: {$href}");
         }
 
         $this->assertDoesNotMatchRegularExpression('/href="(?:#|javascript:|\s*)"/i', $html);
@@ -114,11 +114,11 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $this->assertSame(1, preg_match_all('/<h1\b/i', $html));
         $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $html);
         $this->assertStringContainsString('SoftwareApplication', $html);
-        $this->assertStringContainsString('href="/our-work"', $html);
+        $this->assertStringContainsString('href="/our-work"', str_replace('\\"', '"', $html));
         $this->assertStringNotContainsString('data-page=', $html);
 
         $catalog = (string) $this->get('/our-work')->assertOk()->getContent();
-        $this->assertStringContainsString('href="http://localhost/our-work/sentinel-demo"', $catalog);
+        $this->assertStringContainsString('href="http://localhost/our-work/sentinel-demo"', str_replace('\\"', '"', $catalog));
 
         $sitemap = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
         $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $sitemap);
