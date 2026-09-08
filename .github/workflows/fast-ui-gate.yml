@@ -3,6 +3,8 @@ name: Fast UI Gate
 on:
   pull_request:
     paths:
+      - 'app/**'
+      - 'config/**'
       - 'resources/**'
       - 'routes/**'
       - 'scripts/**'
@@ -15,6 +17,8 @@ on:
   push:
     branches-ignore: [main]
     paths:
+      - 'app/**'
+      - 'config/**'
       - 'resources/**'
       - 'routes/**'
       - 'scripts/**'
