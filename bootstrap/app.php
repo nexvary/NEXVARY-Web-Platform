@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AuditAdminActivity;
 use App\Http\Middleware\EnsureAdmin;
+use App\Http\Middleware\EnsureAppCenter;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\UseCspNonce;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__.'/../routes/web.php',
             __DIR__.'/../routes/our-work.php',
             __DIR__.'/../routes/contact.php',
+            __DIR__.'/../routes/app-center.php',
             __DIR__.'/../routes/public-seo.php',
         ],
         commands: __DIR__.'/../routes/console.php',
@@ -23,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'app.center' => EnsureAppCenter::class,
             'audit.admin' => AuditAdminActivity::class,
         ]);
 
