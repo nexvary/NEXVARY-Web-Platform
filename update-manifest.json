@@ -1,7 +1,7 @@
 {
-  "version": "0.1.411",
-  "download_url": "https://api.github.com/repos/nexvary/NEXVARY-Web-Platform/releases/assets/550427789",
-  "sha256": "15f1cc222add2ac6e06fc741c9eb0836c6b371f7ee59381c6a95516c96125b71",
-  "published_at": "2026-09-08T12:12:30Z",
-  "notes": "Verified stable release from commit e6edfe0a3df0dc54cac781fb26b67457ecb78598"
+  "version": "0.1.413",
+  "download_url": "https://api.github.com/repos/nexvary/NEXVARY-Web-Platform/releases/assets/550435273",
+  "sha256": "5e2d8a050c856dd20f6b53d2299d6dda04c027da4d136d1414a905ea0b8e7e11",
+  "published_at": "2026-09-08T12:17:24Z",
+  "notes": "Verified stable release from commit ef5f36875da3989eef5da8e49302f444602f16e8"
 }
