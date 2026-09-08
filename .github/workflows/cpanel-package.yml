@@ -2,6 +2,25 @@ name: cPanel Ready Bundle
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cpanel-package.yml'
+      - 'scripts/build-cpanel.sh'
+      - 'app/**'
+      - 'bootstrap/**'
+      - 'config/**'
+      - 'database/**'
+      - 'public/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'storage/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.*'
   push:
     branches:
       - main
@@ -38,6 +57,7 @@ jobs:
           php-version: '8.4'
           coverage: none
           ini-file: production
+          extensions: mbstring, pdo_sqlite, sqlite3
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -80,6 +100,86 @@ jobs:
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/show.blade.php'
           unzip -p NEXVARY-cPanel-Ready.zip nexvary_app/routes/public-seo.php | grep -q "view('public.home')"
+
+      - name: Runtime smoke test packaged cPanel artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUNTIME="$RUNNER_TEMP/cpanel-runtime"
+          rm -rf "$RUNTIME"
+          mkdir -p "$RUNTIME"
+          unzip -q NEXVARY-cPanel-Ready.zip -d "$RUNTIME"
+
+          SETUP_URL="$(grep -oE 'https://nexvary\.com/setup-nexvary\.php\?key=[0-9a-f]+' "$RUNTIME/INSTALL-NEXVARY.txt" | head -1)"
+          test -n "$SETUP_URL"
+          SETUP_PATH="${SETUP_URL#https://nexvary.com}"
+
+          cd "$RUNTIME"
+          php -S 127.0.0.1:8787 -t public_html > "$RUNNER_TEMP/cpanel-runtime-server.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for i in {1..30}; do
+            if curl -fsS "http://127.0.0.1:8787${SETUP_PATH}" -o "$RUNNER_TEMP/setup-result.html"; then
+              break
+            fi
+            sleep 1
+          done
+
+          grep -q 'تم تثبيت NEXVARY بنجاح' "$RUNNER_TEMP/setup-result.html"
+          test ! -e "$RUNTIME/public_html/setup-nexvary.php"
+          test -e "$RUNTIME/nexvary_app/.installed"
+
+          for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml; do
+            code="$(curl -sS -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
+            if [ "$code" != "200" ]; then
+              echo "Route ${route} returned HTTP ${code}"
+              cat "$RUNNER_TEMP/route-body" || true
+              cat "$RUNNER_TEMP/cpanel-runtime-server.log" || true
+              tail -200 "$RUNTIME/nexvary_app/storage/logs/laravel.log" || true
+              exit 1
+            fi
+          done
+
+      - name: Install Chromium for verified screenshots
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture screenshots from installed packaged artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUNTIME="$RUNNER_TEMP/cpanel-runtime"
+          mkdir -p release-screenshots
+
+          cd "$RUNTIME"
+          php -S 127.0.0.1:8787 -t public_html > "$RUNNER_TEMP/cpanel-screenshot-server.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/ >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          cd "$GITHUB_WORKSPACE"
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-desktop.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/services release-screenshots/services-desktop.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/apps release-screenshots/apps-desktop.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/about release-screenshots/about-desktop.png
+          npx playwright screenshot --browser=chromium --device='Pixel 5' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
+
+          test -s release-screenshots/home-desktop.png
+          test -s release-screenshots/home-mobile.png
+
+      - name: Upload verified screenshots
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: NEXVARY-Verified-Screenshots
+          path: release-screenshots/
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Upload cPanel ready package
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
