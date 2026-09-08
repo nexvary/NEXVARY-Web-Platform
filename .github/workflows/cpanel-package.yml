@@ -21,6 +21,23 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.*'
+  pull_request:
+    paths:
+      - '.github/workflows/cpanel-package.yml'
+      - 'scripts/build-cpanel.sh'
+      - 'app/**'
+      - 'bootstrap/**'
+      - 'config/**'
+      - 'database/**'
+      - 'public/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'storage/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.*'
 
 permissions:
   contents: read
