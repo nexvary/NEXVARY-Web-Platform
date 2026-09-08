@@ -21,6 +21,23 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.*'
+  pull_request:
+    paths:
+      - '.github/workflows/cpanel-package.yml'
+      - 'scripts/build-cpanel.sh'
+      - 'app/**'
+      - 'bootstrap/**'
+      - 'config/**'
+      - 'database/**'
+      - 'public/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'storage/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.*'
 
 permissions:
   contents: read
@@ -38,6 +55,7 @@ jobs:
           php-version: '8.4'
           coverage: none
           ini-file: production
+          extensions: sqlite3, pdo_sqlite, mbstring
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -80,6 +98,76 @@ jobs:
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/show.blade.php'
           unzip -p NEXVARY-cPanel-Ready.zip nexvary_app/routes/public-seo.php | grep -q "view('public.home')"
+
+      - name: Runtime smoke test packaged cPanel site
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=/tmp/nexvary-cpanel-smoke
+          APP="$ROOT/nexvary_app"
+          WEB="$ROOT/public_html"
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT"
+          unzip -q NEXVARY-cPanel-Ready.zip -d "$ROOT"
+
+          mkdir -p \
+            "$APP/storage/framework/sessions" \
+            "$APP/storage/framework/cache/data" \
+            "$APP/storage/framework/views" \
+            "$APP/bootstrap/cache"
+          touch "$APP/database/database.sqlite"
+          APP_KEY="base64:$(openssl rand -base64 32 | tr -d '\n')"
+          cat > "$APP/.env" <<EOF
+          APP_NAME="NEXVARY"
+          APP_ENV=production
+          APP_KEY=$APP_KEY
+          APP_DEBUG=false
+          APP_URL=http://127.0.0.1:8099
+          LOG_CHANNEL=stack
+          DB_CONNECTION=sqlite
+          DB_DATABASE=$APP/database/database.sqlite
+          SESSION_DRIVER=file
+          SESSION_ENCRYPT=false
+          CACHE_STORE=file
+          QUEUE_CONNECTION=sync
+          EOF
+
+          chmod -R u+rwX "$APP/storage" "$APP/bootstrap/cache" "$APP/database"
+          (
+            cd "$APP"
+            php artisan migrate --force
+            php artisan optimize:clear
+          )
+
+          php -S 127.0.0.1:8099 -t "$WEB" "$WEB/index.php" >/tmp/nexvary-cpanel-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          ready=0
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8099/ >/tmp/nexvary-home.html; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat /tmp/nexvary-cpanel-server.log || true
+            cat "$APP/storage/logs/laravel.log" || true
+            exit 1
+          fi
+
+          for route in / /services /apps /safescan /about /contact /our-work /health; do
+            code="$(curl -sS -o /tmp/nexvary-response.html -w '%{http_code}' "http://127.0.0.1:8099$route")"
+            if [ "$code" != "200" ]; then
+              echo "Packaged route failed: $route returned HTTP $code"
+              cat /tmp/nexvary-response.html || true
+              cat /tmp/nexvary-cpanel-server.log || true
+              cat "$APP/storage/logs/laravel.log" || true
+              exit 1
+            fi
+          done
+          grep -qi 'NEXVARY' /tmp/nexvary-home.html
 
       - name: Upload cPanel ready package
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
