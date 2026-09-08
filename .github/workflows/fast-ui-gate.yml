@@ -5,6 +5,7 @@ on:
     paths:
       - 'resources/**'
       - 'routes/**'
+      - 'scripts/**'
       - 'tests/visual/**'
       - 'public/**'
       - 'package.json'
@@ -16,6 +17,7 @@ on:
     paths:
       - 'resources/**'
       - 'routes/**'
+      - 'scripts/**'
       - 'tests/visual/**'
       - 'public/**'
       - 'package.json'
@@ -58,6 +60,8 @@ jobs:
           key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: npm ci
+      - name: Fast static security gate
+        run: npm run security:gate
       - name: Typecheck and build
         run: |
           npm run types:check
