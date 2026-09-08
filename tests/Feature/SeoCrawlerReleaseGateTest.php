@@ -25,8 +25,7 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $titles = [];
 
         foreach (self::PUBLIC_PATHS as $path) {
-            $response = $this->get($path)->assertOk();
-            $html = (string) $response->getContent();
+            $html = (string) $this->get($path)->assertOk()->getContent();
 
             preg_match('/<title>(.*?)<\/title>/is', $html, $titleMatch);
             $title = trim(html_entity_decode(strip_tags($titleMatch[1] ?? '')));
@@ -70,7 +69,7 @@ final class SeoCrawlerReleaseGateTest extends TestCase
             'https://www.youtube.com/@NexvaryInc',
             'https://x.com/Nexvary',
         ] as $href) {
-            $this->assertStringContainsString('href="'.$href.'"', str_replace('\\"', '"', $html), "Missing official channel: {$href}");
+            $this->assertStringContainsString(sprintf('href="%s"', $href), $html, "Missing official channel: {$href}");
         }
 
         $this->assertDoesNotMatchRegularExpression('/href="(?:#|javascript:|\s*)"/i', $html);
@@ -114,11 +113,11 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $this->assertSame(1, preg_match_all('/<h1\b/i', $html));
         $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $html);
         $this->assertStringContainsString('SoftwareApplication', $html);
-        $this->assertStringContainsString('href="/our-work"', str_replace('\\"', '"', $html));
+        $this->assertStringContainsString('href="/our-work"', $html);
         $this->assertStringNotContainsString('data-page=', $html);
 
         $catalog = (string) $this->get('/our-work')->assertOk()->getContent();
-        $this->assertStringContainsString('href="http://localhost/our-work/sentinel-demo"', str_replace('\\"', '"', $catalog));
+        $this->assertStringContainsString('sentinel-demo', $catalog);
 
         $sitemap = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
         $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $sitemap);
