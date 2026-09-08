@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class SeoCrawlerReleaseGateTest extends TestCase
@@ -56,6 +57,71 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         }
 
         $this->assertSame(count($titles), count(array_unique($titles)), 'Public pages must not share duplicate titles.');
+    }
+
+    public function test_official_social_links_are_exact_and_not_placeholders(): void
+    {
+        $html = (string) $this->get('/about')->assertOk()->getContent();
+
+        foreach ([
+            'https://nexvary.com/',
+            'https://www.facebook.com/share/14p9krEn5ij/',
+            'mailto:info@nexvary.com',
+            'https://www.youtube.com/@NexvaryInc',
+            'https://x.com/Nexvary',
+        ] as $href) {
+            $this->assertStringContainsString('href="'.$href.'"', $html, "Missing official channel: {$href}");
+        }
+
+        $this->assertDoesNotMatchRegularExpression('/href="(?:#|javascript:|\s*)"/i', $html);
+    }
+
+    public function test_language_fallback_never_declares_english_content_as_an_untranslated_language(): void
+    {
+        $this->get('/services?lang=tr')
+            ->assertOk()
+            ->assertSee('<html lang="en" dir="ltr">', false)
+            ->assertSee('<option value="en" selected>EN</option>', false);
+
+        $this->get('/services?lang=ar')
+            ->assertOk()
+            ->assertSee('<html lang="ar" dir="rtl">', false)
+            ->assertSee('hreflang="ar"', false)
+            ->assertSee('https://nexvary.com/services?lang=ar', false);
+    }
+
+    public function test_dynamic_project_page_is_crawlable_and_linked_from_sitemap_and_catalog(): void
+    {
+        DB::table('portfolio_apps')->insert([
+            'slug' => 'sentinel-demo',
+            'name' => 'NEXVARY Sentinel Demonstration Project',
+            'tagline' => 'A controlled security demonstration project.',
+            'summary' => 'A published NEXVARY security project used to verify crawlable metadata, structured data, distribution status, internal linking, and sitemap integrity for dynamic portfolio pages.',
+            'description' => str_repeat('This project description documents defensive capabilities, controlled release expectations, verification steps, privacy boundaries, and operational context for visitors reviewing the published project. ', 5),
+            'platform' => 'Web',
+            'category' => 'Cybersecurity',
+            'version' => '1.0.0',
+            'features' => "Crawlable project metadata\nControlled distribution status\nStructured release information",
+            'distribution_mode' => 'showcase',
+            'download_enabled' => false,
+            'is_published' => true,
+            'published_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $html = (string) $this->get('/our-work/sentinel-demo')->assertOk()->getContent();
+        $this->assertSame(1, preg_match_all('/<h1\b/i', $html));
+        $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $html);
+        $this->assertStringContainsString('SoftwareApplication', $html);
+        $this->assertStringContainsString('href="/our-work"', $html);
+        $this->assertStringNotContainsString('data-page=', $html);
+
+        $catalog = (string) $this->get('/our-work')->assertOk()->getContent();
+        $this->assertStringContainsString('href="http://localhost/our-work/sentinel-demo"', $catalog);
+
+        $sitemap = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
+        $this->assertStringContainsString('https://nexvary.com/our-work/sentinel-demo', $sitemap);
     }
 
     public function test_every_sitemap_public_url_has_a_crawled_internal_link(): void
