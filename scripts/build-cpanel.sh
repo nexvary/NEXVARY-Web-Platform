@@ -18,6 +18,13 @@ rsync -a ./ "$APP/" \
 
 cp -a public/. "$WEB/"
 
+# Laravel's Vite helper resolves the production manifest from app/public/build,
+# while cPanel serves the same compiled assets from public_html/build.
+# Keep the build output in both locations so the split cPanel layout works
+# without changing Laravel's public_path or the browser asset URLs.
+mkdir -p "$APP/public"
+cp -a public/build "$APP/public/build"
+
 python3 - <<'PY'
 from pathlib import Path
 import os
