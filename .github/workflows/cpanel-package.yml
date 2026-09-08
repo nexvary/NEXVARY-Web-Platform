@@ -53,14 +53,17 @@ jobs:
           npm ci
           npm run build
 
-      - name: Verify quick installer syntax
-        run: php -l public/quick-install.php
-
       - name: Assemble cPanel bundle
         run: bash scripts/build-cpanel.sh
 
-      - name: Verify quick installer is packaged
-        run: unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'public/quick-install.php'
+      - name: Verify secure one-click installer is packaged
+        run: |
+          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'public_html/setup-nexvary.php'
+          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'INSTALL-NEXVARY.txt'
+          unzip -p NEXVARY-cPanel-Ready.zip public_html/setup-nexvary.php > /tmp/setup-nexvary.php
+          php -l /tmp/setup-nexvary.php
+          grep -q 'hash_equals' /tmp/setup-nexvary.php
+          grep -q '@unlink(__FILE__)' /tmp/setup-nexvary.php
 
       - name: Upload cPanel ready package
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
