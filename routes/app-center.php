@@ -116,6 +116,7 @@ Route::prefix('app-center')
             DB::table('portfolio_apps')->where('id', $app)->update(['review_status' => 'pending', 'is_published' => false, 'updated_at' => now()]);
             $slug = DB::table('portfolio_apps')->where('id', $app)->value('slug');
             DB::table('app_center_audit_events')->insert(['user_id' => $request->user()?->id, 'action' => 'app.submitted', 'app_slug' => $slug, 'created_at' => now()]);
+
             return back();
         })->name('app-center.apps.submit');
 
@@ -131,6 +132,7 @@ Route::prefix('app-center')
             ]);
             $slug = DB::table('portfolio_apps')->where('id', $app)->value('slug');
             DB::table('app_center_audit_events')->insert(['user_id' => $request->user()?->id, 'action' => 'app.approved_published', 'app_slug' => $slug, 'created_at' => now()]);
+
             return back();
         })->name('app-center.apps.approve');
 
@@ -139,6 +141,7 @@ Route::prefix('app-center')
             DB::table('portfolio_apps')->where('id', $app)->update(['is_published' => false, 'review_status' => 'draft', 'updated_at' => now()]);
             $slug = DB::table('portfolio_apps')->where('id', $app)->value('slug');
             DB::table('app_center_audit_events')->insert(['user_id' => $request->user()?->id, 'action' => 'app.unpublished', 'app_slug' => $slug, 'created_at' => now()]);
+
             return back();
         })->name('app-center.apps.unpublish');
 
@@ -187,6 +190,7 @@ Route::prefix('app-center')
             DB::table('app_releases')->where('id', $release)->update(['status' => 'pending', 'updated_at' => now()]);
             $slug = DB::table('portfolio_apps')->where('id', $row->portfolio_app_id)->value('slug');
             DB::table('app_center_audit_events')->insert(['user_id' => $request->user()?->id, 'action' => 'release.submitted', 'app_slug' => $slug, 'meta' => json_encode(['version' => $row->version]), 'created_at' => now()]);
+
             return back();
         })->name('app-center.releases.submit');
 
@@ -223,6 +227,7 @@ Route::prefix('app-center')
 
             $slug = DB::table('portfolio_apps')->where('id', $row->portfolio_app_id)->value('slug');
             DB::table('app_center_audit_events')->insert(['user_id' => $request->user()?->id, 'action' => 'release.published', 'app_slug' => $slug, 'meta' => json_encode(['version' => $row->version, 'channel' => $row->channel]), 'created_at' => now()]);
+
             return back();
         })->name('app-center.releases.approve');
     });
