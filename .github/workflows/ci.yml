@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    types: [labeled]
+    types: [labeled, synchronize]
   workflow_dispatch:
 
 permissions:
@@ -15,11 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RELEASE_GATE_ENABLED: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+  RELEASE_GATE_ENABLED: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
 
 jobs:
   dependency-integrity:
-    if: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -37,7 +37,7 @@ jobs:
           node -e 'const l=require("./package-lock.json"); if(l.lockfileVersion!==3) process.exit(1)'
 
   backend:
-    if: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
     runs-on: ubuntu-24.04
     needs: dependency-integrity
     steps:
@@ -67,7 +67,7 @@ jobs:
           php artisan route:list --path=secure-control | grep -q 'admin.security'
 
   frontend:
-    if: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
     runs-on: ubuntu-24.04
     needs: dependency-integrity
     steps:
@@ -82,7 +82,7 @@ jobs:
       - run: npm audit --audit-level=high
 
   security-static-gate:
-    if: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -111,7 +111,7 @@ jobs:
           grep -q "privacy_mode.*zero-storage" routes/web.php
 
   visual-release-gate:
-    if: ${{ github.event_name != 'pull_request' || github.event.label.name == 'release-candidate' }}
+    if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
     runs-on: ubuntu-24.04
     needs: [backend, frontend, security-static-gate]
     steps:
