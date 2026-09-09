@@ -1,3 +1,6 @@
+import '../css/command-center-v5.css';
+import './home-command-v5';
+
 function installCommandWidgets(): void {
   const globe = document.querySelector<HTMLElement>('.nx-command-globe');
   if (!globe || globe.querySelector('.nx-v4-side-stack')) return;
