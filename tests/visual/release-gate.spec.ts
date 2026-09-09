@@ -61,11 +61,28 @@ test('Arabic RTL alignment gate', async ({ page }, testInfo) => {
 
 test('Android 15 viewport-safe tap target gate', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  const undersized = await page.locator('a, button, select').evaluateAll((nodes) => nodes.filter((node) => {
+
+  const undersized = await page.locator('a, button, select, [role="button"]').evaluateAll((nodes) => nodes.flatMap((node, index) => {
     const rect = node.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0 && rect.height < 44;
-  }).length);
-  expect(undersized).toBe(0);
+    if (!(rect.width > 0 && rect.height > 0 && rect.height < 44)) return [];
+
+    const element = node as HTMLElement;
+    const id = element.id ? `#${element.id}` : '';
+    const classes = typeof element.className === 'string' && element.className.trim()
+      ? `.${element.className.trim().split(/\s+/).slice(0, 4).join('.')}`
+      : '';
+    const text = (element.innerText || element.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+
+    return [{
+      index,
+      selector: `${element.tagName.toLowerCase()}${id}${classes}`,
+      width: Math.round(rect.width * 10) / 10,
+      height: Math.round(rect.height * 10) / 10,
+      text,
+    }];
+  }));
+
+  expect(undersized, `Undersized tap targets on ${page.url()}:\n${JSON.stringify(undersized, null, 2)}`).toEqual([]);
 
   const viewportMeta = await page.locator('meta[name="viewport"]').getAttribute('content');
   expect(viewportMeta).toContain('viewport-fit=cover');

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__.'/../routes/contact.php',
             __DIR__.'/../routes/app-center.php',
             __DIR__.'/../routes/public-seo.php',
+            __DIR__.'/../routes/security-command.php',
         ],
         commands: __DIR__.'/../routes/console.php',
         health: '/up',

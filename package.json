@@ -8,6 +8,7 @@
     "lint:check": "eslint .",
     "format:check": "prettier --check resources/",
     "types:check": "tsc --noEmit",
+    "security:gate": "node scripts/security-release-gate.mjs",
     "visual:test": "playwright test tests/visual"
   },
   "devDependencies": {
