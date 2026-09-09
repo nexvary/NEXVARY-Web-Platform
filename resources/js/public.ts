@@ -23,96 +23,223 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-back-bu
   });
 }
 
-function upgradeThreatGlobe(): void {
-  const svg = document.querySelector<SVGSVGElement>('.nx-world-svg');
-  if (!svg) return;
+type LonLat = [number, number];
 
-  svg.setAttribute('data-visual-version', '2');
-  svg.innerHTML = `
-    <defs>
-      <radialGradient id="nxOceanV2" cx="34%" cy="28%" r="78%">
-        <stop offset="0" stop-color="#1f7db8" stop-opacity=".72"/>
-        <stop offset=".34" stop-color="#0a3158"/>
-        <stop offset=".74" stop-color="#031322"/>
-        <stop offset="1" stop-color="#01050c"/>
-      </radialGradient>
-      <linearGradient id="nxLandV2" x1="0" x2="1" y1="0" y2="1">
-        <stop offset="0" stop-color="#8be7ff" stop-opacity=".92"/>
-        <stop offset=".4" stop-color="#1c9bdd" stop-opacity=".68"/>
-        <stop offset="1" stop-color="#0b426c" stop-opacity=".42"/>
-      </linearGradient>
-      <radialGradient id="nxAtmoV2"><stop offset="70%" stop-color="#4cc9ff" stop-opacity="0"/><stop offset="94%" stop-color="#4cc9ff" stop-opacity=".16"/><stop offset="100%" stop-color="#b3f3ff" stop-opacity=".55"/></radialGradient>
-      <filter id="nxGlowV2" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      <filter id="nxSoftV2" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="12"/></filter>
-      <clipPath id="nxSphereV2"><circle cx="300" cy="300" r="228"/></clipPath>
-    </defs>
-    <circle cx="300" cy="300" r="239" fill="#148fe0" fill-opacity=".10" filter="url(#nxSoftV2)"/>
-    <circle cx="300" cy="300" r="228" fill="url(#nxOceanV2)" stroke="#75dbff" stroke-opacity=".84" stroke-width="1.2"/>
-    <g clip-path="url(#nxSphereV2)" class="nx-world-grid">
-      <ellipse cx="300" cy="300" rx="228" ry="54"/><ellipse cx="300" cy="300" rx="228" ry="111"/><ellipse cx="300" cy="300" rx="228" ry="170"/>
-      <ellipse cx="300" cy="300" rx="60" ry="228"/><ellipse cx="300" cy="300" rx="123" ry="228"/><ellipse cx="300" cy="300" rx="184" ry="228"/>
-      <path d="M72 300H528M300 72V528"/>
-    </g>
-    <g clip-path="url(#nxSphereV2)" fill="url(#nxLandV2)" stroke="#b5efff" stroke-opacity=".46" stroke-width=".8" stroke-linejoin="round">
-      <path d="M92 208l18-35 26-22 32-26 47-10 37 12 27 19 16 25-10 20-18 5-13 19-27 4-7 18-26 8-13 23-21-1-7-16-15-7-14-19-18-2z"/>
-      <path d="M207 290l21 8 20 22 16 32-2 39-11 37-18 40-18-4-12-26-8-39 3-29-9-31 5-24z"/>
-      <path d="M286 173l29-20 40-13 38 2 26-10 43 17 31 27 14 24-7 18-24 3-12 21-31-2-20 16-27-4-15 12-29-7-13-18-25-8-22-22-3-18z"/>
-      <path d="M329 276l23-14 31 5 22 22 18 20 12 42-11 39-19 38-29 17-20-10-14-27-6-34-14-22 5-36z"/>
-      <path d="M419 263l26-19 29 2 22 15 18-5 28 18 18 25-9 18-23-2-18 11-22-5-18-16-28-3-18-17z"/>
-      <path d="M477 407l28-10 26 6 22 18 7 19-19 18-33 3-27-13-12-21z"/>
-      <path d="M454 205l9-15 15-5 11 8-4 13-14 6z"/><path d="M132 283l14-6 8 8-4 13-14 2z"/>
-    </g>
-    <g clip-path="url(#nxSphereV2)" class="nx-world-routes" fill="none" stroke-linecap="round">
-      <path d="M145 216 Q291 78 439 222"/><path d="M205 350 Q322 176 486 321"/><path d="M345 221 Q253 243 183 337"/><path d="M383 286 Q436 214 507 240"/><path d="M243 313 Q360 246 474 277"/><path d="M169 245 Q275 185 375 236"/>
-    </g>
-    <g class="nx-world-nodes" filter="url(#nxGlowV2)">
-      <circle cx="145" cy="216" r="4.5"/><circle cx="205" cy="350" r="4"/><circle cx="345" cy="221" r="4.5"/><circle cx="383" cy="286" r="4"/><circle cx="439" cy="222" r="4.5"/><circle cx="486" cy="321" r="4"/><circle class="nx-risk-node" cx="507" cy="240" r="5"/><circle class="nx-risk-node" cx="183" cy="337" r="4.5"/><circle cx="474" cy="277" r="3.5"/><circle cx="243" cy="313" r="3.5"/>
-    </g>
-    <circle cx="300" cy="300" r="228" fill="url(#nxAtmoV2)" pointer-events="none"/>
-    <path d="M110 395 Q300 520 492 396" fill="none" stroke="#36b7ff" stroke-opacity=".13" stroke-width="10" filter="url(#nxSoftV2)"/>
-  `;
+const worldPolygons: LonLat[][] = [
+  [[-168,72],[-145,70],[-126,58],[-115,52],[-103,50],[-94,46],[-84,49],[-76,45],[-66,45],[-61,50],[-70,58],[-84,61],[-95,67],[-112,72],[-140,74],[-168,72]],
+  [[-82,13],[-78,7],[-74,1],[-71,-9],[-67,-17],[-63,-27],[-58,-36],[-53,-49],[-66,-55],[-72,-44],[-76,-30],[-80,-15],[-82,13]],
+  [[-10,36],[-5,43],[8,48],[20,55],[35,58],[48,60],[62,56],[78,57],[95,53],[113,48],[126,45],[138,49],[151,58],[161,63],[169,58],[160,48],[143,43],[130,35],[118,28],[105,20],[94,16],[80,20],[67,24],[54,28],[43,33],[31,35],[18,38],[7,37],[-10,36]],
+  [[-17,35],[-8,28],[-3,20],[8,12],[18,5],[28,-2],[33,-12],[30,-24],[23,-34],[14,-35],[5,-30],[-2,-18],[-8,-4],[-12,12],[-17,24],[-17,35]],
+  [[112,-11],[120,-17],[131,-20],[141,-28],[151,-33],[153,-39],[145,-44],[132,-42],[121,-35],[114,-26],[112,-11]],
+  [[-54,82],[-42,78],[-30,72],[-25,65],[-35,59],[-49,61],[-61,69],[-65,77],[-54,82]],
+  [[47,-13],[50,-18],[49,-26],[45,-26],[43,-19],[47,-13]],
+  [[130,33],[137,35],[142,41],[145,44],[141,36],[136,32],[130,33]],
+];
 
+const threatPoints: LonLat[] = [
+  [-74,40.7],[-0.1,51.5],[31.2,30.0],[55.3,25.2],[77.2,28.6],[103.8,1.35],[139.7,35.7],[151.2,-33.8],[-46.6,-23.6]
+];
+
+function projectOrthographic(lon: number, lat: number, rotation: number, radius: number, cx: number, cy: number): {x:number;y:number;visible:boolean;z:number} {
+  const lambda = (lon + rotation) * Math.PI / 180;
+  const phi = lat * Math.PI / 180;
+  const cosPhi = Math.cos(phi);
+  const z = cosPhi * Math.cos(lambda);
+  return {
+    x: cx + radius * cosPhi * Math.sin(lambda),
+    y: cy - radius * Math.sin(phi),
+    visible: z > 0,
+    z,
+  };
+}
+
+function installVisualStyles(): void {
+  if (document.getElementById('nx-visual-overhaul-v3')) return;
   const style = document.createElement('style');
+  style.id = 'nx-visual-overhaul-v3';
   style.textContent = `
-    .nx-world-stage{perspective:900px}
-    .nx-world-svg[data-visual-version="2"]{transform:rotateX(3deg) rotateY(-7deg);filter:drop-shadow(0 0 30px rgba(38,166,255,.32)) drop-shadow(0 26px 32px rgba(0,0,0,.45));animation:nxGlobeFloat 8s ease-in-out infinite}
-    .nx-world-svg[data-visual-version="2"] .nx-world-grid ellipse,.nx-world-svg[data-visual-version="2"] .nx-world-grid path{stroke:#58bfff;stroke-opacity:.18;stroke-width:.8}
-    .nx-world-svg[data-visual-version="2"] .nx-world-routes path{stroke:#52c8ff;stroke-opacity:.58;stroke-width:1.35;stroke-dasharray:3 7;animation:nxRouteV2 4.5s linear infinite}
-    .nx-world-svg[data-visual-version="2"] .nx-world-routes path:nth-child(2n){stroke:#9d7dff;animation-duration:6.2s}.nx-world-svg[data-visual-version="2"] .nx-world-routes path:nth-child(3n){stroke:#f5c86d}
-    .nx-world-svg[data-visual-version="2"] .nx-world-nodes circle{fill:#71e7ff}.nx-world-svg[data-visual-version="2"] .nx-world-nodes .nx-risk-node{fill:#ff4d62}
-    .nx-command-globe{background:radial-gradient(circle at 56% 43%,rgba(20,118,189,.27),transparent 30%),radial-gradient(circle at 60% 74%,rgba(61,197,255,.06),transparent 25%),linear-gradient(180deg,rgba(2,11,22,.99),rgba(1,6,12,.99))}
-    .nx-radar-large{box-shadow:inset 0 0 55px rgba(33,165,255,.08),0 0 45px rgba(16,100,174,.09)}
-    .nx-radar-large::before{box-shadow:0 0 18px rgba(47,156,255,.08)}
-    .nx-radar-large .nx-sweep{filter:drop-shadow(0 0 9px rgba(78,197,255,.48));animation-duration:4.2s!important}
-    .nx-spectrum-chart svg{filter:drop-shadow(0 0 7px rgba(54,169,255,.24))}
-    .nx-spectrum-chart::after{content:'FFT · WATERFALL · PEAK HOLD';position:absolute;right:14px;top:11px;color:#4f7896;font-size:.48rem;letter-spacing:.12em}
-    @keyframes nxGlobeFloat{0%,100%{transform:rotateX(3deg) rotateY(-7deg) translateY(0)}50%{transform:rotateX(2deg) rotateY(-3deg) translateY(-5px)}}
-    @keyframes nxRouteV2{to{stroke-dashoffset:-55}}
-    @media (prefers-reduced-motion:reduce){.nx-world-svg[data-visual-version="2"],.nx-world-svg[data-visual-version="2"] .nx-world-routes path{animation:none!important}}
+    .nx-world-stage{position:relative;perspective:1100px;isolation:isolate}
+    .nx-world-canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 0 22px rgba(44,175,255,.28)) drop-shadow(0 28px 36px rgba(0,0,0,.44))}
+    .nx-command-globe{background:radial-gradient(circle at 58% 42%,rgba(17,133,217,.20),transparent 32%),radial-gradient(circle at 50% 75%,rgba(145,83,255,.05),transparent 28%),linear-gradient(180deg,rgba(2,10,20,.995),rgba(1,5,10,.995))}
+    .nx-radar-large{overflow:hidden;box-shadow:inset 0 0 60px rgba(33,165,255,.10),0 0 40px rgba(16,100,174,.11)}
+    .nx-radar-large::after{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(90,220,255,.00) 0 76%,rgba(72,202,255,.15) 88%,rgba(126,241,255,.72) 99%,rgba(90,220,255,.00) 100%);animation:nxRadarSweepV3 3.3s linear infinite;filter:drop-shadow(0 0 10px rgba(87,213,255,.55));pointer-events:none}
+    .nx-radar-large>i{animation:nxRadarPulseV3 2.4s ease-out infinite;box-shadow:0 0 11px currentColor}
+    .nx-radar-large>i:nth-of-type(2){animation-delay:.55s}.nx-radar-large>i:nth-of-type(3){animation-delay:1.1s}.nx-radar-large>i:nth-of-type(4){animation-delay:1.65s}
+    .nx-spectrum-chart{position:relative;overflow:hidden}
+    .nx-spectrum-chart svg{filter:drop-shadow(0 0 8px rgba(54,169,255,.28))}
+    .nx-spectrum-chart::after{content:'FFT · WATERFALL · PEAK HOLD';position:absolute;right:14px;top:10px;color:#698da7;font-size:.48rem;letter-spacing:.13em}
+    .nx-waterfall span{transition:opacity .25s ease,filter .25s ease}
+    @keyframes nxRadarSweepV3{to{transform:rotate(360deg)}}
+    @keyframes nxRadarPulseV3{0%,100%{opacity:.28;transform:scale(.8)}42%{opacity:1;transform:scale(1.55)}70%{opacity:.5;transform:scale(1)}}
+    @media (prefers-reduced-motion:reduce){.nx-radar-large::after,.nx-radar-large>i{animation:none!important}}
   `;
   document.head.appendChild(style);
 }
 
+function upgradeThreatGlobe(): void {
+  const svg = document.querySelector<SVGSVGElement>('.nx-world-svg');
+  const stage = svg?.closest<HTMLElement>('.nx-world-stage');
+  if (!svg || !stage) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'nx-world-canvas';
+  canvas.setAttribute('aria-hidden', 'true');
+  svg.replaceWith(canvas);
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let rotation = 18;
+  let last = performance.now();
+  let raf = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const draw = (now: number) => {
+    const rect = stage.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(320, rect.width);
+    const h = Math.max(320, rect.height);
+    if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+    }
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+
+    const dt = Math.min(40, now - last);
+    last = now;
+    if (!reduced) rotation = (rotation + dt * 0.0048) % 360;
+
+    const radius = Math.min(w,h) * .39;
+    const cx = w * .51;
+    const cy = h * .50;
+
+    const glow = ctx.createRadialGradient(cx-radius*.35,cy-radius*.42,radius*.1,cx,cy,radius*1.2);
+    glow.addColorStop(0,'rgba(35,145,220,.82)');
+    glow.addColorStop(.48,'rgba(5,42,74,.96)');
+    glow.addColorStop(1,'rgba(1,6,13,.98)');
+    ctx.save();
+    ctx.shadowColor='rgba(56,196,255,.45)';
+    ctx.shadowBlur=32;
+    ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(120,225,255,.88)';ctx.lineWidth=1.4;ctx.stroke();
+    ctx.restore();
+
+    ctx.save();
+    ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.clip();
+
+    ctx.strokeStyle='rgba(88,190,255,.17)';ctx.lineWidth=.7;
+    for (let lat=-60;lat<=60;lat+=30){
+      ctx.beginPath();let started=false;
+      for(let lon=-180;lon<=180;lon+=3){const p=projectOrthographic(lon,lat,rotation,radius,cx,cy);if(!p.visible){started=false;continue;}if(!started){ctx.moveTo(p.x,p.y);started=true;}else ctx.lineTo(p.x,p.y);}ctx.stroke();
+    }
+    for (let lon=-180;lon<180;lon+=30){
+      ctx.beginPath();let started=false;
+      for(let lat=-88;lat<=88;lat+=2){const p=projectOrthographic(lon,lat,rotation,radius,cx,cy);if(!p.visible){started=false;continue;}if(!started){ctx.moveTo(p.x,p.y);started=true;}else ctx.lineTo(p.x,p.y);}ctx.stroke();
+    }
+
+    for (const polygon of worldPolygons) {
+      ctx.beginPath(); let started=false;
+      for (const [lon,lat] of polygon) {
+        const p=projectOrthographic(lon,lat,rotation,radius,cx,cy);
+        if (!p.visible){started=false;continue;}
+        if(!started){ctx.moveTo(p.x,p.y);started=true;} else ctx.lineTo(p.x,p.y);
+      }
+      if(started){ctx.closePath();ctx.fillStyle='rgba(30,142,205,.60)';ctx.fill();ctx.strokeStyle='rgba(156,232,255,.55)';ctx.lineWidth=.8;ctx.stroke();}
+    }
+
+    const routePairs:[[number,number],[number,number]][] = [
+      [threatPoints[0],threatPoints[1]],[threatPoints[1],threatPoints[3]],[threatPoints[3],threatPoints[4]],[threatPoints[4],threatPoints[6]],[threatPoints[5],threatPoints[7]],[threatPoints[8],threatPoints[3]]
+    ];
+    ctx.lineCap='round';
+    routePairs.forEach(([a,b],i)=>{
+      const pa=projectOrthographic(a[0],a[1],rotation,radius,cx,cy);const pb=projectOrthographic(b[0],b[1],rotation,radius,cx,cy);
+      if(!pa.visible||!pb.visible)return;
+      const mx=(pa.x+pb.x)/2;const my=(pa.y+pb.y)/2-radius*(.11+(i%3)*.035);
+      ctx.beginPath();ctx.moveTo(pa.x,pa.y);ctx.quadraticCurveTo(mx,my,pb.x,pb.y);
+      ctx.strokeStyle=i%3===0?'rgba(255,192,85,.72)':i%2===0?'rgba(151,105,255,.65)':'rgba(81,211,255,.72)';
+      ctx.lineWidth=1.2;ctx.setLineDash([4,7]);ctx.lineDashOffset=-(now*.018+i*8);ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    threatPoints.forEach(([lon,lat],i)=>{
+      const p=projectOrthographic(lon,lat,rotation,radius,cx,cy);if(!p.visible)return;
+      const pulse=3.2+Math.sin(now/430+i)*1.3;
+      ctx.beginPath();ctx.arc(p.x,p.y,pulse+4,0,Math.PI*2);ctx.fillStyle=i%4===0?'rgba(255,72,96,.13)':'rgba(95,226,255,.10)';ctx.fill();
+      ctx.beginPath();ctx.arc(p.x,p.y,pulse,0,Math.PI*2);ctx.fillStyle=i%4===0?'#ff5368':'#7beaff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0;
+    });
+
+    const shine=ctx.createRadialGradient(cx-radius*.38,cy-radius*.42,0,cx-radius*.25,cy-radius*.30,radius*.85);
+    shine.addColorStop(0,'rgba(174,239,255,.16)');shine.addColorStop(.5,'rgba(63,190,255,.04)');shine.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=shine;ctx.fillRect(cx-radius,cy-radius,radius*2,radius*2);
+    ctx.restore();
+
+    ctx.beginPath();ctx.arc(cx,cy,radius+1.5,0,Math.PI*2);ctx.strokeStyle='rgba(87,205,255,.36)';ctx.lineWidth=3;ctx.stroke();
+    raf=requestAnimationFrame(draw);
+  };
+
+  raf=requestAnimationFrame(draw);
+  window.addEventListener('beforeunload',()=>cancelAnimationFrame(raf),{once:true});
+}
+
 function upgradeRfPanel(): void {
   const radar = document.querySelector<HTMLElement>('.nx-radar-large');
-  if (radar && !radar.querySelector('.nx-rf-rings-v2')) {
+  if (radar && !radar.querySelector('.nx-rf-rings-v3')) {
     const rings = document.createElement('div');
-    rings.className = 'nx-rf-rings-v2';
-    rings.setAttribute('aria-hidden', 'true');
-    rings.style.cssText = 'position:absolute;inset:7%;border:1px solid rgba(74,184,255,.14);border-radius:50%;box-shadow:0 0 0 28px rgba(32,140,220,.025),0 0 0 56px rgba(32,140,220,.018);pointer-events:none';
+    rings.className='nx-rf-rings-v3';
+    rings.setAttribute('aria-hidden','true');
+    rings.style.cssText='position:absolute;inset:8%;border:1px solid rgba(74,184,255,.17);border-radius:50%;box-shadow:0 0 0 30px rgba(32,140,220,.026),0 0 0 60px rgba(32,140,220,.018);pointer-events:none';
     radar.appendChild(rings);
   }
 
   const chart = document.querySelector<HTMLElement>('.nx-spectrum-chart');
-  if (chart && !chart.querySelector('.nx-peak-hold-v2')) {
-    chart.style.position = 'relative';
-    const peak = document.createElement('div');
-    peak.className = 'nx-peak-hold-v2';
-    peak.setAttribute('aria-hidden', 'true');
-    peak.style.cssText = 'position:absolute;left:43.5%;top:18%;bottom:17%;width:1px;background:linear-gradient(#ffcf67,rgba(255,207,103,.15));box-shadow:0 0 9px rgba(255,207,103,.55);pointer-events:none';
-    chart.appendChild(peak);
-  }
+  const line = chart?.querySelector<SVGPathElement>('.nx-spec-line');
+  const fill = chart?.querySelector<SVGPathElement>('.nx-spec-fill');
+  const marker = chart?.querySelector<SVGLineElement>('.nx-detected-line');
+  const dot = chart?.querySelector<SVGCircleElement>('.nx-detected-dot');
+  const waterfall = document.querySelector<HTMLElement>('.nx-waterfall');
+  if (!chart || !line || !fill) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const points = 55;
+  const buildPath = (t:number) => {
+    const coords:string[]=[];
+    let peakX=0,peakY=220;
+    for(let i=0;i<points;i++){
+      const x=(720/(points-1))*i;
+      const noise=Math.sin(i*1.73+t*.0021)*7+Math.sin(i*.49+t*.0037)*5;
+      const peak1=Math.exp(-Math.pow((i-24)/2.1,2))*82;
+      const peak2=Math.exp(-Math.pow((i-37)/2.7,2))*52;
+      const jitter=reduced?0:Math.sin(t*.006+i)*3;
+      const y=190-noise-peak1-peak2-jitter;
+      if(y<peakY){peakY=y;peakX=x;}
+      coords.push(`${i===0?'M':'L'}${x.toFixed(1)} ${y.toFixed(1)}`);
+    }
+    return {line:coords.join(' '),fill:`${coords.join(' ')} L720 220 L0 220 Z`,peakX,peakY};
+  };
+
+  let raf=0;
+  const animate=(t:number)=>{
+    const p=buildPath(t);
+    line.setAttribute('d',p.line);fill.setAttribute('d',p.fill);
+    marker?.setAttribute('x1',p.peakX.toFixed(1));marker?.setAttribute('x2',p.peakX.toFixed(1));
+    dot?.setAttribute('cx',p.peakX.toFixed(1));dot?.setAttribute('cy',p.peakY.toFixed(1));
+    if(waterfall){
+      Array.from(waterfall.children).forEach((el,index)=>{
+        const span=el as HTMLElement;
+        const v=.35+.65*Math.max(0,Math.sin(t*.0025+index*.72));
+        span.style.opacity=v.toFixed(2);span.style.filter=`brightness(${(.7+v*.85).toFixed(2)})`;
+      });
+    }
+    raf=requestAnimationFrame(animate);
+  };
+  raf=requestAnimationFrame(animate);
+  window.addEventListener('beforeunload',()=>cancelAnimationFrame(raf),{once:true});
 }
 
+installVisualStyles();
 upgradeThreatGlobe();
 upgradeRfPanel();
