@@ -14,7 +14,7 @@ function installCommandWidgets(): void {
       <em>NEXT INTELLIGENCE REFRESH · SIMULATED</em>
     </section>
     <section class="nx-v4-card nx-v4-compass" aria-label="NEXVARY direction compass">
-      <div class="nx-v4-compass-wheel" aria-hidden="true"><div class="nx-v4-compass-core">NX</div></div>
+      <div class="nx-v4-compass-wheel" aria-hidden="true"><div class="nx-v4-compass-core"><img src="/nexvary-mark.svg" alt="" aria-hidden="true"></div></div>
       <div class="nx-v4-compass-copy"><b>YOU’RE ON THE RIGHT PATH</b><span>Trust · Expertise · Real Protection</span></div>
     </section>`;
   globe.appendChild(stack);
