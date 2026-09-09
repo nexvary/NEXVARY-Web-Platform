@@ -60,8 +60,9 @@ abstract class JsonHttpSecuritySource implements SecuritySignalSource
         ];
     }
 
-    /** @param mixed $payload
-     *  @return array<int, array<string, mixed>>
+    /**
+     * @param  mixed  $payload
+     * @return array<int, array<string, mixed>>
      */
     abstract protected function mapPayload(mixed $payload): array;
 }
