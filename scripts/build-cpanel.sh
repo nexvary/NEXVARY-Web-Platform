@@ -4,13 +4,29 @@ set -euo pipefail
 ROOT="${RUNNER_TEMP:-/tmp}/cpanel-bundle"
 APP="$ROOT/nexvary_app"
 WEB="$ROOT/public_html"
+WORLD_DATA="public/nexvary-world-110m.geojson"
 rm -rf "$ROOT"
 mkdir -p "$APP" "$WEB"
+
+# Bundle Natural Earth 1:110m geography locally. The deployed globe has no CDN/runtime dependency.
+curl --fail --silent --show-error --location --retry 3 \
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson" \
+  --output "$WORLD_DATA"
+python3 - <<'PY'
+import json
+from pathlib import Path
+p=Path('public/nexvary-world-110m.geojson')
+data=json.loads(p.read_text())
+assert data.get('type') == 'FeatureCollection'
+assert len(data.get('features', [])) > 150
+assert p.stat().st_size > 300_000
+PY
 
 rsync -a ./ "$APP/" --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='tests' --exclude='/public/' --exclude='.env' --exclude='dist'
 cp -a public/. "$WEB/"
 mkdir -p "$APP/public"
 cp -a public/build "$APP/public/build"
+cp "$WORLD_DATA" "$APP/public/nexvary-world-110m.geojson"
 
 python3 - <<'PY'
 from pathlib import Path
