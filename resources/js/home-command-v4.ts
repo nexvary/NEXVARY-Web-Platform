@@ -1,5 +1,7 @@
 import '../css/command-center-v5.css';
 import './home-command-v5';
+import '../css/command-center-v6.css';
+import './home-command-v6';
 
 function installCommandWidgets(): void {
   const globe = document.querySelector<HTMLElement>('.nx-command-globe');
