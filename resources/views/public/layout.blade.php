@@ -58,7 +58,7 @@
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    @vite(['resources/css/public.css', 'resources/css/command-center-v4.css', 'resources/css/command-center-v6.css', 'resources/js/public.ts', 'resources/js/home-command-v4.ts', 'resources/js/home-command-v6.ts'])
+    @vite(['resources/css/public.css', 'resources/css/command-center-v4.css', 'resources/js/public.ts', 'resources/js/home-command-v4.ts'])
     <script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>
     @stack('head')
 </head>
