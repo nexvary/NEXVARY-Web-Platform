@@ -1,3 +1,5 @@
+import '../css/threat-map-v7.css';
+
 type ThreatEvent = {
   id: string;
   type: 'attack' | 'scan' | 'infrastructure' | string;
@@ -93,10 +95,14 @@ function renderThreatFeed(feed: ThreatFeed): void {
 
   const high = safeEvents.filter((event) => event.severity === 'high').length;
   const infra = safeEvents.filter((event) => event.type === 'infrastructure').length;
-  document.querySelector<HTMLElement>('[data-active-events]')!.textContent = String(safeEvents.length);
-  document.querySelector<HTMLElement>('[data-high-events]')!.textContent = String(high);
-  document.querySelector<HTMLElement>('[data-infra-events]')!.textContent = String(infra);
-  document.querySelector<HTMLElement>('[data-last-refresh]')!.textContent = new Date(feed.updated_at).toLocaleTimeString([], { hour12: false });
+  const activeNode = document.querySelector<HTMLElement>('[data-active-events]');
+  const highNode = document.querySelector<HTMLElement>('[data-high-events]');
+  const infraNode = document.querySelector<HTMLElement>('[data-infra-events]');
+  const refreshNode = document.querySelector<HTMLElement>('[data-last-refresh]');
+  if (activeNode) activeNode.textContent = String(safeEvents.length);
+  if (highNode) highNode.textContent = String(high);
+  if (infraNode) infraNode.textContent = String(infra);
+  if (refreshNode) refreshNode.textContent = new Date(feed.updated_at).toLocaleTimeString([], { hour12: false });
   state.innerHTML = feed.mode === 'live' ? '<i></i> LIVE API' : '<i></i> SIMULATED FEED';
   state.dataset.mode = feed.mode;
 }
