@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Activity, Database, FileSearch, Gauge, Home as HomeIcon, Radar, ScanSearch, Settings, ShieldCheck, Users } from 'lucide-react';
 import SiteShell from '../components/site-shell';
-import '../css/site-command-v9.css';
+import '../../css/site-command-v9.css';
 
 const nav = [
   { labelAr: 'الرئيسية', labelEn: 'Home', href: '/', icon: HomeIcon, active: true },
