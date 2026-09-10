@@ -1,111 +1,127 @@
 import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { AudioLines, Eye, FileSearch, RadioTower, ScanSearch, ShieldCheck } from 'lucide-react';
+import { Activity, Database, FileSearch, Gauge, Home as HomeIcon, Radar, ScanSearch, Settings, ShieldCheck, Users } from 'lucide-react';
 import SiteShell from '../components/site-shell';
-import { NxCard } from '../components/ui/nx-card';
+import '../css/site-command-v9.css';
 
-const capabilities = [
-  { title: 'TSCM', desc: 'RF & counter-surveillance operations', icon: Eye },
-  { title: 'Cybersecurity', desc: 'Hardening, assessment and incident response', icon: ShieldCheck },
-  { title: 'SafeScan', desc: 'Zero-storage browser-side file inspection', icon: ScanSearch },
-  { title: 'Audio Shield', desc: 'Privacy-aware audio protection tools', icon: AudioLines },
-  { title: 'Tower Guard', desc: 'Cellular anomaly awareness and validation', icon: RadioTower },
-  { title: 'Digital Forensics', desc: 'Structured evidence and investigation workflows', icon: FileSearch },
+const nav = [
+  { labelAr: 'الرئيسية', labelEn: 'Home', href: '/', icon: HomeIcon, active: true },
+  { labelAr: 'مركز العمليات', labelEn: 'Operations', href: '/services', icon: Radar },
+  { labelAr: 'التهديدات', labelEn: 'Threats', href: '/safescan', icon: ShieldCheck },
+  { labelAr: 'الرصد والتحليل', labelEn: 'Analytics', href: '/apps', icon: Activity },
+  { labelAr: 'الأصول الرقمية', labelEn: 'Assets', href: '/our-work', icon: Database },
+  { labelAr: 'التقارير', labelEn: 'Reports', href: '/contact', icon: FileSearch },
+  { labelAr: 'الإعدادات', labelEn: 'Settings', href: '/about', icon: Settings },
 ];
 
 export default function Home() {
   const ar = document.documentElement.lang.startsWith('ar');
+  const t = (arText: string, enText: string) => (ar ? arText : enText);
 
   return (
     <SiteShell>
-      <Head title={ar ? 'NEXVARY — الأمن أبعد مما تراه' : 'NEXVARY — Security Beyond the Visible'}>
+      <Head title={t('NEXVARY — مركز العمليات الأمنية العالمي', 'NEXVARY — Global Security Operations Center')}>
         <meta name="description" content="NEXVARY cybersecurity, counter-surveillance, digital forensics and privacy technology platform." />
         <link rel="canonical" href="https://nexvary.com/" />
       </Head>
-      <main>
-        <section className="nx-hero nx-hero-premium">
-          <motion.div className="nx-hero-copy" initial={{ opacity: 0, x: ar ? 24 : -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.45 }}>
-            <p className="nx-kicker">NEXVARY SECURITY INTELLIGENCE</p>
-            <h1>{ar ? 'نرى ما لا يراه الآخرون.' : 'Security Beyond the Visible.'}</h1>
-            <p className="nx-lead">
-              {ar
-                ? 'منصة أمنية متقدمة تجمع مكافحة التجسس، الأمن السيبراني، التحليل الجنائي الرقمي وتقنيات الخصوصية في تجربة واحدة فاخرة ومحمية.'
-                : 'A premium security platform unifying counter-surveillance, cybersecurity, digital forensics and privacy technology in one protected experience.'}
-            </p>
-            <div className="nx-actions">
-              <Link className="nx-btn nx-btn-primary" href="/services">{ar ? 'استكشف الخدمات' : 'Explore services'}</Link>
-              <Link className="nx-btn" href="/apps">{ar ? 'التطبيقات' : 'Applications'}</Link>
-            </div>
-            <div className="nx-status-strip" aria-label="Platform capability status">
-              <span><i /> TSCM</span>
-              <span><i /> Cyber Defense</span>
-              <span><i /> Digital Forensics</span>
-              <span><i /> Privacy</span>
-            </div>
-          </motion.div>
 
-          <motion.div className="nx-command nx-command-globe" aria-label="Decorative global security visualization" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.45 }}>
-            <div className="nx-command-topline" aria-hidden="true">
-              <strong>NEXVARY COMMAND VISUAL</strong>
-              <span>RF AWARENESS LAYER</span>
-            </div>
+      <main className="nx-dashboard-home" dir={ar ? 'rtl' : 'ltr'}>
+        <div className="nx-command-shell">
+          <aside className="nx-command-sidebar" aria-label={t('التنقل الرئيسي', 'Primary navigation')}>
+            <div className="nx-command-brand"><strong>NEXVARY</strong><small>SECURITY BEYOND THE VISIBLE</small></div>
+            <nav className="nx-command-nav">
+              {nav.map(({ labelAr, labelEn, href, icon: Icon, active }) => (
+                <Link key={href} href={href} className={active ? 'active' : ''}><Icon strokeWidth={1.7} />{t(labelAr, labelEn)}</Link>
+              ))}
+            </nav>
+            <div className="nx-sidebar-foot">NEXVARY<br />GLOBAL INTELLIGENCE<br />SAFER TOGETHER</div>
+          </aside>
 
-            <div className="nx-rf-field" aria-hidden="true">
-              <div className="nx-rf-sweep" />
-              <i className="nx-rf-node node-1" />
-              <i className="nx-rf-node node-2" />
-              <i className="nx-rf-node node-3" />
-              <i className="nx-rf-node node-4" />
-            </div>
-
-            <div className="nx-intel-rail nx-intel-left" aria-hidden="true">
-              <div className="nx-intel-chip"><b>TSCM</b><span>{ar ? 'وعي طيفي متعدد الطبقات' : 'multi-layer spectrum awareness'}</span></div>
-              <div className="nx-intel-chip"><b>RF</b><span>{ar ? 'تصور مسح لاسلكي' : 'radio sweep visualization'}</span></div>
-            </div>
-
-            <div className="nx-intel-rail nx-intel-right" aria-hidden="true">
-              <div className="nx-intel-chip"><b>CYBER</b><span>{ar ? 'دفاع رقمي متكامل' : 'integrated cyber defense'}</span></div>
-              <div className="nx-intel-chip"><b>DFIR</b><span>{ar ? 'مسارات أدلة منظمة' : 'structured evidence workflows'}</span></div>
-            </div>
-
-            <div className="nx-orbit nx-orbit-a" />
-            <div className="nx-orbit nx-orbit-b" />
-            <div className="nx-globe-wrap" aria-hidden="true">
-              <div className="nx-globe">
-                <span className="nx-globe-lat lat-1" />
-                <span className="nx-globe-lat lat-2" />
-                <span className="nx-globe-lat lat-3" />
-                <span className="nx-globe-long long-1" />
-                <span className="nx-globe-long long-2" />
-                <span className="nx-globe-long long-3" />
-                <span className="nx-continent nx-continent-a" />
-                <span className="nx-continent nx-continent-b" />
-                <span className="nx-continent nx-continent-c" />
-                <span className="nx-globe-pulse pulse-1" />
-                <span className="nx-globe-pulse pulse-2" />
-                <span className="nx-globe-pulse pulse-3" />
-                <div className="nx-globe-core">N</div>
+          <section className="nx-command-main">
+            <section className="nx-command-overview">
+              <div className="nx-command-title">
+                <small>{t('مرحبًا بك في', 'WELCOME TO')}</small>
+                <h1>{t('مركز العمليات الأمنية العالمي', 'Global Security Operations Center')}</h1>
+                <p>{t('مراقبة · تحليل · استجابة · حماية', 'Monitor · Analyze · Respond · Protect')}</p>
               </div>
-            </div>
-            <div className="nx-command-meta">
-              <span><b>GLOBAL</b>{ar ? 'وعي أمني متعدد الطبقات' : 'multi-layer security awareness'}</span>
-              <span><b>VISUAL</b>{ar ? 'تصميم بصري ديناميكي' : 'dynamic intelligence visualization'}</span>
-              <span><b>SECURE</b>{ar ? 'بوابات إصدار واختبارات' : 'release-gated engineering'}</span>
-            </div>
-          </motion.div>
-        </section>
+              <div className="nx-stat"><strong>183</strong><span>{t('دولة مغطاة', 'Countries')}</span></div>
+              <div className="nx-stat"><strong>2.4M</strong><span>{t('مصدر بيانات', 'Data sources')}</span></div>
+              <div className="nx-stat"><strong>17,382</strong><span>{t('إشارة نشطة', 'Active signals')}</span></div>
+              <div className="nx-stat"><strong>99.98%</strong><span>{t('جاهزية', 'Availability')}</span></div>
+            </section>
 
-        <section className="nx-section">
-          <div className="nx-section-title"><p>CAPABILITIES</p><h2>{ar ? 'منظومة أمنية متعددة الطبقات' : 'A multi-layer security capability'}</h2></div>
-          <div className="nx-grid">
-            {capabilities.map(({ title, desc, icon: Icon }) => (
-              <NxCard key={title} interactive className="nx-card">
-                <div className="nx-icon" aria-hidden="true"><Icon size={22} strokeWidth={1.8} /></div>
-                <h3>{title}</h3><p>{desc}</p>
-              </NxCard>
-            ))}
-          </div>
-        </section>
+            <section className="nx-map-module">
+              <div className="nx-map-tabs" role="tablist" aria-label={t('طبقات العرض', 'Visualization layers')}>
+                <button className="active" type="button">{t('خريطة التهديدات العالمية', 'Global Threat Map')}</button>
+                <button type="button">{t('التدفق المباشر', 'Live Feed')}</button>
+                <button type="button">{t('الهجمات السيبرانية', 'Cyber Attacks')}</button>
+                <button type="button">{t('مستوى المخاطر', 'Risk Level')}</button>
+              </div>
+              <div className="nx-map-workspace">
+                <div className="nx-command nx-command-globe" aria-label={t('خريطة نشاط التهديدات العالمية', 'Global threat activity map')}>
+                  <div className="nx-world-stage" />
+                </div>
+              </div>
+            </section>
+
+            <section className="nx-command-grid">
+              <article className="nx-panel">
+                <div className="nx-panel-head"><strong>{t('أحدث التهديدات', 'Latest Threats')}</strong><span>{t('عرض الكل', 'View all')}</span></div>
+                <div className="nx-threat-list">
+                  <div className="nx-threat-row"><b>17:24:12</b><span><i className="nx-severity-dot critical" />{t('محاولة وصول غير مصرح', 'Unauthorized access attempt')}</span><em>RU</em></div>
+                  <div className="nx-threat-row"><b>17:23:54</b><span><i className="nx-severity-dot warn" />{t('نشاط فحص للمنافذ', 'Port scanning activity')}</span><em>CN</em></div>
+                  <div className="nx-threat-row"><b>17:23:28</b><span><i className="nx-severity-dot warn" />{t('بصمة خبيثة محتملة', 'Possible malicious fingerprint')}</span><em>IR</em></div>
+                  <div className="nx-threat-row"><b>17:22:41</b><span><i className="nx-severity-dot ok" />{t('نشاط عابر على API', 'Transient API activity')}</span><em>US</em></div>
+                </div>
+              </article>
+
+              <article className="nx-panel">
+                <div className="nx-panel-head"><strong>{t('اتجاهات التهديدات', 'Threat Trends')}</strong><span>{t('آخر 24 ساعة', 'Last 24h')}</span></div>
+                <div className="nx-mini-chart" aria-label={t('مخطط اتجاهات تجريبي', 'Demo trend chart')}>
+                  {[28,42,36,55,68,52,77,61,84,58,71,49,64,82,73,91,66,78,88,70].map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
+                </div>
+              </article>
+
+              <article className="nx-panel">
+                <div className="nx-panel-head"><strong>{t('حالة الخدمات الأمنية', 'Security Services')}</strong><span>{t('تشغيلي', 'Operational')}</span></div>
+                <div className="nx-service-list">
+                  <span>{t('جدار الحماية', 'Firewall')}<b>{t('يعمل', 'Online')}</b></span>
+                  <span>{t('كشف التسلل', 'Intrusion Detection')}<b>{t('يعمل', 'Online')}</b></span>
+                  <span>{t('تحليل السلوك', 'Behavior Analytics')}<b>{t('يعمل', 'Online')}</b></span>
+                  <span>{t('مركز البيانات', 'Data Center')}<b>{t('يعمل', 'Online')}</b></span>
+                  <span>{t('النسخ الاحتياطي', 'Backup')}<b>{t('يعمل', 'Online')}</b></span>
+                </div>
+              </article>
+            </section>
+
+            <section className="nx-action-strip">
+              <Link href="/safescan" className="nx-action-tile"><span className="nx-action-icon"><ScanSearch /></span><span><strong>{t('فحص شامل', 'Comprehensive Scan')}</strong><small>{t('بدء فحص أمني الآن', 'Start a security scan')}</small></span></Link>
+              <Link href="/apps" className="nx-action-tile"><span className="nx-action-icon"><FileSearch /></span><span><strong>{t('تحليل ملف', 'Analyze File')}</strong><small>{t('فحص ملف مشتبه به', 'Inspect suspicious file')}</small></span></Link>
+              <Link href="/services" className="nx-action-tile"><span className="nx-action-icon"><Activity /></span><span><strong>{t('مراقبة مباشرة', 'Live Monitoring')}</strong><small>{t('عرض النشاط الحالي', 'View current activity')}</small></span></Link>
+              <Link href="/our-work" className="nx-action-tile"><span className="nx-action-icon"><Database /></span><span><strong>{t('إدارة الأصول', 'Asset Management')}</strong><small>{t('عرض الأصول الرقمية', 'View digital assets')}</small></span></Link>
+              <Link href="/contact" className="nx-action-tile"><span className="nx-action-icon"><FileSearch /></span><span><strong>{t('إنشاء تقرير', 'Create Report')}</strong><small>{t('طلب تقرير مخصص', 'Request a tailored report')}</small></span></Link>
+            </section>
+          </section>
+
+          <aside className="nx-command-rail">
+            <section className="nx-rail-card nx-clock-large">
+              <small>{t('توقيت مركز العمليات', 'OPERATIONS CLOCK')}</small>
+              <strong>17:24:36</strong>
+              <span>Cairo · UTC+3</span>
+            </section>
+            <section className="nx-rail-card nx-compass-large">
+              <div className="nx-compass-face" aria-hidden="true"><i /><b>NX</b></div>
+              <div className="nx-compass-label">{t('أنت في الاتجاه الصحيح', "YOU'RE ON THE RIGHT PATH")}</div>
+            </section>
+            <section className="nx-rail-card">
+              <div className="nx-panel-head"><strong>{t('الوضع العام للنظام', 'System Status')}</strong><span><Gauge size={16} /></span></div>
+              <div className="nx-system-good">{t('آمن ومستقر', 'Secure & Stable')}</div>
+              <div className="nx-rail-metric"><span>{t('معدل المعالجة', 'Processing')}</span><strong>2.4M/s</strong></div>
+              <div className="nx-rail-metric"><span>{t('زمن الاستجابة', 'Response')}</span><strong>12 ms</strong></div>
+              <div className="nx-rail-metric"><span>{t('سلامة البنية', 'Infrastructure')}</span><strong>100%</strong></div>
+              <div className="nx-rail-metric"><span>{t('جلسات نشطة', 'Active sessions')}</span><strong><Users size={14} /> 243</strong></div>
+            </section>
+          </aside>
+        </div>
       </main>
     </SiteShell>
   );
