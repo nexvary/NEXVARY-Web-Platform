@@ -16,7 +16,9 @@
 <body class="antialiased">
     <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0" aria-hidden="true">
         <h1>{{ app()->getLocale() === 'ar' ? 'مركز العمليات الأمنية العالمي NEXVARY' : 'NEXVARY Global Security Operations Center' }}</h1>
-        <nav>
+    </div>
+    <noscript>
+        <nav aria-label="Primary">
             <a href="/">{{ app()->getLocale() === 'ar' ? 'الرئيسية' : 'Home' }}</a>
             <a href="/services">{{ app()->getLocale() === 'ar' ? 'الخدمات' : 'Services' }}</a>
             <a href="/our-work">{{ app()->getLocale() === 'ar' ? 'أعمالنا' : 'Our Work' }}</a>
@@ -25,7 +27,7 @@
             <a href="/about">{{ app()->getLocale() === 'ar' ? 'عنّا' : 'About' }}</a>
             <a href="/contact">{{ app()->getLocale() === 'ar' ? 'تواصل معنا' : 'Contact' }}</a>
         </nav>
-    </div>
+    </noscript>
     @inertia
 </body>
 </html>
