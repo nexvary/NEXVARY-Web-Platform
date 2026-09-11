@@ -11,7 +11,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main class="nx-exec" dir="{{ $ar ? 'rtl' : 'ltr' }}" data-testid="final-command-home" data-release-ui="command-center-v10">
-    <header class="nx-exec-top" data-testid="site-header">
+    <header class="nx-exec-top" data-testid="command-header">
         <a href="/" class="nx-exec-brand"><span class="nx-user-dot">N</span><span><b>NEXVARY</b><small>SECURITY COMMAND INTERFACE</small></span></a>
         <label class="nx-exec-search"><span aria-hidden="true">⌕</span><input aria-label="{{ $ar ? 'البحث' : 'Search' }}" placeholder="{{ $ar ? 'البحث في المنصة ...' : 'Search the platform ...' }}"></label>
         <div class="nx-exec-tools"><a href="/contact" class="nx-user-dot" aria-label="{{ $ar ? 'التواصل' : 'Contact' }}">@</a><span class="nx-user-label"><b>{{ $ar ? 'مدير النظام' : 'Administrator' }}</b><small>NEXVARY</small></span></div>
@@ -19,7 +19,7 @@
 
     <div class="nx-exec-shell">
         <aside class="nx-exec-side">
-            <nav aria-label="{{ $ar ? 'التنقل الرئيسي' : 'Primary navigation' }}">
+            <nav role="group" aria-label="{{ $ar ? 'تنقل مركز العمليات' : 'Command navigation' }}">
                 <a href="/" class="active"><span>◉</span><span>{{ $ar ? 'الرئيسية' : 'Home' }}</span></a>
                 <a href="/services"><span>◎</span><span>{{ $ar ? 'الخدمات' : 'Services' }}</span></a>
                 <a href="/safescan"><span>◇</span><span>{{ $ar ? 'التهديدات' : 'Threats' }}</span></a>
