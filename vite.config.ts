@@ -11,6 +11,7 @@ export default defineConfig({
         'resources/js/app.tsx',
         'resources/css/public.css',
         'resources/css/command-center-v4.css',
+        'resources/css/site-command-v9.css',
         'resources/js/public.ts',
         'resources/js/home-command-v4.ts',
       ],
