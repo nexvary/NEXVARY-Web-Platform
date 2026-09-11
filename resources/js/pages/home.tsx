@@ -5,7 +5,7 @@ import '../../css/site-command-v9.css';
 
 const nav = [
   { ar: 'الرئيسية', en: 'Home', href: '/', icon: HomeIcon },
-  { ar: 'مركز العمليات', en: 'Operations', href: '/services', icon: Radar },
+  { ar: 'الخدمات', en: 'Services', href: '/services', icon: Radar },
   { ar: 'التهديدات', en: 'Threats', href: '/safescan', icon: ShieldCheck },
   { ar: 'الرصد والتحليل', en: 'Analytics', href: '/apps', icon: Activity },
   { ar: 'الأصول الرقمية', en: 'Assets', href: '/our-work', icon: Database },
@@ -28,6 +28,8 @@ export default function Home() {
   useEffect(() => { const id = window.setInterval(() => setNow(new Date()), 1000); return () => window.clearInterval(id); }, []);
   const cairo = useMemo(() => new Intl.DateTimeFormat(ar ? 'ar-EG' : 'en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now), [now, ar]);
   const utc = useMemo(() => new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(now), [now]);
+
+  const tabStyle = { minHeight: 44 } as const;
 
   return (
     <div className="nx-exec" dir={ar ? 'rtl' : 'ltr'}>
@@ -55,7 +57,7 @@ export default function Home() {
 
           <section className="nx-visual-grid">
             <div className="nx-map-card">
-              <div className="nx-map-tabs"><button className="active">{t('خريطة التهديدات العالمية', 'Global Threat Map')}</button><button>{t('التدفق المباشر', 'Live Feed')}</button><button>{t('الهجمات السيبرانية', 'Cyber Attacks')}</button><button>{t('مستوى المخاطر', 'Risk Level')}</button></div>
+              <div className="nx-map-tabs"><button style={tabStyle} className="active">{t('خريطة التهديدات العالمية', 'Global Threat Map')}</button><button style={tabStyle}>{t('التدفق المباشر', 'Live Feed')}</button><button style={tabStyle}>{t('الهجمات السيبرانية', 'Cyber Attacks')}</button><button style={tabStyle}>{t('مستوى المخاطر', 'Risk Level')}</button></div>
               <div className="nx-map-host"><div className="nx-command nx-command-globe"><div className="nx-world-stage" /></div></div>
             </div>
             <aside className="nx-right-rail">
