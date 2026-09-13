@@ -25,7 +25,7 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             try {
                 return back()->with('maintenance.result', $maintenance->clearCaches());
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 report($exception);
 
                 return back()->with('maintenance.error', 'Cache cleanup failed safely. Review the audit/logs before retrying.');
@@ -37,7 +37,7 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             try {
                 return back()->with('maintenance.result', $maintenance->optimize());
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 report($exception);
 
                 return back()->with('maintenance.error', 'Optimization failed safely. The current site configuration was not replaced manually.');
