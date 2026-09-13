@@ -121,7 +121,7 @@ final class MaintenanceCenter
     }
 
     /**
-     * @param list<string> $commands
+     * @param  list<string>  $commands
      */
     private function runArtisan(array $commands): void
     {
