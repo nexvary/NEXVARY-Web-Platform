@@ -53,13 +53,13 @@ jobs:
           php-version: '8.4'
           coverage: none
       - name: Cache Composer packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/composer/files
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
       - name: Cache Playwright browser
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
