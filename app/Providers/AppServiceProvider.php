@@ -25,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
             $identity = (string) ($request->user()?->id ?? $request->ip());
 
             return [
-                Limit::perMinute(30)->by('admin-minute:'.$identity),
-                Limit::perHour(300)->by('admin-hour:'.$identity),
+                Limit::perMinute(180)->by('admin-minute:'.$identity),
+                Limit::perHour(3000)->by('admin-hour:'.$identity),
             ];
         });
 
