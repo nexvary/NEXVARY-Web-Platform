@@ -5,7 +5,7 @@
 @section('canonical', 'https://nexvary.com/')
 
 @push('head')
-    @vite('resources/css/site-command-v9.css')
+    @vite(['resources/css/site-command-v9.css', 'resources/css/site-density-v10.css'])
 @endpush
 
 @section('content')
