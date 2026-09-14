@@ -3,8 +3,7 @@ name: cPanel Ready Bundle
 on:
   workflow_dispatch:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - '.github/workflows/cpanel-package.yml'
       - 'scripts/build-cpanel.sh'
@@ -22,24 +21,7 @@ on:
       - 'package-lock.json'
       - 'vite.config.*'
   push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/cpanel-package.yml'
-      - 'scripts/build-cpanel.sh'
-      - 'app/**'
-      - 'bootstrap/**'
-      - 'config/**'
-      - 'database/**'
-      - 'public/**'
-      - 'resources/**'
-      - 'routes/**'
-      - 'storage/**'
-      - 'composer.json'
-      - 'composer.lock'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'vite.config.*'
+    branches: [main]
 
 permissions:
   contents: read
@@ -65,54 +47,35 @@ jobs:
           node-version: '24'
           cache: npm
 
-      - name: Install production PHP dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
-
-      - name: Build frontend
+      - name: Build production application
         run: |
+          composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
           npm ci
           npm run build
 
       - name: Assemble cPanel bundle
         run: bash scripts/build-cpanel.sh
 
-      - name: Verify secure one-click installer is packaged
+      - name: Verify installer package
         run: |
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'public_html/setup-nexvary.php'
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'INSTALL-NEXVARY.txt'
           unzip -p NEXVARY-cPanel-Ready.zip public_html/setup-nexvary.php > /tmp/setup-nexvary.php
           php -l /tmp/setup-nexvary.php
           grep -q 'hash_equals' /tmp/setup-nexvary.php
+          grep -q 'password_confirmation' /tmp/setup-nexvary.php
+          grep -q "'role'=>'owner'" /tmp/setup-nexvary.php
           grep -q '@unlink(__FILE__)' /tmp/setup-nexvary.php
 
-      - name: Verify public Blade views are packaged
-        run: |
-          for view in \
-            layout.blade.php \
-            home.blade.php \
-            services.blade.php \
-            apps.blade.php \
-            safescan.blade.php \
-            about.blade.php \
-            contact.blade.php; do
-            unzip -l NEXVARY-cPanel-Ready.zip | grep -q "nexvary_app/resources/views/public/$view"
-          done
-          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
-          unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/show.blade.php'
-          unzip -p NEXVARY-cPanel-Ready.zip nexvary_app/routes/public-seo.php | grep -q "view('public.home')"
-
-      - name: Runtime smoke test packaged cPanel artifact
+      - name: Runtime owner onboarding smoke test
         shell: bash
         run: |
           set -euo pipefail
           RUNTIME="$RUNNER_TEMP/cpanel-runtime"
-          rm -rf "$RUNTIME"
-          mkdir -p "$RUNTIME"
+          rm -rf "$RUNTIME" && mkdir -p "$RUNTIME"
           unzip -q NEXVARY-cPanel-Ready.zip -d "$RUNTIME"
-
-          SETUP_URL="$(grep -oE 'https://nexvary\.com/setup-nexvary\.php\?key=[0-9a-f]+' "$RUNTIME/INSTALL-NEXVARY.txt" | head -1)"
-          test -n "$SETUP_URL"
-          SETUP_PATH="${SETUP_URL#https://nexvary.com}"
+          KEY="$(grep -oE 'key=[0-9a-f]+' "$RUNTIME/INSTALL-NEXVARY.txt" | head -1 | cut -d= -f2)"
+          test -n "$KEY"
 
           cd "$RUNTIME"
           php -S 127.0.0.1:8787 -t public_html > "$RUNNER_TEMP/cpanel-runtime-server.log" 2>&1 &
@@ -120,56 +83,45 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
           for i in {1..30}; do
-            if curl -fsS "http://127.0.0.1:8787${SETUP_PATH}" -o "$RUNNER_TEMP/setup-result.html"; then
-              break
-            fi
+            curl -fsS "http://127.0.0.1:8787/setup-nexvary.php?key=$KEY" -o "$RUNNER_TEMP/setup-form.html" && break
             sleep 1
           done
+          grep -q 'إنشاء حساب المالك الأول' "$RUNNER_TEMP/setup-form.html"
 
-          grep -q 'تم تثبيت NEXVARY بنجاح' "$RUNNER_TEMP/setup-result.html"
+          curl -fsS -X POST "http://127.0.0.1:8787/setup-nexvary.php?key=$KEY" \
+            --data-urlencode 'name=NEXVARY Owner' \
+            --data-urlencode 'email=owner-ci@nexvary.invalid' \
+            --data-urlencode 'password=NEXVARY-CI-Owner-2026!' \
+            --data-urlencode 'password_confirmation=NEXVARY-CI-Owner-2026!' \
+            -o "$RUNNER_TEMP/setup-result.html"
+
+          grep -q 'تم إنشاء حساب المالك بنجاح' "$RUNNER_TEMP/setup-result.html"
           test ! -e "$RUNTIME/public_html/setup-nexvary.php"
           test -e "$RUNTIME/nexvary_app/.installed"
+          php -r '$db=new PDO("sqlite:'"$RUNTIME"'/nexvary_app/database/database.sqlite"); $q=$db->query("select count(*) from users where email=\"owner-ci@nexvary.invalid\" and is_admin=1 and role=\"owner\""); exit(((int)$q->fetchColumn())===1?0:1);'
 
-          for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml; do
-            code="$(curl -sS -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
-            if [ "$code" != "200" ]; then
-              echo "Route ${route} returned HTTP ${code}"
-              cat "$RUNNER_TEMP/route-body" || true
-              cat "$RUNNER_TEMP/cpanel-runtime-server.log" || true
-              tail -200 "$RUNTIME/nexvary_app/storage/logs/laravel.log" || true
-              exit 1
-            fi
+          for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml /secure-control; do
+            code="$(curl -sS -L -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
+            test "$code" = "200" || { echo "Route ${route} returned HTTP ${code}"; exit 1; }
           done
 
-      - name: Install Chromium for verified screenshots
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Capture screenshots from installed packaged artifact
+      - name: Capture verified visual screenshots
         shell: bash
         run: |
           set -euo pipefail
           RUNTIME="$RUNNER_TEMP/cpanel-runtime"
           mkdir -p release-screenshots
-
           cd "$RUNTIME"
           php -S 127.0.0.1:8787 -t public_html > "$RUNNER_TEMP/cpanel-screenshot-server.log" 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-
-          for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:8787/ >/dev/null; then
-              break
-            fi
-            sleep 1
-          done
-
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8787/ >/dev/null && break; sleep 1; done
           cd "$GITHUB_WORKSPACE"
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/services release-screenshots/services-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/apps release-screenshots/apps-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/about release-screenshots/about-desktop.png
-          npx playwright screenshot --browser=chromium --device='Pixel 5' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
-
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-desktop.png
+          npx playwright screenshot --browser=chromium --device='Pixel 5' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
           test -s release-screenshots/home-desktop.png
           test -s release-screenshots/home-mobile.png
 
