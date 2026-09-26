@@ -2,20 +2,18 @@ import { expect, test } from '@playwright/test';
 
 const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan'];
 
-test('command map loads country boundaries and filters simulated signals', async ({ page }) => {
+test('geography loads without invented incidents and CISA provenance is visible', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  await expect(page.locator('[data-threat-feed-state]')).toContainText('SIMULATED FEED');
+  await expect(page.locator('[data-threat-feed-state]')).toContainText('GEO FEED NOT CONNECTED');
   await expect.poll(() => page.locator('[data-country-layer] path').count()).toBeGreaterThan(100);
-  await expect(page.locator('[data-threat-events] [data-event-type]')).toHaveCount(7);
+  await expect(page.locator('[data-threat-events] [data-event-type]')).toHaveCount(0);
+  await expect(page.locator('[data-map-empty]')).toBeVisible();
+  await expect(page.getByText('CISA KEV').first()).toBeVisible();
 
   const attacks = page.locator('[data-map-filter="attack"]');
   await attacks.click();
   await expect(attacks).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('[data-event-type="scan"][hidden]')).toHaveCount(2);
-  await expect(page.locator('[data-event-type="attack"]:not([hidden])')).toHaveCount(3);
-
-  await page.locator('[data-map-filter="all"]').click();
-  await expect(page.locator('[data-threat-events] [data-event-type]:not([hidden])')).toHaveCount(7);
+  await expect(page.locator('[data-threat-events] [data-event-type]')).toHaveCount(0);
 });
 
 for (const path of pages) {
