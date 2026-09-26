@@ -7,7 +7,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main class="nx-section nx-page-body">
-    <section class="nx-about-hero"><div><p class="nx-kicker">ABOUT NEXVARY</p><h1>{{ $ar ? 'تقنية أمنية مصممة لما لا يظهر للعين.' : 'Security technology for what is not immediately visible.' }}</h1><p class="nx-lead">{{ $ar ? 'تجمع NEXVARY بين الأمن السيبراني، مكافحة التجسس الفني، التحليل الجنائي الرقمي وتقنيات الخصوصية لبناء طبقات حماية مترابطة.' : 'NEXVARY combines cybersecurity, technical counter-surveillance, digital forensics and privacy technology into connected layers of protection.' }}</p></div><div class="nx-about-emblem" aria-hidden="true"><span>N</span></div></section>
+    <section class="nx-about-hero"><div><p class="nx-kicker">{{ $ar ? 'عن NEXVARY' : 'ABOUT NEXVARY' }}</p><h1>{{ $ar ? 'تقنية أمنية مصممة لما لا يظهر للعين.' : 'Security technology for what is not immediately visible.' }}</h1><p class="nx-lead">{{ $ar ? 'تجمع NEXVARY بين الأمن السيبراني، مكافحة التجسس الفني، التحليل الجنائي الرقمي وتقنيات الخصوصية لبناء طبقات حماية مترابطة.' : 'NEXVARY combines cybersecurity, technical counter-surveillance, digital forensics and privacy technology into connected layers of protection.' }}</p></div><div class="nx-about-emblem" aria-hidden="true"><img src="/nexvary-mark.svg" alt=""></div></section>
     <div class="nx-grid nx-about-grid">@foreach([
       [$ar?'الأمن السيبراني':'Cybersecurity',$ar?'تقليل سطح الهجوم وتقوية الأنظمة قبل وقوع الحوادث.':'Reducing attack surface and strengthening systems before incidents happen.'],
       [$ar?'مكافحة التجسس الفني':'Counter-Surveillance',$ar?'فحص فني وتوعية للبيئات التي تتطلب سرية عالية.':'Technical inspection and awareness for environments where confidentiality matters.'],
