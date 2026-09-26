@@ -24,11 +24,12 @@ function projectMap(lon: number, lat: number): { x: number; y: number } {
 }
 
 function mapMarkup(): string {
+  const ar = document.documentElement.lang === 'ar';
   return `
     <div class="nx-threat-map-shell" data-threat-map-shell>
       <div class="nx-threat-map-head">
-        <div><strong>GLOBAL THREAT ACTIVITY</strong><span>Internet infrastructure · attack telemetry · reconnaissance</span></div>
-        <span class="nx-threat-feed-state" data-threat-feed-state><i></i> CONNECTING</span>
+        <div><strong>${ar ? 'نشاط التهديدات العالمي' : 'GLOBAL THREAT ACTIVITY'}</strong><span>${ar ? 'البنية الرقمية · مؤشرات الهجمات · الاستطلاع' : 'Internet infrastructure · attack telemetry · reconnaissance'}</span></div>
+        <span class="nx-threat-feed-state" data-threat-feed-state><i></i> ${ar ? 'جار الاتصال' : 'CONNECTING'}</span>
       </div>
       <div class="nx-threat-map-canvas" data-threat-map-canvas>
         <svg viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
@@ -37,13 +38,13 @@ function mapMarkup(): string {
           <g class="nx-threat-map-route" data-threat-route-layer></g>
         </svg>
         <div class="nx-threat-map-events" data-threat-events></div>
-        <div class="nx-threat-map-legend"><span><i class="attack"></i>Attack</span><span><i class="scan"></i>Recon</span><span><i class="infrastructure"></i>New infrastructure</span></div>
+        <div class="nx-threat-map-legend"><span><i class="attack"></i>${ar ? 'هجوم' : 'Attack'}</span><span><i class="scan"></i>${ar ? 'استطلاع' : 'Recon'}</span><span><i class="infrastructure"></i>${ar ? 'بنية جديدة' : 'New infrastructure'}</span></div>
       </div>
       <div class="nx-threat-map-footer">
-        <div><span>ACTIVE EVENTS</span><strong data-active-events>0</strong></div>
-        <div><span>HIGH PRIORITY</span><strong data-high-events>0</strong></div>
-        <div><span>NEW INFRASTRUCTURE</span><strong data-infra-events>0</strong></div>
-        <div><span>LAST REFRESH</span><strong data-last-refresh>--:--:--</strong></div>
+        <div><span>${ar ? 'الإشارات المعروضة' : 'DISPLAYED SIGNALS'}</span><strong data-active-events>0</strong></div>
+        <div><span>${ar ? 'أولوية عالية' : 'HIGH PRIORITY'}</span><strong data-high-events>0</strong></div>
+        <div><span>${ar ? 'بنية جديدة' : 'NEW INFRASTRUCTURE'}</span><strong data-infra-events>0</strong></div>
+        <div><span>${ar ? 'آخر تحديث' : 'LAST REFRESH'}</span><strong data-last-refresh>--:--:--</strong></div>
       </div>
     </div>`;
 }
@@ -91,6 +92,7 @@ async function renderCountryBoundaries(): Promise<void> {
 }
 
 function renderThreatFeed(feed: ThreatFeed): void {
+  const ar = document.documentElement.lang === 'ar';
   const canvas = document.querySelector<HTMLElement>('[data-threat-map-canvas]');
   const eventsLayer = document.querySelector<HTMLElement>('[data-threat-events]');
   const routeLayer = document.querySelector<SVGGElement>('[data-threat-route-layer]');
@@ -119,7 +121,16 @@ function renderThreatFeed(feed: ThreatFeed): void {
     marker.dataset.eventType = type;
     marker.style.left = `${point.x}%`;
     marker.style.top = `${point.y}%`;
-    marker.setAttribute('aria-label', `${event.label}, ${event.city}`);
+    const translatedLabel = ar ? ({
+      'Suspicious traffic': 'حركة مرور مريبة',
+      'Reconnaissance': 'نشاط استطلاع',
+      'New infrastructure': 'بنية جديدة',
+      'Malware telemetry': 'مؤشر برمجيات خبيثة',
+      'Certificate activity': 'نشاط شهادات رقمية',
+      'Internet scan': 'فحص على الإنترنت',
+      'Brute-force telemetry': 'مؤشر محاولات تخمين',
+    } as Record<string, string>)[event.label] ?? event.label : event.label;
+    marker.setAttribute('aria-label', `${translatedLabel}, ${event.city}`);
     const pulse = document.createElement('span');
     pulse.className = 'nx-threat-pulse';
     const dot = document.createElement('span');
@@ -127,7 +138,7 @@ function renderThreatFeed(feed: ThreatFeed): void {
     const tooltip = document.createElement('span');
     tooltip.className = 'nx-threat-tooltip';
     const label = document.createElement('b');
-    label.textContent = event.label;
+    label.textContent = translatedLabel;
     const city = document.createElement('small');
     city.textContent = event.city;
     tooltip.append(label, city);
@@ -161,7 +172,8 @@ function renderThreatFeed(feed: ThreatFeed): void {
   const refreshedAt = new Date(feed.updated_at);
   if (refreshNode) refreshNode.textContent = Number.isNaN(refreshedAt.getTime())
     ? '--:--:--' : refreshedAt.toLocaleTimeString([], { hour12: false });
-  state.innerHTML = feed.mode === 'live' ? '<i></i> LIVE API' : '<i></i> SIMULATED FEED';
+  state.innerHTML = feed.mode === 'live' ? (ar ? '<i></i> مصدر مباشر · LIVE API' : '<i></i> LIVE API')
+    : (ar ? '<i></i> بيانات تجريبية · SIMULATED FEED' : '<i></i> SIMULATED FEED');
   state.dataset.mode = feed.mode;
   applyMapFilter();
 }
@@ -183,7 +195,7 @@ async function refreshThreatFeed(): Promise<void> {
     renderThreatFeed(await response.json() as ThreatFeed);
   } catch {
     const state = document.querySelector<HTMLElement>('[data-threat-feed-state]');
-    if (state) state.innerHTML = '<i></i> FEED OFFLINE';
+    if (state) state.innerHTML = document.documentElement.lang === 'ar' ? '<i></i> التغذية غير متاحة' : '<i></i> FEED OFFLINE';
   }
 }
 
