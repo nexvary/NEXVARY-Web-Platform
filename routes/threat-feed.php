@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 // Optional geolocated observation provider. Never synthesize incidents or paths.
 Route::get('/api/threat-feed', function () {
     $provider = trim((string) env('NEXVARY_THREAT_FEED_URL', ''));
-    if ($provider === '' || ! str_starts_with($provider, 'https://')) {
+    if ($provider === '' || str_starts_with($provider, 'https://') === false) {
         return response()->json(['mode' => 'unavailable', 'events' => [], 'source' => null])
             ->header('Cache-Control', 'no-store');
     }
@@ -24,7 +24,7 @@ Route::get('/api/threat-feed', function () {
             $response = $request->get($provider);
             $response->throw();
             $json = $response->json();
-            if (! is_array($json) || ! is_array($json['events'] ?? null) || ! is_string($json['source'] ?? null)) {
+            if (is_array($json) === false || is_array($json['events'] ?? null) === false || is_string($json['source'] ?? null) === false) {
                 throw new RuntimeException('Geolocated feed needs events and source fields');
             }
             $events = collect($json['events'])->filter(fn ($event) => is_array($event) && is_numeric($event['lat'] ?? null) && is_numeric($event['lon'] ?? null) && abs((float) $event['lat']) <= 90 && abs((float) $event['lon']) <= 180 && is_string($event['label'] ?? null))->take(40)->map(fn ($event) => [
@@ -32,7 +32,8 @@ Route::get('/api/threat-feed', function () {
                     'type' => in_array($event['type'] ?? '', ['attack', 'scan', 'infrastructure'], true) ? $event['type'] : 'scan',
                     'label' => mb_substr($event['label'], 0, 140),
                     'city' => mb_substr((string) ($event['city'] ?? ''), 0, 90),
-                    'lat' => (float) $event['lat'], 'lon' => (float) $event['lon'],
+                    'lat' => (float) $event['lat'],
+                    'lon' => (float) $event['lon'],
                     'severity' => in_array($event['severity'] ?? '', ['high', 'medium', 'low'], true) ? $event['severity'] : 'low',
             ])->values()->all();
 
