@@ -10,14 +10,14 @@
     <div class="nx-section-title"><p>APPLICATION ECOSYSTEM</p><h1>{{ $ar ? 'تطبيقات أمنية بواجهة موحدة' : 'Security applications, one platform' }}</h1><p class="nx-lead">{{ $ar ? 'مجموعة تطبيقات دفاعية وخصوصية مصممة لتقديم معلومات أو إجراءات واضحة دون ادعاءات غير واقعية.' : 'A set of defensive and privacy-first applications designed to provide useful signals, clear workflows and controlled release paths.' }}</p></div>
     <div class="nx-grid">
         @foreach([
-            ['Audio Shield','PRIVACY','Privacy-aware audio protection and awareness tooling.'],
-            ['Tower Guard','CELLULAR','Cellular anomaly awareness with professional validation guidance.'],
-            ['SafeScan','ZERO-STORAGE','Browser-side zero-storage static inspection with optional hash reputation.'],
-            ['Threat Intelligence','INTEL','Curated security intelligence and advisory surfaces.'],
-            ['AI Intelligence','AI','Focused AI security and technology intelligence.'],
-            ['DFIR Lab','FORENSICS','Structured digital-forensics workflows and investigation support.']
+            ['Audio Shield',$ar?'الخصوصية':'PRIVACY',$ar?'أدوات لحماية الصوت والوعي بمخاطر الخصوصية.':'Privacy-aware audio protection and awareness tooling.'],
+            ['Tower Guard',$ar?'الاتصالات':'CELLULAR',$ar?'وعي بشذوذ الاتصالات الخلوية مع إرشادات للتحقق المهني.':'Cellular anomaly awareness with professional validation guidance.'],
+            ['SafeScan',$ar?'تخزين صفري':'ZERO-STORAGE',$ar?'فحص أولي داخل المتصفح دون تخزين الملف، مع تحقق اختياري من سمعة البصمة.':'Browser-side zero-storage static inspection with optional hash reputation.'],
+            ['Threat Intelligence',$ar?'معلومات أمنية':'INTEL',$ar?'معلومات وتقارير أمنية منتقاة لدعم القرار.':'Curated security intelligence and advisory surfaces.'],
+            ['AI Intelligence',$ar?'الذكاء الاصطناعي':'AI',$ar?'متابعة مركزة لأمن الذكاء الاصطناعي والتقنيات المرتبطة به.':'Focused AI security and technology intelligence.'],
+            ['DFIR Lab',$ar?'أدلة رقمية':'FORENSICS',$ar?'خطوات منظمة للتحليل الجنائي الرقمي ودعم التحقيق.':'Structured digital-forensics workflows and investigation support.']
         ] as $product)
-            <article class="nx-card nx-app-card"><div class="nx-icon" aria-hidden="true">N</div><div class="nx-card-tag">{{ $product[1] }}</div><h2>{{ $product[0] }}</h2><p>{{ $product[2] }}</p>@if($product[0] === 'SafeScan')<a class="nx-card-link" href="/safescan">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} →</a>@else<span class="nx-card-status">CONTROLLED RELEASE</span>@endif</article>
+            <article class="nx-card nx-app-card"><div class="nx-icon" aria-hidden="true">N</div><div class="nx-card-tag">{{ $product[1] }}</div><h2>{{ $product[0] }}</h2><p>{{ $product[2] }}</p>@if($product[0] === 'SafeScan')<a class="nx-card-link" href="/safescan">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} {{ $ar ? '←' : '→' }}</a>@else<span class="nx-card-status">{{ $ar ? 'إصدار منضبط' : 'CONTROLLED RELEASE' }}</span>@endif</article>
         @endforeach
     </div>
     <div class="nx-ssr-copy" style="margin-top:34px">
