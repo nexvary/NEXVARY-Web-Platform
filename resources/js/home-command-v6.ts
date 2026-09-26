@@ -33,14 +33,7 @@ function mapMarkup(): string {
       <div class="nx-threat-map-canvas" data-threat-map-canvas>
         <svg viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
           <g class="nx-threat-map-grid"><path d="M0 100H1200M0 200H1200M0 300H1200M0 400H1200M0 500H1200M200 0V600M400 0V600M600 0V600M800 0V600M1000 0V600"/></g>
-          <g class="nx-threat-map-land">
-            <path d="M75 128l55-42 91-22 101 13 55 42-22 36-67 17-34 42-53 8-56 36-50-29-28-52z"/>
-            <path d="M282 301l44 14 42 47-14 65-34 101-41-44-18-93 8-66z"/>
-            <path d="M505 120l65-24 88 12 46 27 58 5 43 30-8 33-53 12-44 43-58-9-54-42-72-19z"/>
-            <path d="M563 257l73 8 55 48 15 76-41 95-54-22-31-72-28-79z"/>
-            <path d="M761 187l86-22 95 31 92 40 71 61-23 32-92-18-64 4-61-40-83-34z"/>
-            <path d="M981 386l74 12 55 47-22 54-87 3-51-41z"/>
-          </g>
+          <g class="nx-threat-map-land" data-country-layer></g>
           <g class="nx-threat-map-route" data-threat-route-layer></g>
         </svg>
         <div class="nx-threat-map-events" data-threat-events></div>
@@ -53,6 +46,48 @@ function mapMarkup(): string {
         <div><span>LAST REFRESH</span><strong data-last-refresh>--:--:--</strong></div>
       </div>
     </div>`;
+}
+
+async function renderCountryBoundaries(): Promise<void> {
+  const layer = document.querySelector<SVGGElement>('[data-country-layer]');
+  if (!layer) return;
+  try {
+    const response = await fetch('/nexvary-world-110m.geojson', { cache: 'force-cache', credentials: 'same-origin' });
+    if (!response.ok) throw new Error('Map geography unavailable');
+    const data: unknown = await response.json();
+    if (!data || typeof data !== 'object' || !('features' in data) || !Array.isArray(data.features)) return;
+    const point = (coordinate: unknown): string | null => {
+      if (!Array.isArray(coordinate) || coordinate.length < 2 ||
+          typeof coordinate[0] !== 'number' || typeof coordinate[1] !== 'number' ||
+          !Number.isFinite(coordinate[0]) || !Number.isFinite(coordinate[1])) return null;
+      const lon = Math.max(-180, Math.min(180, coordinate[0]));
+      const lat = Math.max(-90, Math.min(90, coordinate[1]));
+      return `${(((lon + 180) / 360) * 1200).toFixed(1)} ${(((90 - lat) / 180) * 600).toFixed(1)}`;
+    };
+    const ringPath = (ring: unknown): string => {
+      if (!Array.isArray(ring) || ring.length < 3) return '';
+      const points = ring.map(point).filter((p): p is string => p !== null);
+      return points.length >= 3 ? `M${points.join('L')}Z` : '';
+    };
+    const fragment = document.createDocumentFragment();
+    for (const feature of data.features.slice(0, 300)) {
+      const geometry = feature?.geometry;
+      if (!geometry || !Array.isArray(geometry.coordinates)) continue;
+      const polygons = geometry.type === 'Polygon' ? [geometry.coordinates]
+        : geometry.type === 'MultiPolygon' ? geometry.coordinates : [];
+      const d = polygons.flatMap((polygon: unknown) =>
+        Array.isArray(polygon) ? polygon.map(ringPath) : []).filter(Boolean).join('');
+      if (!d) continue;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('fill-rule', 'evenodd');
+      fragment.appendChild(path);
+    }
+    if (fragment.childNodes.length > 100) layer.replaceChildren(fragment);
+  } catch {
+    // Map interactions and telemetry remain available if geography cannot load.
+    layer.dataset.unavailable = 'true';
+  }
 }
 
 function renderThreatFeed(feed: ThreatFeed): void {
@@ -153,6 +188,7 @@ function installV6Scene(): void {
     if (topline) topline.style.display = 'none';
     stage.className = 'nx-threat-map-stage';
     stage.innerHTML = mapMarkup();
+    void renderCountryBoundaries();
     threatCard?.remove();
     caption?.remove();
   }
