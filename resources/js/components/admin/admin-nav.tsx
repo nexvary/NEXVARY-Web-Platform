@@ -20,7 +20,7 @@ const items = [
 
 export function AdminNav({ active = 'Overview' }: { active?: string }) {
   return (
-    <nav aria-label="Administration" className="mb-7 overflow-x-auto rounded-2xl border border-cyan-300/10 bg-slate-950/60 p-2 backdrop-blur-xl">
+    <nav aria-label="Administration" className="nx-admin-nav mb-7 overflow-x-auto rounded-2xl border border-cyan-300/10 bg-slate-950/60 p-2 backdrop-blur-xl">
       <div className="flex min-w-max items-center gap-1">
         <div className="mr-2 flex items-center gap-2 px-3 text-cyan-300"><ShieldCheck size={18}/><span className="text-xs font-black tracking-[0.2em]">CONTROL</span></div>
         {items.map(({ label, href, icon: Icon }) => {
