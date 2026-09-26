@@ -120,7 +120,7 @@ jobs:
           TOKEN="$(php -r 'echo urldecode($argv[1]);' "$TOKEN")"
           login_code="$(curl -sS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -o "$RUNNER_TEMP/login-result.html" -w '%{http_code}' \
             -H 'Accept: text/html' \
-            --data-urlencode "_token=$TOKEN" \
+            -H "X-XSRF-TOKEN: $TOKEN" \
             --data-urlencode 'email=owner-ci@nexvary.invalid' \
             --data-urlencode 'password=NEXVARY-CI-Owner-2026!' \
             http://127.0.0.1:8787/secure-access/login)"
