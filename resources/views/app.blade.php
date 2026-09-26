@@ -14,7 +14,7 @@
     @inertiaHead
 </head>
 <body class="antialiased">
-    <div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0" aria-hidden="true">
+    <div class="nx-ssr-a11y" aria-hidden="true">
         <h1>{{ app()->getLocale() === 'ar' ? 'مركز العمليات الأمنية العالمي NEXVARY' : 'NEXVARY Global Security Operations Center' }}</h1>
     </div>
     <noscript>
