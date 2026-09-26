@@ -8,10 +8,7 @@ WORLD_DATA="public/nexvary-world-110m.geojson"
 rm -rf "$ROOT"
 mkdir -p "$APP" "$WEB"
 
-# Bundle Natural Earth 1:110m geography locally. The deployed globe has no CDN/runtime dependency.
-curl --fail --silent --show-error --location --retry 3 \
-  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson" \
-  --output "$WORLD_DATA"
+# Geography is versioned with the application so release and clean install use the same map.
 python3 - <<'PY'
 import json
 from pathlib import Path
