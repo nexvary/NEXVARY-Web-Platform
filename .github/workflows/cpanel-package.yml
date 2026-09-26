@@ -121,9 +121,13 @@ jobs:
           for i in {1..30}; do curl -fsS http://127.0.0.1:8787/ >/dev/null && break; sleep 1; done
           cd "$GITHUB_WORKSPACE"
           npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-desktop.png
-          npx playwright screenshot --browser=chromium --device='Pixel 5' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
+          npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1600 'http://127.0.0.1:8787/?lang=ar' release-screenshots/home-ar-desktop.png
+          npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=1600 'http://127.0.0.1:8787/?lang=ar' release-screenshots/home-ar-mobile.png
           test -s release-screenshots/home-desktop.png
           test -s release-screenshots/home-mobile.png
+          test -s release-screenshots/home-ar-desktop.png
+          test -s release-screenshots/home-ar-mobile.png
 
       - name: Upload verified screenshots
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
