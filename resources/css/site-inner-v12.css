@@ -1,0 +1,97 @@
+/* Shared public pages: the same restrained NEXVARY identity as the command center. */
+.nx-page-body { color: #D9D7D4; }
+body:not(:has(.nx-exec)) .nx-page { background: #0C1319; }
+body:not(:has(.nx-exec)) .nx-section { width: min(1240px, calc(100% - 40px)); }
+body:not(:has(.nx-exec)) .nx-page-body { padding-top: 24px !important; padding-bottom: 40px !important; }
+body:not(:has(.nx-exec)) .nx-back-row { width: min(1240px, calc(100% - 40px)); margin-top: 14px !important; }
+.nx-back-button { border-radius: 3px !important; border-color: rgba(158,155,152,.36) !important; background: #101b23 !important; color: #D9D7D4 !important; }
+.nx-back-button:hover { border-color: #6A88A0 !important; }
+body:not(:has(.nx-exec)) .nx-section-title { max-width: 960px; margin: 15px 0 32px !important; }
+body:not(:has(.nx-exec)) .nx-section-title>p:first-child,
+body:not(:has(.nx-exec)) .nx-kicker {
+  color: #6A88A0 !important; font-size: .72rem !important; font-weight: 700;
+  letter-spacing: .17em !important; line-height: 1.5;
+}
+body:not(:has(.nx-exec)) .nx-section-title h1,
+body:not(:has(.nx-exec)) .nx-about-hero h1,
+body:not(:has(.nx-exec)) .nx-product-heading h1 {
+  margin: 12px 0 14px !important; font-size: clamp(2.1rem,4vw,4rem) !important;
+  line-height: 1.12 !important; letter-spacing: -.025em !important; font-weight: 650;
+}
+body:not(:has(.nx-exec)) .nx-section-title h2 { font-size: clamp(1.5rem,2.6vw,2.4rem) !important; line-height: 1.2; }
+body:not(:has(.nx-exec)) .nx-section-title .nx-lead,
+body:not(:has(.nx-exec)) .nx-about-hero .nx-lead,
+body:not(:has(.nx-exec)) .nx-hero-copy .nx-lead {
+  max-width: 850px; margin: 0 !important; color: #B9C0C4 !important;
+  font-size: clamp(.94rem,1.15vw,1.13rem) !important; line-height: 1.7 !important;
+  letter-spacing: 0 !important; font-weight: 400 !important;
+}
+body:not(:has(.nx-exec)) .nx-grid { gap: 12px !important; }
+body:not(:has(.nx-exec)) .nx-card {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: 23px !important; border: 1px solid rgba(158,155,152,.27) !important;
+  border-radius: 4px !important; background: #142029 !important; box-shadow: none !important;
+}
+body:not(:has(.nx-exec)) .nx-card:hover { border-color: rgba(106,136,160,.7) !important; }
+body:not(:has(.nx-exec)) .nx-icon,
+body:not(:has(.nx-exec)) .nx-svg-icon {
+  width: 42px; height: 42px; border: 1px solid rgba(106,136,160,.55);
+  border-radius: 3px; background: #20323d; color: #D9D7D4;
+  box-shadow: none; font-size: .74rem;
+}
+body:not(:has(.nx-exec)) .nx-card h2,
+body:not(:has(.nx-exec)) .nx-card h3 {
+  margin: 20px 0 9px; font-size: 1.14rem; line-height: 1.35; font-weight: 650;
+}
+body:not(:has(.nx-exec)) .nx-card p { margin: 0 0 22px !important; color: #B9C0C4 !important; font-size: .87rem; line-height: 1.7; }
+body:not(:has(.nx-exec)) .nx-card-status { margin-top: auto; color: #8DA8BA; font-size: .66rem; letter-spacing: .1em; }
+body:not(:has(.nx-exec)) .nx-card-tag { border-radius: 3px; color: #B9C0C4; border-color: rgba(158,155,152,.28); }
+body:not(:has(.nx-exec)) .nx-card-link { margin-top: auto; color: #D9D7D4; font-size: .82rem; }
+body:not(:has(.nx-exec)) .nx-service-card { min-height: 245px !important; }
+body:not(:has(.nx-exec)) .nx-ssr-copy { max-width: 980px; margin-top: 35px !important; color: #AAB4B9; font-size: .94rem; line-height: 1.8; }
+body:not(:has(.nx-exec)) .nx-ssr-copy p { margin-bottom: 16px; }
+body:not(:has(.nx-exec)) .nx-about-hero {
+  display: grid; grid-template-columns: minmax(0,1fr) 230px; gap: 35px;
+  align-items: center; min-height: 270px; margin: 15px 0 28px;
+}
+body:not(:has(.nx-exec)) .nx-about-emblem {
+  display: flex; align-items: center; justify-content: center;
+  width: 210px; height: 210px; aspect-ratio: 1; border: 1px solid rgba(158,155,152,.28);
+  border-radius: 3px; background: #142029; box-shadow: none; overflow: hidden;
+}
+body:not(:has(.nx-exec)) .nx-about-emblem img {
+  width: 66%; height: 66%; display: block; object-fit: contain;
+}
+body:not(:has(.nx-exec)) .nx-about-grid { grid-template-columns: repeat(4,minmax(0,1fr)) !important; }
+body:not(:has(.nx-exec)) .nx-contact-panel { margin-top: 34px; padding: 26px; border: 1px solid rgba(158,155,152,.27); border-radius: 3px; background: #111b22; }
+body:not(:has(.nx-exec)) .nx-contact-panel h2 { font-size: 1.7rem; }
+body:not(:has(.nx-exec)) .nx-social-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); }
+body:not(:has(.nx-exec)) .nx-social-grid a { min-height: 85px; align-items: flex-start; flex-direction: column; justify-content: space-between; border-radius: 3px; background: #17232b; }
+body:not(:has(.nx-exec)) .nx-public-form { border-radius: 4px; background: #17232b; box-shadow: none; padding: 28px; }
+body:not(:has(.nx-exec)) .nx-field input,
+body:not(:has(.nx-exec)) .nx-field select,
+body:not(:has(.nx-exec)) .nx-field textarea { border-radius: 3px; background: #0C1319; }
+body:not(:has(.nx-exec)) .nx-btn-primary { border: 1px solid #6A88A0; border-radius: 3px; background: #344b5b; color: #D9D7D4; box-shadow: none; }
+body:not(:has(.nx-exec)) .nx-btn-primary:hover { background: #476478; }
+@media(max-width: 1000px) {
+  body:not(:has(.nx-exec)) .nx-about-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  body:not(:has(.nx-exec)) .nx-social-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media(max-width: 700px) {
+  body:not(:has(.nx-exec)) .nx-section { width: calc(100% - 24px); }
+  body:not(:has(.nx-exec)) .nx-back-row { width: calc(100% - 24px); }
+  body:not(:has(.nx-exec)) .nx-section-title { margin: 15px 0 23px !important; }
+  body:not(:has(.nx-exec)) .nx-section-title h1,
+  body:not(:has(.nx-exec)) .nx-about-hero h1,
+  body:not(:has(.nx-exec)) .nx-product-heading h1 { font-size: clamp(2rem,8vw,2.8rem) !important; }
+  body:not(:has(.nx-exec)) .nx-grid,
+  body:not(:has(.nx-exec)) .nx-about-grid { grid-template-columns: 1fr !important; }
+  body:not(:has(.nx-exec)) .nx-service-card { min-height: 0 !important; }
+  body:not(:has(.nx-exec)) .nx-about-hero { grid-template-columns: 1fr; }
+  body:not(:has(.nx-exec)) .nx-about-emblem { width: 120px; height: 120px; }
+  body:not(:has(.nx-exec)) .nx-public-form { padding: 17px; }
+  body:not(:has(.nx-exec)) .nx-social-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width: 440px) {
+  body:not(:has(.nx-exec)) .nx-social-grid { grid-template-columns: 1fr; }
+}

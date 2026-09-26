@@ -10,14 +10,14 @@
     <div class="nx-section-title"><p>SECURITY SERVICES</p><h1>{{ $ar ? 'حماية تقنية متعددة التخصصات' : 'Multi-disciplinary technical protection' }}</h1><p class="nx-lead">{{ $ar ? 'خدمات مصممة لتقليل التعرض الرقمي والمادي، مع فصل واضح بين التوعية، الفحص الفني، والتحقق المهني.' : 'Services designed to reduce digital and physical exposure with a clear separation between awareness, technical inspection and professional validation.' }}</p></div>
     <div class="nx-grid">
         @foreach([
-            ['01','TSCM & Counter-Surveillance','Technical inspections for offices, vehicles, rooms, devices, networks and RF environments.'],
-            ['02','Cybersecurity','Assessment, hardening, vulnerability reduction, incident response and security architecture.'],
-            ['03','Digital Privacy','Privacy-first workflows, exposure reduction and defensive technology for sensitive users and teams.'],
-            ['04','Digital Forensics','Structured evidence review, investigation workflows and defensible reporting.'],
-            ['05','Physical Security Technology','CCTV, access control, alarms, secure networking and sensor integration.'],
-            ['06','Security Intelligence','Curated threat, breach and AI-security intelligence surfaces for decision support.']
+            ['01',$ar?'مكافحة التجسس الفني':'TSCM & Counter-Surveillance',$ar?'فحص فني للمكاتب والسيارات وغرف الاجتماعات والأجهزة والشبكات وبيئات الاتصال اللاسلكي.':'Technical inspections for offices, vehicles, rooms, devices, networks and RF environments.'],
+            ['02',$ar?'الأمن السيبراني':'Cybersecurity',$ar?'تقييم المخاطر والتحصين وتقليل الثغرات والاستجابة للحوادث وهندسة الأنظمة الآمنة.':'Assessment, hardening, vulnerability reduction, incident response and security architecture.'],
+            ['03',$ar?'الخصوصية الرقمية':'Digital Privacy',$ar?'إجراءات وتقنيات دفاعية تحد من التعرض غير الضروري لبيانات الأفراد والفرق الحساسة.':'Privacy-first workflows, exposure reduction and defensive technology for sensitive users and teams.'],
+            ['04',$ar?'الأدلة الرقمية':'Digital Forensics',$ar?'مراجعة منظمة للأدلة ومسارات تحقيق موثقة وتقارير قابلة للمراجعة.':'Structured evidence review, investigation workflows and defensible reporting.'],
+            ['05',$ar?'تقنيات الحماية المادية':'Physical Security Technology',$ar?'كاميرات وتحكم في الدخول وإنذارات وشبكات آمنة وتكامل للمستشعرات.':'CCTV, access control, alarms, secure networking and sensor integration.'],
+            ['06',$ar?'الاستخبارات الأمنية':'Security Intelligence',$ar?'معلومات منتقاة عن التهديدات والتسريبات وأمن الذكاء الاصطناعي لدعم القرار.':'Curated threat, breach and AI-security intelligence surfaces for decision support.']
         ] as $service)
-            <article class="nx-card nx-service-card"><div class="nx-icon">{{ $service[0] }}</div><h2>{{ $service[1] }}</h2><p>{{ $service[2] }}</p><span class="nx-card-status">NEXVARY · CONTROLLED DELIVERY</span></article>
+            <article class="nx-card nx-service-card"><div class="nx-icon">{{ $service[0] }}</div><h2>{{ $service[1] }}</h2><p>{{ $service[2] }}</p><span class="nx-card-status">{{ $ar ? 'NEXVARY · تنفيذ منضبط' : 'NEXVARY · CONTROLLED DELIVERY' }}</span></article>
         @endforeach
     </div>
     <div class="nx-ssr-copy" style="margin-top:34px">
