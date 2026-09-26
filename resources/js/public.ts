@@ -1,4 +1,20 @@
 const languageSwitches = document.querySelectorAll<HTMLSelectElement>('[data-language-switch]');
+const accentNames = ['blue', 'ice', 'teal', 'indigo'] as const;
+type AccentName = typeof accentNames[number];
+const accentKey = 'nexvary-accent';
+const accentButton = document.querySelector<HTMLButtonElement>('[data-accent-cycle]');
+const savedAccent = (() => { try { return window.localStorage.getItem(accentKey); } catch { return null; } })();
+let currentAccent: AccentName = accentNames.includes(savedAccent as AccentName) ? savedAccent as AccentName : 'blue';
+function applyAccent(name: AccentName): void {
+  document.documentElement.dataset.accent = name;
+  accentButton?.setAttribute('aria-label', `${document.documentElement.lang === 'ar' ? 'تغيير لون التفاعل. اللون الحالي' : 'Change accent color. Current color'}: ${name}`);
+}
+applyAccent(currentAccent);
+accentButton?.addEventListener('click', () => {
+  currentAccent = accentNames[(accentNames.indexOf(currentAccent) + 1) % accentNames.length];
+  applyAccent(currentAccent);
+  try { window.localStorage.setItem(accentKey, currentAccent); } catch { /* private storage may be unavailable */ }
+});
 for (const select of languageSwitches) {
   select.addEventListener('change', () => {
     const url = new URL(window.location.href);
