@@ -29,6 +29,10 @@
 .nx-admin-panel-heading>strong { font-size:2rem; font-weight:650; }
 .nx-admin-progress { height:5px; margin:22px 0; background:#0C1319; }
 .nx-admin-progress span { display:block; height:100%; background:#6A88A0; }
+.nx-admin-progress[data-active='1'] span { width:25%; }
+.nx-admin-progress[data-active='2'] span { width:50%; }
+.nx-admin-progress[data-active='3'] span { width:75%; }
+.nx-admin-progress[data-active='4'] span { width:100%; }
 .nx-admin-control-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
 .nx-admin-control-list>div { display:flex; align-items:center; gap:9px; min-height:48px; padding:11px; border:1px solid rgba(158,155,152,.18); background:#101b23; font-size:.78rem; }
 .nx-admin-control-list svg { flex-shrink:0; color:#8DA8BA; }
