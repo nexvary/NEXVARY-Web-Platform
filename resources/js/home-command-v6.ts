@@ -116,6 +116,7 @@ function renderThreatFeed(feed: ThreatFeed): void {
     const type = ['attack', 'scan', 'infrastructure'].includes(event.type) ? event.type : 'scan';
     const severity = ['high', 'medium', 'low'].includes(event.severity) ? event.severity : 'low';
     marker.className = `nx-threat-event nx-event-${type} nx-severity-${severity}`;
+    marker.dataset.eventType = type;
     marker.style.left = `${point.x}%`;
     marker.style.top = `${point.y}%`;
     marker.setAttribute('aria-label', `${event.label}, ${event.city}`);
@@ -162,6 +163,17 @@ function renderThreatFeed(feed: ThreatFeed): void {
     ? '--:--:--' : refreshedAt.toLocaleTimeString([], { hour12: false });
   state.innerHTML = feed.mode === 'live' ? '<i></i> LIVE API' : '<i></i> SIMULATED FEED';
   state.dataset.mode = feed.mode;
+  applyMapFilter();
+}
+
+function applyMapFilter(): void {
+  const selected = document.querySelector<HTMLButtonElement>('[data-map-filter][aria-pressed="true"]')?.dataset.mapFilter ?? 'all';
+  document.querySelectorAll<HTMLElement>('[data-event-type]').forEach((marker) => {
+    marker.hidden = selected !== 'all' && marker.dataset.eventType !== selected;
+  });
+  document.querySelectorAll<SVGPathElement>('.nx-threat-route').forEach((route) => {
+    route.style.display = selected === 'all' || route.classList.contains(`nx-route-${selected}`) ? '' : 'none';
+  });
 }
 
 async function refreshThreatFeed(): Promise<void> {
@@ -207,6 +219,16 @@ function installV6Scene(): void {
   });
 
   void refreshThreatFeed();
+  document.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach((tab) => {
+        const active = tab === button;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-pressed', String(active));
+      });
+      applyMapFilter();
+    });
+  });
   const interval = window.setInterval(() => void refreshThreatFeed(), 15000);
   window.addEventListener('beforeunload', () => window.clearInterval(interval), { once: true });
 }
