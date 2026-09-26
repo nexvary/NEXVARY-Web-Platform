@@ -200,6 +200,7 @@ function installV6Scene(): void {
     if (topline) topline.style.display = 'none';
     stage.className = 'nx-threat-map-stage';
     stage.innerHTML = mapMarkup();
+    command.querySelector('.nx-v5-threat-overlays')?.remove();
     void renderCountryBoundaries();
     threatCard?.remove();
     caption?.remove();
