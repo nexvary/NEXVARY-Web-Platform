@@ -11,8 +11,9 @@ type ThreatEvent = {
 };
 
 type ThreatFeed = {
-  mode: 'live' | 'simulated';
-  updated_at: string;
+  mode: 'live' | 'unavailable';
+  source: string | null;
+  observed_at?: string;
   events: ThreatEvent[];
 };
 
@@ -28,7 +29,7 @@ function mapMarkup(): string {
   return `
     <div class="nx-threat-map-shell" data-threat-map-shell>
       <div class="nx-threat-map-head">
-        <div><strong>${ar ? 'نشاط التهديدات العالمي' : 'GLOBAL THREAT ACTIVITY'}</strong><span>${ar ? 'البنية الرقمية · مؤشرات الهجمات · الاستطلاع' : 'Internet infrastructure · attack telemetry · reconnaissance'}</span></div>
+        <div><strong>${ar ? 'الأطلس العالمي للمؤشرات' : 'GLOBAL OBSERVATION ATLAS'}</strong><span>${ar ? 'جغرافيا مرجعية · تظهر الأحداث عند توصيل مصدر موثق' : 'Reference geography · verified observations when connected'}</span></div>
         <span class="nx-threat-feed-state" data-threat-feed-state><i></i> ${ar ? 'جار الاتصال' : 'CONNECTING'}</span>
       </div>
       <div class="nx-threat-map-canvas" data-threat-map-canvas>
@@ -38,6 +39,7 @@ function mapMarkup(): string {
           <g class="nx-threat-map-route" data-threat-route-layer></g>
         </svg>
         <div class="nx-threat-map-events" data-threat-events></div>
+        <div class="nx-map-empty" data-map-empty>${ar ? 'لا توجد تغذية جغرافية متصلة حاليًا. لا نعرض مسارات أو هجمات مفترضة.' : 'No geolocated observation feed is connected. No attack routes or events are inferred.'}</div>
         <div class="nx-threat-map-legend"><span><i class="attack"></i>${ar ? 'هجوم' : 'Attack'}</span><span><i class="scan"></i>${ar ? 'استطلاع' : 'Recon'}</span><span><i class="infrastructure"></i>${ar ? 'بنية جديدة' : 'New infrastructure'}</span></div>
       </div>
       <div class="nx-threat-map-footer">
@@ -145,19 +147,7 @@ function renderThreatFeed(feed: ThreatFeed): void {
     marker.append(pulse, dot, tooltip);
     eventsLayer.appendChild(marker);
 
-    if (index > 0 && index % 2 === 1) {
-      const previous = safeEvents[index - 1];
-      if (Number.isFinite(previous.lon) && Number.isFinite(previous.lat)) {
-        const a = projectMap(previous.lon, previous.lat);
-        const b = point;
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        const x1 = a.x * 12, y1 = a.y * 6, x2 = b.x * 12, y2 = b.y * 6;
-        const cx = (x1 + x2) / 2, cy = Math.min(y1, y2) - 55;
-        path.setAttribute('d', `M${x1.toFixed(1)} ${y1.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`);
-        path.setAttribute('class', `nx-threat-route nx-route-${type}`);
-        routeLayer.appendChild(path);
-      }
-    }
+    void index;
   });
 
   const high = safeEvents.filter((event) => event.severity === 'high').length;
@@ -169,11 +159,13 @@ function renderThreatFeed(feed: ThreatFeed): void {
   if (activeNode) activeNode.textContent = String(safeEvents.length);
   if (highNode) highNode.textContent = String(high);
   if (infraNode) infraNode.textContent = String(infra);
-  const refreshedAt = new Date(feed.updated_at);
+  const refreshedAt = new Date(feed.observed_at ?? '');
   if (refreshNode) refreshNode.textContent = Number.isNaN(refreshedAt.getTime())
     ? '--:--:--' : refreshedAt.toLocaleTimeString([], { hour12: false });
-  state.innerHTML = feed.mode === 'live' ? (ar ? '<i></i> مصدر مباشر · LIVE API' : '<i></i> LIVE API')
-    : (ar ? '<i></i> بيانات تجريبية · SIMULATED FEED' : '<i></i> SIMULATED FEED');
+  const empty = document.querySelector<HTMLElement>('[data-map-empty]');
+  if (empty) empty.hidden = feed.mode === 'live' && safeEvents.length > 0;
+  state.textContent = feed.mode === 'live' ? `${ar ? 'مصدر' : 'SOURCE'}: ${feed.source ?? 'API'}`
+    : (ar ? 'لا توجد تغذية جغرافية' : 'GEO FEED NOT CONNECTED');
   state.dataset.mode = feed.mode;
   applyMapFilter();
 }
@@ -195,7 +187,43 @@ async function refreshThreatFeed(): Promise<void> {
     renderThreatFeed(await response.json() as ThreatFeed);
   } catch {
     const state = document.querySelector<HTMLElement>('[data-threat-feed-state]');
-    if (state) state.innerHTML = document.documentElement.lang === 'ar' ? '<i></i> التغذية غير متاحة' : '<i></i> FEED OFFLINE';
+    if (state) state.textContent = document.documentElement.lang === 'ar' ? 'التغذية الجغرافية غير متاحة' : 'GEO FEED OFFLINE';
+  }
+}
+
+type KevEntry = { cve: string; date_added: string; vendor: string; product: string; name: string; ransomware: boolean };
+type KevCatalog = { status: 'current' | 'stale' | 'unavailable'; catalog_released_at?: string; catalog_count?: number; entries: KevEntry[] };
+
+async function refreshIntelligence(): Promise<void> {
+  const status = document.querySelector<HTMLElement>('[data-intel-status]');
+  const list = document.querySelector<HTMLElement>('[data-kev-list]');
+  if (!status || !list) return;
+  const ar = document.documentElement.lang === 'ar';
+  try {
+    const response = await fetch('/api/security-intelligence', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('CISA source unavailable');
+    const catalog = await response.json() as KevCatalog;
+    if (!Array.isArray(catalog.entries) || catalog.entries.length === 0) throw new Error('Empty catalog');
+    status.textContent = `${catalog.status === 'stale' ? (ar ? 'نسخة محفوظة · ' : 'CACHED · ') : ''}CISA KEV · ${catalog.catalog_released_at?.slice(0, 10) ?? ''}`;
+    const count = document.querySelector<HTMLElement>('[data-kev-count]');
+    if (count) count.textContent = new Intl.NumberFormat(ar ? 'ar' : 'en').format(catalog.catalog_count ?? 0);
+    const fragment = document.createDocumentFragment();
+    for (const item of catalog.entries.slice(0, 6)) {
+      if (!/^CVE-\d{4}-\d{4,19}$/.test(item.cve)) continue;
+      const row = document.createElement('a');
+      row.className = 'nx-kev-row';
+      row.href = `https://nvd.nist.gov/vuln/detail/${item.cve}`;
+      row.target = '_blank'; row.rel = 'noopener noreferrer';
+      const id = document.createElement('strong'); id.textContent = item.cve;
+      const description = document.createElement('span'); description.textContent = `${item.vendor} · ${item.product}`;
+      const date = document.createElement('time'); date.textContent = item.date_added;
+      row.append(id, description, date);
+      fragment.appendChild(row);
+    }
+    list.replaceChildren(fragment);
+  } catch {
+    status.textContent = ar ? 'تعذر تحديث CISA الآن' : 'CISA FEED UNAVAILABLE';
+    list.textContent = ar ? 'لا توجد بيانات موثقة متاحة الآن.' : 'Verified data is temporarily unavailable.';
   }
 }
 
@@ -232,6 +260,7 @@ function installV6Scene(): void {
   });
 
   void refreshThreatFeed();
+  void refreshIntelligence();
   document.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach((button) => {
     button.addEventListener('click', () => {
       document.querySelectorAll<HTMLButtonElement>('[data-map-filter]').forEach((tab) => {
@@ -242,7 +271,7 @@ function installV6Scene(): void {
       applyMapFilter();
     });
   });
-  const interval = window.setInterval(() => void refreshThreatFeed(), 15000);
+  const interval = window.setInterval(() => void refreshThreatFeed(), 300000);
   window.addEventListener('beforeunload', () => window.clearInterval(interval), { once: true });
 }
 
