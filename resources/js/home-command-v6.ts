@@ -18,8 +18,8 @@ type ThreatFeed = {
 
 function projectMap(lon: number, lat: number): { x: number; y: number } {
   return {
-    x: ((lon + 180) / 360) * 100,
-    y: ((90 - lat) / 180) * 100,
+    x: Math.max(0, Math.min(100, ((lon + 180) / 360) * 100)),
+    y: Math.max(0, Math.min(100, ((90 - lat) / 180) * 100)),
   };
 }
 
@@ -65,17 +65,37 @@ function renderThreatFeed(feed: ThreatFeed): void {
   eventsLayer.innerHTML = '';
   routeLayer.innerHTML = '';
 
-  const safeEvents = Array.isArray(feed.events) ? feed.events.slice(0, 40) : [];
+  const safeEvents = Array.isArray(feed.events)
+    ? feed.events.filter((event): event is ThreatEvent =>
+      event !== null && typeof event === 'object' &&
+      typeof event.lon === 'number' && Number.isFinite(event.lon) &&
+      typeof event.lat === 'number' && Number.isFinite(event.lat) &&
+      typeof event.label === 'string' && typeof event.city === 'string' &&
+      event.lon >= -180 && event.lon <= 180 && event.lat >= -90 && event.lat <= 90,
+    ).slice(0, 40)
+    : [];
   safeEvents.forEach((event, index) => {
-    if (!Number.isFinite(event.lon) || !Number.isFinite(event.lat)) return;
     const point = projectMap(event.lon, event.lat);
     const marker = document.createElement('button');
     marker.type = 'button';
-    marker.className = `nx-threat-event nx-event-${event.type} nx-severity-${event.severity}`;
+    const type = ['attack', 'scan', 'infrastructure'].includes(event.type) ? event.type : 'scan';
+    const severity = ['high', 'medium', 'low'].includes(event.severity) ? event.severity : 'low';
+    marker.className = `nx-threat-event nx-event-${type} nx-severity-${severity}`;
     marker.style.left = `${point.x}%`;
     marker.style.top = `${point.y}%`;
     marker.setAttribute('aria-label', `${event.label}, ${event.city}`);
-    marker.innerHTML = `<span class="nx-threat-pulse"></span><span class="nx-threat-dot"></span><span class="nx-threat-tooltip"><b>${event.label}</b><small>${event.city}</small></span>`;
+    const pulse = document.createElement('span');
+    pulse.className = 'nx-threat-pulse';
+    const dot = document.createElement('span');
+    dot.className = 'nx-threat-dot';
+    const tooltip = document.createElement('span');
+    tooltip.className = 'nx-threat-tooltip';
+    const label = document.createElement('b');
+    label.textContent = event.label;
+    const city = document.createElement('small');
+    city.textContent = event.city;
+    tooltip.append(label, city);
+    marker.append(pulse, dot, tooltip);
     eventsLayer.appendChild(marker);
 
     if (index > 0 && index % 2 === 1) {
@@ -87,7 +107,7 @@ function renderThreatFeed(feed: ThreatFeed): void {
         const x1 = a.x * 12, y1 = a.y * 6, x2 = b.x * 12, y2 = b.y * 6;
         const cx = (x1 + x2) / 2, cy = Math.min(y1, y2) - 55;
         path.setAttribute('d', `M${x1.toFixed(1)} ${y1.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`);
-        path.setAttribute('class', `nx-threat-route nx-route-${event.type}`);
+        path.setAttribute('class', `nx-threat-route nx-route-${type}`);
         routeLayer.appendChild(path);
       }
     }
@@ -102,7 +122,9 @@ function renderThreatFeed(feed: ThreatFeed): void {
   if (activeNode) activeNode.textContent = String(safeEvents.length);
   if (highNode) highNode.textContent = String(high);
   if (infraNode) infraNode.textContent = String(infra);
-  if (refreshNode) refreshNode.textContent = new Date(feed.updated_at).toLocaleTimeString([], { hour12: false });
+  const refreshedAt = new Date(feed.updated_at);
+  if (refreshNode) refreshNode.textContent = Number.isNaN(refreshedAt.getTime())
+    ? '--:--:--' : refreshedAt.toLocaleTimeString([], { hour12: false });
   state.innerHTML = feed.mode === 'live' ? '<i></i> LIVE API' : '<i></i> SIMULATED FEED';
   state.dataset.mode = feed.mode;
 }
