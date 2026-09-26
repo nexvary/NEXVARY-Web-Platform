@@ -105,6 +105,25 @@ jobs:
             test "$code" = "200" || { echo "Route ${route} returned HTTP ${code}"; exit 1; }
           done
 
+          # Exercise the actual browser session after setup, including CSRF and
+          # the first Owner's access to the protected dashboard.
+          COOKIE_JAR="$RUNNER_TEMP/owner-session.cookies"
+          curl -fsS -c "$COOKIE_JAR" -b "$COOKIE_JAR" \
+            http://127.0.0.1:8787/secure-access/login -o "$RUNNER_TEMP/login-form.html"
+          TOKEN="$(awk '$6 == "XSRF-TOKEN" { print $7 }' "$COOKIE_JAR" | tail -1)"
+          test -n "$TOKEN"
+          TOKEN="$(php -r 'echo urldecode($argv[1]);' "$TOKEN")"
+          login_code="$(curl -sS -c "$COOKIE_JAR" -b "$COOKIE_JAR" -o "$RUNNER_TEMP/login-result.html" -w '%{http_code}' \
+            -H 'Accept: text/html' \
+            --data-urlencode "_token=$TOKEN" \
+            --data-urlencode 'email=owner-ci@nexvary.invalid' \
+            --data-urlencode 'password=NEXVARY-CI-Owner-2026!' \
+            http://127.0.0.1:8787/secure-access/login)"
+          test "$login_code" = "302" || { echo "Owner sign-in returned HTTP ${login_code}"; exit 1; }
+          dashboard_code="$(curl -sS -b "$COOKIE_JAR" -o "$RUNNER_TEMP/owner-dashboard.html" -w '%{http_code}' \
+            http://127.0.0.1:8787/secure-control/)"
+          test "$dashboard_code" = "200" || { echo "Owner dashboard returned HTTP ${dashboard_code}"; exit 1; }
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
