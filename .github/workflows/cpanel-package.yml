@@ -100,6 +100,11 @@ jobs:
           test -e "$RUNTIME/nexvary_app/.installed"
           php -r '$db=new PDO("sqlite:'"$RUNTIME"'/nexvary_app/database/database.sqlite"); $q=$db->query("select count(*) from users where email=\"owner-ci@nexvary.invalid\" and is_admin=1 and role=\"owner\""); exit(((int)$q->fetchColumn())===1?0:1);'
 
+          # PHP's built-in smoke server uses HTTP; production keeps secure cookies
+          # enabled for HTTPS. Relax this setting only in the disposable test copy.
+          sed -i 's/^SESSION_SECURE_COOKIE=true$/SESSION_SECURE_COOKIE=false/' "$RUNTIME/nexvary_app/.env"
+          php "$RUNTIME/nexvary_app/artisan" config:clear
+
           for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml /secure-control; do
             code="$(curl -sS -L -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
             test "$code" = "200" || { echo "Route ${route} returned HTTP ${code}"; exit 1; }
