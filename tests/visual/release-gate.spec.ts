@@ -75,6 +75,17 @@ test('Arabic RTL alignment gate', async ({ page }, testInfo) => {
   await page.screenshot({ path: `artifacts/screenshots/home-ar-${testInfo.project.name}.png`, fullPage: true });
 });
 
+test('Arabic service and contact content is translated', async ({ page }) => {
+  await page.goto('/services?lang=ar', { waitUntil: 'networkidle' });
+  await expect(page.getByRole('heading', { name: 'مكافحة التجسس الفني' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'الأدلة الرقمية' })).toBeVisible();
+  await page.goto('/contact?lang=ar', { waitUntil: 'networkidle' });
+  await expect(page.locator('select[name="reason"] option')).toContainText([
+    'استفسار عام', 'الأمن السيبراني', 'مكافحة التجسس الفني', 'الأدلة الرقمية',
+    'تقنيات الخصوصية', 'شراكة', 'الدعم', 'أخرى',
+  ]);
+});
+
 test('Android 15 viewport-safe tap target gate', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
 
