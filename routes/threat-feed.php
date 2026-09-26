@@ -2,52 +2,46 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
+// Optional geolocated observation provider. Never synthesize incidents or paths.
 Route::get('/api/threat-feed', function () {
     $provider = trim((string) env('NEXVARY_THREAT_FEED_URL', ''));
-
-    if ($provider !== '') {
-        try {
-            $payload = Cache::remember('nexvary.threat-feed', 15, function () use ($provider): array {
-                $response = Http::acceptJson()->timeout(5)->retry(1, 150)->get($provider);
-                $response->throw();
-                $json = $response->json();
-
-                if (! is_array($json) || ! isset($json['events']) || ! is_array($json['events'])) {
-                    throw new RuntimeException('Threat feed provider must return an events array.');
-                }
-
-                return $json;
-            });
-
-            return response()->json([
-                'mode' => 'live',
-                'updated_at' => now()->toIso8601String(),
-                'events' => array_slice($payload['events'], 0, 80),
-            ])->header('Cache-Control', 'public, max-age=10, stale-while-revalidate=20');
-        } catch (ConnectionException|Throwable $exception) {
-            report($exception);
-        }
+    if ($provider === '' || ! str_starts_with($provider, 'https://')) {
+        return response()->json(['mode' => 'unavailable', 'events' => [], 'source' => null])
+            ->header('Cache-Control', 'no-store');
     }
 
-    $seed = (int) floor(now()->timestamp / 30);
-    $events = [
-        ['id' => "{$seed}-1", 'type' => 'attack', 'label' => 'Suspicious traffic', 'city' => 'Frankfurt, DE', 'lat' => 50.11, 'lon' => 8.68, 'severity' => 'high'],
-        ['id' => "{$seed}-2", 'type' => 'scan', 'label' => 'Reconnaissance', 'city' => 'Singapore, SG', 'lat' => 1.35, 'lon' => 103.82, 'severity' => 'medium'],
-        ['id' => "{$seed}-3", 'type' => 'infrastructure', 'label' => 'New infrastructure', 'city' => 'Virginia, US', 'lat' => 37.43, 'lon' => -78.65, 'severity' => 'low'],
-        ['id' => "{$seed}-4", 'type' => 'attack', 'label' => 'Malware telemetry', 'city' => 'Tokyo, JP', 'lat' => 35.68, 'lon' => 139.69, 'severity' => 'high'],
-        ['id' => "{$seed}-5", 'type' => 'infrastructure', 'label' => 'Certificate activity', 'city' => 'Amsterdam, NL', 'lat' => 52.37, 'lon' => 4.90, 'severity' => 'low'],
-        ['id' => "{$seed}-6", 'type' => 'scan', 'label' => 'Internet scan', 'city' => 'Dubai, AE', 'lat' => 25.20, 'lon' => 55.27, 'severity' => 'medium'],
-        ['id' => "{$seed}-7", 'type' => 'attack', 'label' => 'Brute-force telemetry', 'city' => 'São Paulo, BR', 'lat' => -23.55, 'lon' => -46.63, 'severity' => 'high'],
-    ];
-
-    return response()->json([
-        'mode' => 'simulated',
-        'updated_at' => now()->toIso8601String(),
-        'events' => $events,
-    ])->header('Cache-Control', 'no-store');
+    try {
+        $payload = Cache::remember('nexvary.geo-observations.v2', now()->addMinutes(5), function () use ($provider) {
+            $request = Http::acceptJson()->timeout(7);
+            if ($token = env('NEXVARY_THREAT_FEED_TOKEN')) $request = $request->withToken((string) $token);
+            $response = $request->get($provider);
+            $response->throw();
+            $json = $response->json();
+            if (! is_array($json) || ! is_array($json['events'] ?? null) || ! is_string($json['source'] ?? null)) {
+                throw new RuntimeException('Geolocated feed needs events and source fields');
+            }
+            $events = collect($json['events'])->filter(fn ($event) => is_array($event) &&
+                is_numeric($event['lat'] ?? null) && is_numeric($event['lon'] ?? null) &&
+                abs((float) $event['lat']) <= 90 && abs((float) $event['lon']) <= 180 &&
+                is_string($event['label'] ?? null))->take(40)->map(fn ($event) => [
+                    'id' => mb_substr((string) ($event['id'] ?? ''), 0, 80),
+                    'type' => in_array($event['type'] ?? '', ['attack', 'scan', 'infrastructure'], true) ? $event['type'] : 'scan',
+                    'label' => mb_substr($event['label'], 0, 140),
+                    'city' => mb_substr((string) ($event['city'] ?? ''), 0, 90),
+                    'lat' => (float) $event['lat'], 'lon' => (float) $event['lon'],
+                    'severity' => in_array($event['severity'] ?? '', ['high', 'medium', 'low'], true) ? $event['severity'] : 'low',
+                ])->values()->all();
+            return ['source' => mb_substr($json['source'], 0, 100), 'observed_at' => (string) ($json['observed_at'] ?? ''), 'events' => $events];
+        });
+        return response()->json(['mode' => 'live', 'source' => $payload['source'], 'observed_at' => $payload['observed_at'], 'events' => $payload['events']])
+            ->header('Cache-Control', 'public, max-age=60');
+    } catch (Throwable $exception) {
+        report($exception);
+        return response()->json(['mode' => 'unavailable', 'events' => [], 'source' => null])
+            ->header('Cache-Control', 'no-store');
+    }
 })->middleware('throttle:public-health')->name('threat-feed.public');
