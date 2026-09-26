@@ -162,6 +162,10 @@ jobs:
           ]) {
             const context = await browser.newContext({ viewport, baseURL: 'http://127.0.0.1:8787' });
             const page = await context.newPage();
+            page.on('pageerror', error => console.error('Owner page error:', error.message));
+            page.on('console', message => { if (message.type() === 'error') console.error('Owner console:', message.text()); });
+            page.on('response', response => { if (response.request().method() === 'POST') console.log('Owner POST:', response.status(), response.url()); });
+            page.on('requestfailed', request => console.error('Owner request failed:', request.url(), request.failure()?.errorText));
             await page.goto('/secure-access/login');
             await page.getByLabel('Email').fill('owner-ci@nexvary.invalid');
             await page.getByLabel('Password').fill('NEXVARY-CI-Owner-2026!');
