@@ -10,6 +10,7 @@ export default defineConfig({
         'resources/css/app.css',
         'resources/js/app.tsx',
         'resources/css/public.css',
+        'resources/css/site-inner-v12.css',
         'resources/css/command-center-v4.css',
         'resources/css/site-command-v9.css',
         'resources/css/site-density-v10.css',
