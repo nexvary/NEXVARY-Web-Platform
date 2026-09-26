@@ -21,9 +21,7 @@ Route::get('/api/security-intelligence', function () {
             if (! is_array($catalog) || ! is_array($catalog['vulnerabilities'] ?? null) || ! is_string($catalog['dateReleased'] ?? null)) {
                 throw new RuntimeException('Invalid CISA KEV catalog response');
             }
-            $entries = collect($catalog['vulnerabilities'])->filter(fn ($entry) => is_array($entry) &&
-                preg_match('/^CVE-\d{4}-\d{4,19}$/', (string) ($entry['cveID'] ?? '')) &&
-                preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($entry['dateAdded'] ?? '')))
+            $entries = collect($catalog['vulnerabilities'])->filter(fn ($entry) => is_array($entry) && preg_match('/^CVE-\d{4}-\d{4,19}$/', (string) ($entry['cveID'] ?? '')) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($entry['dateAdded'] ?? '')))
                 ->sortByDesc('dateAdded')->take(8)->map(fn ($entry) => [
                     'cve' => $entry['cveID'],
                     'date_added' => $entry['dateAdded'],
@@ -32,7 +30,10 @@ Route::get('/api/security-intelligence', function () {
                     'name' => mb_substr((string) ($entry['vulnerabilityName'] ?? ''), 0, 180),
                     'ransomware' => ($entry['knownRansomwareCampaignUse'] ?? '') === 'Known',
                 ])->values()->all();
-            if (count($entries) < 1) throw new RuntimeException('Empty CISA KEV catalog');
+            if (count($entries) < 1) {
+                throw new RuntimeException('Empty CISA KEV catalog');
+            }
+
             $snapshot = [
                 'fetched_at' => now()->timestamp,
                 'catalog_released_at' => $catalog['dateReleased'],
