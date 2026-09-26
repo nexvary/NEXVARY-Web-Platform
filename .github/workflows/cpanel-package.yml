@@ -124,10 +124,15 @@ jobs:
           npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=1600 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
           npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1600 'http://127.0.0.1:8787/?lang=ar' release-screenshots/home-ar-desktop.png
           npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=1600 'http://127.0.0.1:8787/?lang=ar' release-screenshots/home-ar-mobile.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/services release-screenshots/services-desktop.png
+          npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=800 'http://127.0.0.1:8787/services?lang=ar' release-screenshots/services-ar-mobile.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/about release-screenshots/about-desktop.png
+          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/contact release-screenshots/contact-desktop.png
           test -s release-screenshots/home-desktop.png
           test -s release-screenshots/home-mobile.png
           test -s release-screenshots/home-ar-desktop.png
           test -s release-screenshots/home-ar-mobile.png
+          test -s release-screenshots/services-ar-mobile.png
 
       - name: Upload verified screenshots
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
