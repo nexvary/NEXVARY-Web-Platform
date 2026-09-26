@@ -2,6 +2,22 @@ import { expect, test } from '@playwright/test';
 
 const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan'];
 
+test('command map loads country boundaries and filters simulated signals', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await expect(page.locator('[data-threat-feed-state]')).toContainText('SIMULATED FEED');
+  await expect.poll(() => page.locator('[data-country-layer] path').count()).toBeGreaterThan(100);
+  await expect(page.locator('[data-threat-events] [data-event-type]')).toHaveCount(7);
+
+  const attacks = page.locator('[data-map-filter="attack"]');
+  await attacks.click();
+  await expect(attacks).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-event-type="scan"][hidden]')).toHaveCount(2);
+  await expect(page.locator('[data-event-type="attack"]:not([hidden])')).toHaveCount(3);
+
+  await page.locator('[data-map-filter="all"]').click();
+  await expect(page.locator('[data-threat-events] [data-event-type]:not([hidden])')).toHaveCount(7);
+});
+
 for (const path of pages) {
   test(`${path} has no horizontal overflow or clipped controls`, async ({ page }, testInfo) => {
     await page.goto(path, { waitUntil: 'networkidle' });
@@ -33,7 +49,7 @@ for (const path of pages) {
 
 test('back button returns to the previous same-origin page', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  await page.getByRole('link', { name: /about|عنّا/i }).click();
+  await page.getByTestId('site-header').getByRole('link', { name: /about|عنّا/i }).click();
   await expect(page).toHaveURL(/\/about$/);
   const back = page.getByTestId('back-button');
   await expect(back).toBeVisible();
