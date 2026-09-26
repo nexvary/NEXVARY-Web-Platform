@@ -152,11 +152,32 @@ jobs:
           npx playwright screenshot --browser=chromium --device='Pixel 9' --full-page --wait-for-timeout=800 'http://127.0.0.1:8787/services?lang=ar' release-screenshots/services-ar-mobile.png
           npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/about release-screenshots/about-desktop.png
           npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/contact release-screenshots/contact-desktop.png
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          const browser = await chromium.launch({ headless: true });
+          for (const [name, viewport] of [
+            ['admin-desktop', { width: 1440, height: 1100 }],
+            ['admin-mobile', { width: 393, height: 852 }],
+          ]) {
+            const context = await browser.newContext({ viewport, baseURL: 'http://127.0.0.1:8787' });
+            const page = await context.newPage();
+            await page.goto('/secure-access/login');
+            await page.getByLabel('Email').fill('owner-ci@nexvary.invalid');
+            await page.getByLabel('Password').fill('NEXVARY-CI-Owner-2026!');
+            await page.getByRole('button', { name: 'Secure Sign In' }).click();
+            await page.waitForURL(/\/secure-control\/?/, { timeout: 15000 });
+            await page.screenshot({ path: `release-screenshots/${name}.png`, fullPage: true });
+            await context.close();
+          }
+          await browser.close();
+          NODE
           test -s release-screenshots/home-desktop.png
           test -s release-screenshots/home-mobile.png
           test -s release-screenshots/home-ar-desktop.png
           test -s release-screenshots/home-ar-mobile.png
           test -s release-screenshots/services-ar-mobile.png
+          test -s release-screenshots/admin-desktop.png
+          test -s release-screenshots/admin-mobile.png
 
       - name: Upload verified screenshots
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
