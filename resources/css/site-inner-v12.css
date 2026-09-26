@@ -55,6 +55,7 @@ body:not(:has(.nx-exec)) .nx-about-hero {
   align-items: center; min-height: 270px; margin: 15px 0 28px;
 }
 body:not(:has(.nx-exec)) .nx-about-emblem {
+  display: flex; align-items: center; justify-content: center;
   width: 210px; height: 210px; aspect-ratio: 1; border: 1px solid rgba(158,155,152,.28);
   border-radius: 3px; background: #142029; box-shadow: none; overflow: hidden;
 }
