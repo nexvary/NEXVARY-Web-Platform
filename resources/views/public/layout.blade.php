@@ -75,6 +75,7 @@
             <a href="/about">{{ $isRtl ? 'عنّا' : 'About' }}</a>
             <a href="/contact">{{ $isRtl ? 'تواصل معنا' : 'Contact' }}</a>
         </nav>
+        <button type="button" class="nx-accent-cycle" data-accent-cycle aria-label="{{ $isRtl ? 'تغيير لون التفاعل' : 'Change accent color' }}" title="{{ $isRtl ? 'تغيير لون التفاعل' : 'Change accent color' }}"><span aria-hidden="true">✦</span><span>{{ $isRtl ? 'اللون' : 'COLOR' }}</span></button>
         <label class="nx-language"><span class="sr-only">Language</span><select class="nx-locale-select" data-language-switch aria-label="Language">
             <option value="en" @selected($publicLocale === 'en')>EN</option>
             <option value="ar" @selected($publicLocale === 'ar')>AR</option>
