@@ -15,6 +15,7 @@ export default defineConfig({
         'resources/css/site-command-v9.css',
         'resources/css/site-density-v10.css',
         'resources/css/site-command-v11.css',
+        'resources/css/site-command-v14.css',
         'resources/js/public.ts',
         'resources/js/home-command-v4.ts',
       ],
