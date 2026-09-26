@@ -104,6 +104,7 @@ jobs:
           # enabled for HTTPS. Relax this setting only in the disposable test copy.
           sed -i 's/^SESSION_SECURE_COOKIE=true$/SESSION_SECURE_COOKIE=false/' "$RUNTIME/nexvary_app/.env"
           sed -i 's#^APP_URL=https://#APP_URL=http://#' "$RUNTIME/nexvary_app/.env"
+          sed -i "/'upgrade-insecure-requests',/d" "$RUNTIME/nexvary_app/app/Http/Middleware/SecurityHeaders.php"
           php "$RUNTIME/nexvary_app/artisan" config:clear
 
           for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml /secure-control; do
