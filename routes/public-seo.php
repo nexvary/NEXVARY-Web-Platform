@@ -16,6 +16,8 @@ Route::get('/apps', fn () => view('public.apps'))->name('apps');
 Route::get('/safescan', fn () => view('public.safescan'))->name('safescan');
 Route::get('/about', fn () => view('public.about'))->name('about');
 Route::get('/contact', fn () => view('public.contact'))->name('contact');
+Route::get('/privacy', fn () => view('public.privacy'))->name('privacy');
+Route::get('/terms', fn () => view('public.terms'))->name('terms');
 
 Route::post('/contact', function (Request $request): RedirectResponse {
     if (filled($request->input('website'))) {
@@ -71,7 +73,7 @@ Route::get('/our-work/{slug}', function (string $slug) {
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact'];
+    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms'];
 
     if (Schema::hasTable('portfolio_apps')) {
         foreach (DB::table('portfolio_apps')->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
