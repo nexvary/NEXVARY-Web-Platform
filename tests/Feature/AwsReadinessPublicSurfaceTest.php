@@ -11,6 +11,12 @@ final class AwsReadinessPublicSurfaceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     public function test_verified_products_are_visible_without_empty_portfolio_claim(): void
     {
         $response = $this->get('/our-work')->assertOk();
