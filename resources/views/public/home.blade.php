@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', app()->getLocale() === 'ar' ? 'NEXVARY — برمجيات الأمن والخصوصية والتحليل الجنائي والذكاء الاصطناعي' : 'NEXVARY — Cybersecurity, Privacy, Forensics & AI Security Software')
+@section('title', app()->getLocale() === 'ar' ? 'NEXVARY — برمجيات الأمن والخصوصية والتحليل الجنائي والذكاء الاصطناعي' : 'NEXVARY — Cybersecurity, Privacy, Forensics and AI Software')
 @section('description', app()->getLocale() === 'ar' ? 'تطوّر NEXVARY منتجات برمجية للأمن السيبراني والخصوصية والتحليل الجنائي الرقمي وتطبيقات أمنية متصلة بالسحابة ومدعومة بالذكاء الاصطناعي.' : 'NEXVARY develops cybersecurity, privacy, digital forensics, cloud-connected, and AI-assisted security software.')
 @section('canonical', 'https://nexvary.com/')
 
@@ -186,7 +186,7 @@
         <div class="nx-grid">
             <article class="nx-card"><div class="nx-card-tag">PRIVATE PREVIEW</div><h3>Audio Shield</h3><p>{{ $ar ? 'أدوات لحماية الخصوصية وتحليل الصوت ضمن مسارات أمنية مضبوطة.' : 'Privacy-aware audio protection and analysis tooling for controlled security workflows.' }}</p><a class="nx-card-link" href="/our-work/audio-shield">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
             <article class="nx-card"><div class="nx-card-tag">PRIVATE PREVIEW</div><h3>Tower Guard</h3><p>{{ $ar ? 'وعي بالشذوذ الخلوي ومسارات تحقق منظمة دون تقديم الإشارة البرمجية كحكم نهائي.' : 'Cellular anomaly awareness and structured validation workflows without treating software signals as final conclusions.' }}</p><a class="nx-card-link" href="/our-work/tower-guard">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
-            <article class="nx-card"><div class="nx-card-tag">AVAILABLE</div><h3>SafeScan</h3><p>{{ $ar ? 'فحص ثابت للملفات داخل المتصفح بمنهج تقليل نقل البيانات والتخزين الصفري.' : 'Browser-side static file inspection built around data minimization and a zero-storage approach.' }}</p><a class="nx-card-link" href="/safescan">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} →</a></article>
+            <article class="nx-card"><div class="nx-card-tag">AVAILABLE</div><h3>SafeScan</h3><p>{{ $ar ? 'فحص ثابت للملفات داخل المتصفح بمنهج تقليل نقل البيانات والتخزين الصفري.' : 'Browser-side static file inspection built around data minimization and a zero-storage approach.' }}</p><a class="nx-card-link" href="/our-work/safescan">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
         </div>
     </section>
 
