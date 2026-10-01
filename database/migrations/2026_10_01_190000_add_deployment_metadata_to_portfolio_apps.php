@@ -98,7 +98,7 @@ return new class extends Migration
             unset($project['slug']);
             DB::table('portfolio_apps')->updateOrInsert(
                 ['slug' => $slug],
-                [...$project, 'created_at' => DB::raw('COALESCE(created_at, CURRENT_TIMESTAMP)')],
+                [...$project, 'created_at' => $now],
             );
         }
     }
