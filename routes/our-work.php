@@ -14,10 +14,7 @@ $distributionModes = ['download', 'showcase', 'request', 'internal', 'coming_soo
 
 Route::get('/our-work', function () {
     $apps = Schema::hasTable('portfolio_apps')
-        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get([
-            'slug', 'name', 'tagline', 'summary', 'platform', 'category', 'version', 'icon_url', 'downloads', 'published_at',
-            'distribution_mode', 'download_enabled', 'availability_note',
-        ])
+        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get()
         : collect();
 
     return Inertia::render('our-work/index', ['apps' => $apps]);
