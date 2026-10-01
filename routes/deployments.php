@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
-use RuntimeException;
 
 Route::prefix(config('nexvary.admin_prefix'))
     ->middleware(['auth', 'verified', 'admin', 'throttle:admin', 'audit.admin'])
@@ -122,7 +121,7 @@ Route::prefix(config('nexvary.admin_prefix'))
                 if ($finished && ! $failed) {
                     $healthUrl = (string) ($row->health_url ?: $row->website_url ?: '');
                     if ($healthUrl === '') {
-                        throw new RuntimeException('No health URL is configured for this project.');
+                        throw new \RuntimeException('No health URL is configured for this project.');
                     }
 
                     $parts = parse_url($healthUrl);
@@ -130,7 +129,7 @@ Route::prefix(config('nexvary.admin_prefix'))
                     $suffix = strtolower((string) config('deployments.allowed_host_suffix', 'nexvary.com'));
                     $allowed = $host === $suffix || str_ends_with($host, '.'.$suffix);
                     if (($parts['scheme'] ?? null) !== 'https' || ! $allowed) {
-                        throw new RuntimeException('Health URL must be HTTPS on the configured NEXVARY domain suffix.');
+                        throw new \RuntimeException('Health URL must be HTTPS on the configured NEXVARY domain suffix.');
                     }
 
                     $health = Http::timeout(10)->get($healthUrl);
