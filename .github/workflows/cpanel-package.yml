@@ -94,7 +94,9 @@ jobs:
             apps.blade.php \
             safescan.blade.php \
             about.blade.php \
-            contact.blade.php; do
+            contact.blade.php \
+            privacy.blade.php \
+            terms.blade.php; do
             unzip -l NEXVARY-cPanel-Ready.zip | grep -q "nexvary_app/resources/views/public/$view"
           done
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
