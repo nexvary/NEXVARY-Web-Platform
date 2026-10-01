@@ -59,7 +59,7 @@
                     @endif
 
                     <p class="nx-rich-text" style="font-size:.82rem">
-                        {{ $ar ? 'آخر تحديث:' : 'Last updated:' }} {{ optional($app->updated_at)->format ? $app->updated_at->format('Y-m-d') : substr((string) $app->updated_at, 0, 10) }}
+                        {{ $ar ? 'آخر تحديث:' : 'Last updated:' }} {{ substr((string) $app->updated_at, 0, 10) }}
                     </p>
 
                     <div class="nx-actions">
