@@ -132,7 +132,7 @@ jobs:
           test ! -e "$RUNTIME/public_html/setup-nexvary.php"
           test -e "$RUNTIME/nexvary_app/.installed"
 
-          for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml; do
+          for route in / /services /apps /safescan /about /contact /our-work /privacy /terms /sitemap.xml; do
             code="$(curl -sS -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
             if [ "$code" != "200" ]; then
               echo "Route ${route} returned HTTP ${code}"
