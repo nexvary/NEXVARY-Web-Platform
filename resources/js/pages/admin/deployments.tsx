@@ -75,6 +75,7 @@ export default function Deployments({ projects, runs }: { projects: Project[]; r
               <span>Resource: {project.coolify_resource_uuid ? 'Configured' : 'Not configured'}</span>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
+              {project.repository_url && <button onClick={() => router.post(`/secure-control/deployments/projects/${project.id}/sync-github`, {}, { preserveScroll: true })} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 px-4 text-slate-200"><RefreshCw size={16}/>Sync GitHub</button>}
               <button disabled={!project.coolify_resource_uuid} onClick={() => deploy(project, 'deploy_publish')} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-300 px-4 font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-40"><Rocket size={16}/>Deploy & Publish</button>
               <button disabled={!project.coolify_resource_uuid} onClick={() => deploy(project, 'deploy_only')} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-cyan-300/20 px-4 text-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"><Rocket size={16}/>Deploy Only</button>
               {project.website_url && <a className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 px-4 text-slate-200" href={project.website_url} target="_blank" rel="noreferrer"><ExternalLink size={16}/>Open Project</a>}
