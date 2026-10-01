@@ -176,6 +176,7 @@ jobs:
           test -s release-screenshots/home-mobile.png
 
       - name: Upload verified screenshots
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: NEXVARY-Verified-Screenshots
@@ -184,6 +185,7 @@ jobs:
           retention-days: 14
 
       - name: Upload cPanel ready package
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: NEXVARY-cPanel-Ready
