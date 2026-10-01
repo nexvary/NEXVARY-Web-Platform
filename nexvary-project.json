@@ -1,0 +1,14 @@
+{
+  "name": "NEXVARY Web Platform",
+  "slug": "nexvary-web-platform",
+  "description": "Company platform for NEXVARY products, security applications, project publishing, administration and deployment operations.",
+  "category": "Technology Platform",
+  "status": "Available",
+  "visibility": "internal",
+  "website": "https://nexvary.com",
+  "branch": "main",
+  "technologies": ["Laravel", "PHP", "React", "TypeScript", "Inertia", "Vite"],
+  "healthCheck": "https://nexvary.com/health",
+  "deploymentMode": "deploy_only",
+  "publishToWebsite": false
+}
