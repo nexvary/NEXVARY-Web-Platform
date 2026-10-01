@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Services\Deployment\CoolifyClient;
+use App\Services\Deployment\GitHubRepositoryClient;
+use App\Services\Deployment\ProjectManifest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +43,51 @@ Route::prefix(config('nexvary.admin_prefix'))
 
             return Inertia::render('admin/deployments', ['projects' => $projects, 'runs' => $runs]);
         })->name('admin.deployments');
+
+        Route::post('/deployments/projects/{project}/sync-github', function (Request $request, int $project, GitHubRepositoryClient $github, ProjectManifest $manifestValidator): RedirectResponse {
+            abort_unless(in_array($request->user()?->role, ['admin', 'owner'], true), 403);
+
+            $app = DB::table('portfolio_apps')->where('id', $project)->first();
+            abort_if($app === null, 404);
+            abort_if(blank($app->repository_url), 422, 'Set the GitHub repository URL first.');
+
+            try {
+                $inspection = $github->inspect((string) $app->repository_url, (string) ($app->repository_branch ?: 'main'));
+                $updates = [
+                    'last_commit_sha' => $inspection['commit_sha'],
+                    'updated_at' => now(),
+                ];
+
+                if (is_array($inspection['manifest'])) {
+                    $manifest = $manifestValidator->validate($inspection['manifest']);
+                    abort_if($manifest['slug'] !== $app->slug, 422, 'Manifest slug does not match the registered project slug.');
+
+                    $updates = [
+                        ...$updates,
+                        'name' => $manifest['name'],
+                        'summary' => $manifest['description'],
+                        'description' => $manifest['description'],
+                        'category' => $manifest['category'],
+                        'lifecycle_status' => $manifest['status'],
+                        'visibility' => $manifest['visibility'],
+                        'website_url' => $manifest['website'] ?? null,
+                        'repository_url' => $manifest['repository'] ?? $app->repository_url,
+                        'repository_branch' => $manifest['branch'] ?? $app->repository_branch ?: 'main',
+                        'technologies' => json_encode($manifest['technologies'], JSON_THROW_ON_ERROR),
+                        'health_url' => $manifest['healthCheck'] ?? null,
+                        'publish_to_website' => (bool) $manifest['publishToWebsite'],
+                    ];
+                }
+
+                DB::table('portfolio_apps')->where('id', $project)->update($updates);
+            } catch (Throwable $exception) {
+                report($exception);
+
+                return back()->withErrors(['github' => 'GitHub sync failed safely: '.$exception->getMessage()]);
+            }
+
+            return back()->with('success', is_array($inspection['manifest']) ? 'GitHub commit and project manifest synchronized.' : 'GitHub commit synchronized. No nexvary-project.json was found.');
+        })->name('admin.deployments.sync-github');
 
         Route::post('/deployments/projects/{project}/deploy', function (Request $request, int $project, CoolifyClient $coolify): RedirectResponse {
             abort_unless(in_array($request->user()?->role, ['admin', 'owner'], true), 403);
