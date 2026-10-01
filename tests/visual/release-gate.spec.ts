@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan'];
+const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan', '/privacy', '/terms'];
 
 for (const path of pages) {
   test(`${path} has no horizontal overflow or clipped controls`, async ({ page }, testInfo) => {
@@ -90,7 +90,7 @@ test('Android 15 viewport-safe tap target gate', async ({ page }) => {
 
 test('About exposes all official NEXVARY channels', async ({ page }) => {
   await page.goto('/about', { waitUntil: 'networkidle' });
-  for (const label of ['Website', 'Facebook', 'Email', 'YouTube', 'X']) {
+  for (const label of ['Website', 'GitHub', 'Facebook', 'Email', 'YouTube', 'X']) {
     await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 });
