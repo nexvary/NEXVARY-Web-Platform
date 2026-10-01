@@ -21,6 +21,7 @@
                     'https://www.facebook.com/share/14p9krEn5ij/',
                     'https://www.youtube.com/@NexvaryInc',
                     'https://x.com/Nexvary',
+                    'https://github.com/nexvary',
                 ],
             ],
             [
@@ -91,10 +92,13 @@
         <div><strong>NEXVARY</strong><span>{{ $isRtl ? 'الأمن أبعد مما تراه.' : 'Security beyond the visible.' }}</span></div>
         <div class="nx-footer-links" aria-label="Official NEXVARY links">
             <a href="https://nexvary.com/" aria-label="Website"><span>Website</span></a>
+            <a href="https://github.com/nexvary" rel="noreferrer" target="_blank" aria-label="GitHub"><span>GitHub</span></a>
             <a href="https://www.facebook.com/share/14p9krEn5ij/" rel="noreferrer" target="_blank" aria-label="Facebook"><span>Facebook</span></a>
             <a href="mailto:info@nexvary.com" aria-label="Email"><span>Email</span></a>
             <a href="https://www.youtube.com/@NexvaryInc" rel="noreferrer" target="_blank" aria-label="YouTube"><span>YouTube</span></a>
             <a href="https://x.com/Nexvary" rel="noreferrer" target="_blank" aria-label="X"><span>X</span></a>
+            <a href="/privacy"><span>{{ $isRtl ? 'الخصوصية' : 'Privacy' }}</span></a>
+            <a href="/terms"><span>{{ $isRtl ? 'الشروط' : 'Terms' }}</span></a>
         </div>
     </footer>
 </div>
