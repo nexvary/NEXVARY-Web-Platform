@@ -174,7 +174,9 @@ jobs:
           grep -qi '^X-Frame-Options: DENY' <<< "$headers"
           grep -qi '^Referrer-Policy: strict-origin-when-cross-origin' <<< "$headers"
       - run: npm run visual:test
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Upload visual release evidence
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: ui-release-gate-screenshots
