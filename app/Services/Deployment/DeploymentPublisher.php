@@ -10,13 +10,11 @@ use RuntimeException;
 
 final class DeploymentPublisher
 {
-    public function __construct(private readonly ProjectManifest $manifest)
-    {
-    }
+    public function __construct(private readonly ProjectManifest $manifest) {}
 
     /**
-     * @param array<string, mixed> $rawManifest
-     * @param array<string, mixed> $deployment
+     * @param  array<string, mixed>  $rawManifest
+     * @param  array<string, mixed>  $deployment
      * @return array<string, mixed>
      */
     public function publishAfterHealth(array $rawManifest, array $deployment): array
