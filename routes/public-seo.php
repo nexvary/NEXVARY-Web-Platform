@@ -51,10 +51,7 @@ Route::post('/contact', function (Request $request): RedirectResponse {
 
 Route::get('/our-work', function () {
     $apps = Schema::hasTable('portfolio_apps')
-        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get([
-            'slug', 'name', 'tagline', 'summary', 'platform', 'category', 'version', 'icon_url', 'downloads', 'published_at',
-            'distribution_mode', 'download_enabled', 'availability_note',
-        ])
+        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get()
         : collect();
 
     return view('public.our-work.index', ['apps' => $apps]);
