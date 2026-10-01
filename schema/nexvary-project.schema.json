@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexvary.com/schema/nexvary-project.schema.json",
+  "title": "NEXVARY Project Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "slug",
+    "description",
+    "category",
+    "status",
+    "visibility",
+    "technologies",
+    "publishToWebsite"
+  ],
+  "properties": {
+    "name": { "type": "string", "minLength": 2, "maxLength": 180 },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 120 },
+    "description": { "type": "string", "minLength": 20, "maxLength": 2000 },
+    "category": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "status": {
+      "type": "string",
+      "enum": ["Available", "Beta", "In Development", "Private Preview", "Internal"]
+    },
+    "visibility": { "type": "string", "enum": ["public", "private", "internal"] },
+    "website": { "type": ["string", "null"], "format": "uri", "pattern": "^https://" },
+    "repository": { "type": ["string", "null"], "format": "uri", "pattern": "^https://github\\.com/" },
+    "branch": { "type": "string", "minLength": 1, "maxLength": 120, "default": "main" },
+    "technologies": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 80 }
+    },
+    "image": { "type": ["string", "null"], "maxLength": 500 },
+    "healthCheck": { "type": ["string", "null"], "format": "uri", "pattern": "^https://" },
+    "deploymentMode": {
+      "type": "string",
+      "enum": ["deploy_publish", "deploy_only"],
+      "default": "deploy_only"
+    },
+    "publishToWebsite": { "type": "boolean" }
+  }
+}
