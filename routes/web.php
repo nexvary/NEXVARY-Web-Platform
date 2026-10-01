@@ -52,7 +52,7 @@ Route::get('/.well-known/security.txt', function (): Response {
 })->name('security.txt');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = ['/', '/services', '/apps', '/safescan', '/about'];
+    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms'];
     $items = collect($urls)->map(fn (string $path): string => '<url><loc>'.e('https://nexvary.com'.$path).'</loc></url>')->implode('');
     $xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.$items.'</urlset>';
 
