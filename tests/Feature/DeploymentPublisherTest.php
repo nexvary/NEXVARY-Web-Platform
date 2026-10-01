@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Services\Deployment\DeploymentPublisher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 use Tests\TestCase;
@@ -49,7 +50,7 @@ final class DeploymentPublisherTest extends TestCase
             'is_published' => 1,
             'last_commit_sha' => '0123456789abcdef0123456789abcdef01234567',
         ]);
-        $projectId = (int) \Illuminate\Support\Facades\DB::table('portfolio_apps')->where('slug', 'deployment-demo')->value('id');
+        $projectId = (int) DB::table('portfolio_apps')->where('slug', 'deployment-demo')->value('id');
         $this->assertDatabaseHas('deployment_runs', [
             'portfolio_app_id' => $projectId,
             'status' => 'Healthy',
