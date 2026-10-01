@@ -29,6 +29,14 @@ Deployment modes:
 
 A successful build is not sufficient for publication. Publication requires an HTTPS health check returning HTTP 200.
 
+## GitHub integration
+
+Projects can be linked to a GitHub repository and branch. The admin **Sync GitHub** action reads the current branch commit and, when present, `nexvary-project.json`.
+
+Public repositories work without a token. Private repositories require a narrowly scoped credential in `GITHUB_TOKEN`. Prefer a GitHub App installation token because it is repository-scoped and short-lived; if a fine-grained personal access token is used instead, grant only the repository read permissions required for contents and metadata.
+
+Do not use a classic broad-scope PAT.
+
 ## Coolify
 
 Required secrets:
