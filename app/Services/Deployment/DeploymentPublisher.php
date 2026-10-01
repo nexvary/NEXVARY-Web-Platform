@@ -10,7 +10,9 @@ use RuntimeException;
 
 final class DeploymentPublisher
 {
-    public function __construct(private readonly ProjectManifest $manifest)\n    {\n    }
+    public function __construct(private readonly ProjectManifest $manifest)
+    {
+    }
 
     /**
      * @param array<string, mixed> $rawManifest
