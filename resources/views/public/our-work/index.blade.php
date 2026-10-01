@@ -5,7 +5,15 @@
 @section('canonical', 'https://nexvary.com/our-work')
 
 @section('content')
-@php($ar = app()->getLocale() === 'ar')
+@php
+    $ar = app()->getLocale() === 'ar';
+    $fallbackProjects = [
+        ['Audio Shield', 'Privacy Technology', 'Private Preview', 'Privacy-aware audio protection and analysis tooling.', '/apps'],
+        ['Tower Guard', 'Cybersecurity', 'Private Preview', 'Cellular anomaly awareness and structured validation workflows.', '/apps'],
+        ['SafeScan', 'Cybersecurity', 'Available', 'Zero-storage browser-side file inspection.', '/safescan'],
+    ];
+@endphp
+
 <main class="nx-section nx-page-body">
     <div class="nx-section-title">
         <p>PROJECTS / OUR WORK</p>
@@ -15,17 +23,18 @@
 
     @if($apps->isEmpty())
         <div class="nx-product-list">
-            @foreach([
-                ['Audio Shield','Privacy Technology','Private Preview','Privacy-aware audio protection and analysis tooling.','/apps'],
-                ['Tower Guard','Cybersecurity','Private Preview','Cellular anomaly awareness and structured validation workflows.','/apps'],
-                ['SafeScan','Cybersecurity','Available','Zero-storage browser-side file inspection.','/safescan']
-            ] as $fallback)
+            @foreach($fallbackProjects as $fallback)
                 <article class="nx-card">
-                    <div class="nx-project-meta"><span>{{ $fallback[1] }}</span><span>{{ strtoupper($fallback[2]) }}</span></div>
+                    <div class="nx-project-meta">
+                        <span>{{ $fallback[1] }}</span>
+                        <span>{{ strtoupper($fallback[2]) }}</span>
+                    </div>
                     <div class="nx-icon" aria-hidden="true">N</div>
                     <h2>{{ $fallback[0] }}</h2>
                     <p>{{ $fallback[3] }}</p>
-                    <div class="nx-actions"><a class="nx-btn" href="{{ $fallback[4] }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a></div>
+                    <div class="nx-actions">
+                        <a class="nx-btn" href="{{ $fallback[4] }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                    </div>
                 </article>
             @endforeach
         </div>
@@ -33,7 +42,10 @@
         <div class="nx-product-list">
             @foreach($apps as $app)
                 @php
-                    $technologies = is_string($app->technologies ?? null) ? (json_decode($app->technologies, true) ?: []) : ((array) ($app->technologies ?? []));
+                    $decodedTechnologies = is_string($app->technologies ?? null)
+                        ? json_decode($app->technologies, true)
+                        : (array) ($app->technologies ?? []);
+                    $technologies = array_slice(is_array($decodedTechnologies) ? $decodedTechnologies : [], 0, 6);
                     $status = $app->lifecycle_status ?? strtoupper(str_replace('_', ' ', (string) $app->distribution_mode));
                 @endphp
                 <article class="nx-card">
@@ -42,19 +54,29 @@
                     @else
                         <div class="nx-icon" aria-hidden="true">N</div>
                     @endif
+
                     <div class="nx-project-meta">
                         <span>{{ $status }}</span>
                         <span>{{ $app->platform }}</span>
-                        @if($app->category)<span>{{ $app->category }}</span>@endif
-                        @if($app->version)<span>v{{ $app->version }}</span>@endif
+                        @if($app->category)
+                            <span>{{ $app->category }}</span>
+                        @endif
+                        @if($app->version)
+                            <span>v{{ $app->version }}</span>
+                        @endif
                     </div>
-                    <h2><a href="{{ route('our-work.show', ['slug'=>$app->slug]) }}">{{ $app->name }}</a></h2>
-                    @if($app->tagline)<p><strong>{{ $app->tagline }}</strong></p>@endif
+
+                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $app->name }}</a></h2>
+                    @if($app->tagline)
+                        <p><strong>{{ $app->tagline }}</strong></p>
+                    @endif
                     <p>{{ $app->summary }}</p>
 
-                    @if(count($technologies))
+                    @if(count($technologies) > 0)
                         <div class="nx-project-meta">
-                            @foreach(array_slice($technologies, 0, 6) as $technology)<span>{{ $technology }}</span>@endforeach
+                            @foreach($technologies as $technology)
+                                <span>{{ $technology }}</span>
+                            @endforeach
                         </div>
                     @endif
 
@@ -63,9 +85,13 @@
                     </p>
 
                     <div class="nx-actions">
-                        <a class="nx-btn" href="{{ route('our-work.show', ['slug'=>$app->slug]) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
-                        @if($app->website_url)<a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>@endif
-                        @if($app->repository_url)<a class="nx-btn" href="{{ $app->repository_url }}" target="_blank" rel="noreferrer">GitHub</a>@endif
+                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                        @if($app->website_url)
+                            <a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>
+                        @endif
+                        @if($app->repository_url)
+                            <a class="nx-btn" href="{{ $app->repository_url }}" target="_blank" rel="noreferrer">GitHub</a>
+                        @endif
                     </div>
                 </article>
             @endforeach
