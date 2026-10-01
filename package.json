@@ -9,6 +9,7 @@
     "format:check": "prettier --check resources/",
     "types:check": "tsc --noEmit",
     "security:gate": "node scripts/security-release-gate.mjs",
+    "manifest:validate": "node scripts/validate-project-manifest.mjs nexvary-project.json",
     "visual:test": "playwright test tests/visual"
   },
   "devDependencies": {
