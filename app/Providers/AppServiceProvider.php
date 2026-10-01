@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('locale', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
         RateLimiter::for('public-health', fn (Request $request): Limit => Limit::perMinute(20)->by($request->ip()));
+        RateLimiter::for('deployment-hook', fn (Request $request): Limit => Limit::perMinute(30)->by($request->ip()));
 
         Route::middleware('web')->group(base_path('routes/our-work.php'));
 

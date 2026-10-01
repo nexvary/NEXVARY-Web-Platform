@@ -1,6 +1,7 @@
 @php
     $safeProjectTitle = str((string) ($app->name ?? 'NEXVARY Project'))->squish()->limit(49, '');
     $safeProjectDescription = str((string) ($app->summary ?? 'Published NEXVARY security project.'))->squish()->limit(155, '');
+    $technologies = is_string($app->technologies ?? null) ? (json_decode($app->technologies, true) ?: []) : ((array) ($app->technologies ?? []));
     $projectSchema = [
         '@context' => 'https://schema.org',
         '@type' => 'SoftwareApplication',
@@ -27,7 +28,8 @@
 @php($ar = app()->getLocale() === 'ar')
 <main class="nx-section nx-page-body">
     <div class="nx-section-title"><p>PROJECT</p><h1>{{ $app->name }}</h1>@if($app->tagline)<p class="nx-lead">{{ $app->tagline }}</p>@endif</div>
-    <div class="nx-project-meta"><span>{{ $app->platform }}</span>@if($app->category)<span>{{ $app->category }}</span>@endif @if($app->version)<span>v{{ $app->version }}</span>@endif <span>{{ strtoupper(str_replace('_',' ', $app->distribution_mode)) }}</span></div>
+    <div class="nx-project-meta"><span>{{ $app->lifecycle_status ?? strtoupper(str_replace('_',' ', $app->distribution_mode)) }}</span><span>{{ $app->platform }}</span>@if($app->category)<span>{{ $app->category }}</span>@endif @if($app->version)<span>v{{ $app->version }}</span>@endif @if($app->visibility ?? null)<span>{{ strtoupper($app->visibility) }}</span>@endif</div>
+    @if(count($technologies))<div class="nx-project-meta">@foreach($technologies as $technology)<span>{{ $technology }}</span>@endforeach</div>@endif
     <article class="nx-card"><p>{{ $app->summary }}</p>@if($app->description)<div class="nx-rich-text">{{ $app->description }}</div>@endif</article>
 
     @if(!empty($app->features))
@@ -52,6 +54,8 @@
         @if($app->can_download)<a class="nx-btn nx-btn-primary" href="{{ route('our-work.download', ['slug'=>$app->slug]) }}">{{ $ar ? 'تنزيل الإصدار' : 'Download release' }}</a>
         @elseif($app->distribution_mode === 'request' && filled($app->request_url ?? null))<a class="nx-btn nx-btn-primary" href="{{ $app->request_url }}" rel="noreferrer">{{ $ar ? 'طلب الوصول' : 'Request access' }}</a>
         @else<a class="nx-btn" href="/contact">{{ $ar ? 'استفسر عن المشروع' : 'Ask about this project' }}</a>@endif
+        @if($app->website_url ?? null)<a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>@endif
+        @if($app->repository_url ?? null)<a class="nx-btn" href="{{ $app->repository_url }}" target="_blank" rel="noreferrer">GitHub</a>@endif
         <a class="nx-btn" href="/our-work">{{ $ar ? 'كل المشاريع' : 'All projects' }}</a>
     </div>
 

@@ -65,6 +65,7 @@ jobs:
           php artisan route:list --path=secure-access | grep -q 'passkeys/login'
           php artisan route:list --path=secure-access | grep -q 'two-factor-qr-code'
           php artisan route:list --path=secure-control | grep -q 'admin.security'
+          php artisan route:list --path=secure-control | grep -q 'admin.deployments'
 
   frontend:
     if: ${{ github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'release-candidate') }}
@@ -77,6 +78,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run manifest:validate
       - run: npm run types:check
       - run: npm run build
       - run: npm audit --audit-level=high
@@ -172,7 +174,9 @@ jobs:
           grep -qi '^X-Frame-Options: DENY' <<< "$headers"
           grep -qi '^Referrer-Policy: strict-origin-when-cross-origin' <<< "$headers"
       - run: npm run visual:test
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Upload visual release evidence
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: ui-release-gate-screenshots

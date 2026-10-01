@@ -1,7 +1,7 @@
 @extends('public.layout')
 
-@section('title', app()->getLocale() === 'ar' ? 'NEXVARY — الأمن أبعد مما تراه' : 'NEXVARY — Security Beyond the Visible')
-@section('description', app()->getLocale() === 'ar' ? 'منصة NEXVARY للأمن السيبراني ومكافحة التجسس الفني والتحليل الجنائي الرقمي وتقنيات الخصوصية والحماية متعددة الطبقات.' : 'NEXVARY unifies cybersecurity, counter-surveillance, digital forensics and privacy technology into one multi-layer security platform.')
+@section('title', app()->getLocale() === 'ar' ? 'NEXVARY — برمجيات الأمن والخصوصية والتحليل الجنائي والذكاء الاصطناعي' : 'NEXVARY — Cybersecurity, Privacy, Forensics and AI Software')
+@section('description', app()->getLocale() === 'ar' ? 'تطوّر NEXVARY منتجات برمجية للأمن السيبراني والخصوصية والتحليل الجنائي الرقمي وتطبيقات أمنية متصلة بالسحابة ومدعومة بالذكاء الاصطناعي.' : 'NEXVARY develops cybersecurity, privacy, digital forensics, cloud-connected, and AI-assisted security software.')
 @section('canonical', 'https://nexvary.com/')
 
 @section('content')
@@ -9,27 +9,27 @@
 <main class="nx-command-home">
     <section class="nx-hero nx-hero-premium nx-command-hero">
         <div class="nx-hero-copy">
-            <p class="nx-kicker">CYBERSECURITY · TSCM · DIGITAL INTELLIGENCE</p>
+            <p class="nx-kicker">SECURITY SOFTWARE · CLOUD-CONNECTED · AI-ASSISTED</p>
             <h1>
                 @if($ar)
-                    الأمن أبعد من <span>المرئي.</span>
+                    برمجيات أمنية <span>للعمليات الحقيقية.</span>
                 @else
-                    SECURITY BEYOND <span>THE VISIBLE.</span>
+                    SECURITY SOFTWARE. <span>BUILT FOR REAL OPERATIONS.</span>
                 @endif
             </h1>
-            <p class="nx-hero-subline">{{ $ar ? 'الأمن السيبراني · مكافحة التجسس الفني · الاستخبارات الرقمية' : 'Cybersecurity · Counter-Surveillance · Digital Intelligence' }}</p>
-            <p class="nx-lead">{{ $ar ? 'تحمي NEXVARY الأصول الرقمية والبيئات الحساسة وصنّاع القرار عبر طبقات دفاع تقنية مترابطة، من تقليل سطح الهجوم إلى التحقق والتحليل والاستجابة.' : 'NEXVARY protects digital assets, sensitive environments and critical decision-makers through connected technical defense layers, from exposure reduction to validation, investigation and response.' }}</p>
+            <p class="nx-hero-subline">{{ $ar ? 'الأمن السيبراني · الخصوصية · التحليل الجنائي الرقمي · تطبيقات متصلة بالسحابة' : 'Cybersecurity · Privacy · Digital Forensics · Cloud-Connected Applications' }}</p>
+            <p class="nx-lead">{{ $ar ? 'تطوّر NEXVARY منتجاتها البرمجية الخاصة للأمن السيبراني والخصوصية والتحليل الجنائي الرقمي والأتمتة، مع بنية جاهزة للسحابة وقدرات تحليل مدعومة بالذكاء الاصطناعي.' : 'NEXVARY develops cloud-connected cybersecurity, privacy, digital forensics, and AI-assisted security software, with practical products for monitoring, analysis, automation and secure operations.' }}</p>
             <div class="nx-actions">
-                <a class="nx-btn nx-btn-primary" href="/contact">{{ $ar ? 'اطلب تقييمًا أمنيًا' : 'Request an assessment' }} <span aria-hidden="true">→</span></a>
-                <a class="nx-btn" href="/services">{{ $ar ? 'استكشف القدرات' : 'Explore capabilities' }} <span aria-hidden="true">→</span></a>
+                <a class="nx-btn nx-btn-primary" href="/our-work">{{ $ar ? 'استعرض المنتجات' : 'Explore products' }} <span aria-hidden="true">→</span></a>
+                <a class="nx-btn" href="/about">{{ $ar ? 'عن التقنية' : 'Technology & company' }} <span aria-hidden="true">→</span></a>
             </div>
             <div class="nx-status-strip" aria-label="NEXVARY capability areas">
-                <span><i></i>TSCM</span><span><i></i>Cyber Defense</span><span><i></i>Digital Forensics</span><span><i></i>Privacy</span>
+                <span><i></i>Security Software</span><span><i></i>Cloud-ready</span><span><i></i>AI-assisted</span><span><i></i>Privacy by Design</span>
             </div>
         </div>
 
         <div class="nx-command nx-command-globe" aria-label="Simulated global threat intelligence visualization">
-            <div class="nx-command-topline"><strong>GLOBAL SECURITY VISUAL</strong><span>SIMULATED TELEMETRY</span></div>
+            <div class="nx-command-topline"><strong>INTERACTIVE SECURITY OPERATIONS DEMO</strong><span>DEMONSTRATION DATA · NOT LIVE TELEMETRY</span></div>
 
             <div class="nx-world-stage" aria-hidden="true">
                 <div class="nx-world-orbit nx-world-orbit-a"></div>
@@ -85,14 +85,14 @@
             </div>
 
             <aside class="nx-threat-card">
-                <div class="nx-mini-title"><span>{{ $ar ? 'خريطة التهديد' : 'THREAT MAP' }}</span><b>DEMO</b></div>
+                <div class="nx-mini-title"><span>{{ $ar ? 'خريطة توضيحية' : 'SECURITY OPERATIONS VISUAL' }}</span><b>DEMONSTRATION DATA</b></div>
                 <p>{{ $ar ? 'مؤشرات بصرية تجريبية لواجهة مركز العمليات.' : 'Simulated visual indicators for the command interface.' }}</p>
                 <dl>
                     <div><dt><i class="risk-high"></i>{{ $ar ? 'مرتفع' : 'HIGH RISK' }}</dt><dd>12</dd></div>
                     <div><dt><i class="risk-medium"></i>{{ $ar ? 'متوسط' : 'MEDIUM RISK' }}</dt><dd>38</dd></div>
                     <div><dt><i class="risk-low"></i>{{ $ar ? 'منخفض' : 'LOW RISK' }}</dt><dd>156</dd></div>
                 </dl>
-                <small>UPDATED · SIMULATED</small>
+                <small>SIMULATED · NOT A LIVE OPERATIONAL FEED</small>
             </aside>
 
             <div class="nx-globe-caption" aria-hidden="true"><span>DRAG / ORBIT VISUAL</span><span>GLOBAL DEFENSE LAYER</span></div>
@@ -175,6 +175,34 @@
             <article><small>NETWORK EXPOSURE</small><strong>17</strong><em>OPEN FINDINGS</em><div class="nx-gauge"><b>35</b></div></article>
             <article><small>ENDPOINT STATUS</small><strong>243</strong><em>PROTECTED</em><div class="nx-ring"><b>96%</b></div></article>
             <article><small>INCIDENT READINESS</small><strong class="nx-low">HIGH</strong><div class="nx-mini-radar"></div></article>
+        </div>
+    </section>
+
+    <section class="nx-section">
+        <div class="nx-section-heading-row">
+            <div class="nx-section-title"><p>PRODUCTS</p><h2>{{ $ar ? 'منتجات NEXVARY البرمجية' : 'NEXVARY software products' }}</h2><p class="nx-lead">{{ $ar ? 'منتجات حقيقية بحالة توفر معلنة بوضوح، دون تحويل النسخ التجريبية أو الداخلية إلى ادعاء بأنها متاحة للجمهور.' : 'Real product work with explicit availability states, without presenting private previews or controlled releases as public availability.' }}</p></div>
+            <a class="nx-section-link" href="/our-work">{{ $ar ? 'كل المشاريع' : 'View all projects' }} →</a>
+        </div>
+        <div class="nx-grid">
+            <article class="nx-card"><div class="nx-card-tag">PRIVATE PREVIEW</div><h3>Audio Shield</h3><p>{{ $ar ? 'أدوات لحماية الخصوصية وتحليل الصوت ضمن مسارات أمنية مضبوطة.' : 'Privacy-aware audio protection and analysis tooling for controlled security workflows.' }}</p><a class="nx-card-link" href="/our-work/audio-shield">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
+            <article class="nx-card"><div class="nx-card-tag">PRIVATE PREVIEW</div><h3>Tower Guard</h3><p>{{ $ar ? 'وعي بالشذوذ الخلوي ومسارات تحقق منظمة دون تقديم الإشارة البرمجية كحكم نهائي.' : 'Cellular anomaly awareness and structured validation workflows without treating software signals as final conclusions.' }}</p><a class="nx-card-link" href="/our-work/tower-guard">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
+            <article class="nx-card"><div class="nx-card-tag">AVAILABLE</div><h3>SafeScan</h3><p>{{ $ar ? 'فحص ثابت للملفات داخل المتصفح بمنهج تقليل نقل البيانات والتخزين الصفري.' : 'Browser-side static file inspection built around data minimization and a zero-storage approach.' }}</p><a class="nx-card-link" href="/our-work/safescan">{{ $ar ? 'اعرف المزيد' : 'Learn more' }} →</a></article>
+        </div>
+    </section>
+
+    <section class="nx-section">
+        <div class="nx-section-title"><p>TECHNOLOGY & INFRASTRUCTURE</p><h2>{{ $ar ? 'بنية جاهزة للنشر على سحابة قابلة للتوسع' : 'Cloud-ready architecture for scalable deployment' }}</h2><p class="nx-lead">{{ $ar ? 'تصمم NEXVARY منتجاتها لتتكامل مع واجهات سحابية آمنة، المصادقة، التخزين، قواعد البيانات، المراقبة، معالجة الأحداث، الإشعارات والأتمتة. لا يعني ذلك ادعاء استخدام مزود سحابي محدد قبل تشغيله فعليًا.' : 'NEXVARY products are designed for secure cloud APIs, authentication, object storage, databases, monitoring, event processing, notifications, DevOps automation and AI-assisted processing. This describes deployment architecture, not an unsupported claim that a specific cloud provider is already in production.' }}</p></div>
+        <div class="nx-grid">
+            @foreach([
+                ['Cloud APIs','Secure service boundaries and authenticated application backends.'],
+                ['Data & Storage','Database and object-storage patterns with controlled access.'],
+                ['Event Processing','Background jobs, notifications and operational automation.'],
+                ['AI-Assisted Processing','AI components designed to operate behind explicit application boundaries.'],
+                ['Monitoring','Health checks, deployment records and operational observability.'],
+                ['DevOps','Test-gated deployments with rollback and secrets outside source control.']
+            ] as $technology)
+                <article class="nx-card"><h3>{{ $technology[0] }}</h3><p>{{ $technology[1] }}</p></article>
+            @endforeach
         </div>
     </section>
 

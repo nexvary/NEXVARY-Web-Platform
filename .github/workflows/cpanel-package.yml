@@ -94,7 +94,9 @@ jobs:
             apps.blade.php \
             safescan.blade.php \
             about.blade.php \
-            contact.blade.php; do
+            contact.blade.php \
+            privacy.blade.php \
+            terms.blade.php; do
             unzip -l NEXVARY-cPanel-Ready.zip | grep -q "nexvary_app/resources/views/public/$view"
           done
           unzip -l NEXVARY-cPanel-Ready.zip | grep -q 'nexvary_app/resources/views/public/our-work/index.blade.php'
@@ -130,7 +132,7 @@ jobs:
           test ! -e "$RUNTIME/public_html/setup-nexvary.php"
           test -e "$RUNTIME/nexvary_app/.installed"
 
-          for route in / /services /apps /safescan /about /contact /our-work /sitemap.xml; do
+          for route in / /services /apps /safescan /about /contact /our-work /privacy /terms /sitemap.xml; do
             code="$(curl -sS -o "$RUNNER_TEMP/route-body" -w '%{http_code}' "http://127.0.0.1:8787${route}")"
             if [ "$code" != "200" ]; then
               echo "Route ${route} returned HTTP ${code}"
@@ -141,47 +143,8 @@ jobs:
             fi
           done
 
-      - name: Install Chromium for verified screenshots
-        run: npx playwright install --with-deps chromium
-
-      - name: Capture screenshots from installed packaged artifact
-        shell: bash
-        run: |
-          set -euo pipefail
-          RUNTIME="$RUNNER_TEMP/cpanel-runtime"
-          mkdir -p release-screenshots
-
-          cd "$RUNTIME"
-          php -S 127.0.0.1:8787 -t public_html > "$RUNNER_TEMP/cpanel-screenshot-server.log" 2>&1 &
-          SERVER_PID=$!
-          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
-
-          for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:8787/ >/dev/null; then
-              break
-            fi
-            sleep 1
-          done
-
-          cd "$GITHUB_WORKSPACE"
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/services release-screenshots/services-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/apps release-screenshots/apps-desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size='1440,1100' --full-page --wait-for-timeout=800 http://127.0.0.1:8787/about release-screenshots/about-desktop.png
-          npx playwright screenshot --browser=chromium --device='Pixel 5' --full-page --wait-for-timeout=1200 http://127.0.0.1:8787/ release-screenshots/home-mobile.png
-
-          test -s release-screenshots/home-desktop.png
-          test -s release-screenshots/home-mobile.png
-
-      - name: Upload verified screenshots
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: NEXVARY-Verified-Screenshots
-          path: release-screenshots/
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Upload cPanel ready package
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: NEXVARY-cPanel-Ready

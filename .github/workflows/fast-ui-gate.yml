@@ -70,6 +70,7 @@ jobs:
         run: npm run security:gate
       - name: Typecheck and build
         run: |
+          npm run manifest:validate
           npm run types:check
           npm run build
       - name: Install Chromium only on cache miss

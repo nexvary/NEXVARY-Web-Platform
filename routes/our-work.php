@@ -14,10 +14,7 @@ $distributionModes = ['download', 'showcase', 'request', 'internal', 'coming_soo
 
 Route::get('/our-work', function () {
     $apps = Schema::hasTable('portfolio_apps')
-        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get([
-            'slug', 'name', 'tagline', 'summary', 'platform', 'category', 'version', 'icon_url', 'downloads', 'published_at',
-            'distribution_mode', 'download_enabled', 'availability_note',
-        ])
+        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get()
         : collect();
 
     return Inertia::render('our-work/index', ['apps' => $apps]);
@@ -87,12 +84,29 @@ Route::prefix(config('nexvary.admin_prefix'))
                 'download_enabled' => ['required', 'boolean'],
                 'request_url' => ['nullable', 'url:https', 'max:500'],
                 'availability_note' => ['nullable', 'string', 'max:500'],
+                'lifecycle_status' => ['required', Rule::in(['Available', 'Beta', 'In Development', 'Private Preview', 'Internal'])],
+                'visibility' => ['required', Rule::in(['public', 'private', 'internal'])],
+                'website_url' => ['nullable', 'url:https', 'max:500'],
+                'repository_url' => ['nullable', 'url:https', 'regex:/^https:\/\/github\.com\//i', 'max:500'],
+                'repository_branch' => ['required', 'string', 'max:120'],
+                'technologies' => ['nullable', 'array', 'max:30'],
+                'technologies.*' => ['string', 'min:1', 'max:80', 'distinct'],
+                'health_url' => ['nullable', 'url:https', 'max:500'],
+                'deploy_provider' => ['nullable', Rule::in(['coolify', 'cpanel', 'manual'])],
+                'coolify_resource_uuid' => ['nullable', 'string', 'max:120', 'regex:/^[A-Za-z0-9._-]+$/'],
+                'publish_to_website' => ['required', 'boolean'],
                 'is_published' => ['required', 'boolean'],
             ]);
 
             if ($validated['distribution_mode'] !== 'download') {
                 $validated['download_enabled'] = false;
             }
+            if ($validated['visibility'] !== 'public') {
+                $validated['is_published'] = false;
+            }
+            $validated['technologies'] = filled($validated['technologies'] ?? null)
+                ? json_encode(array_values($validated['technologies']), JSON_THROW_ON_ERROR)
+                : null;
 
             $validated['published_at'] = $validated['is_published'] ? now() : null;
             $validated['created_at'] = now();
@@ -127,12 +141,29 @@ Route::prefix(config('nexvary.admin_prefix'))
                 'download_enabled' => ['required', 'boolean'],
                 'request_url' => ['nullable', 'url:https', 'max:500'],
                 'availability_note' => ['nullable', 'string', 'max:500'],
+                'lifecycle_status' => ['required', Rule::in(['Available', 'Beta', 'In Development', 'Private Preview', 'Internal'])],
+                'visibility' => ['required', Rule::in(['public', 'private', 'internal'])],
+                'website_url' => ['nullable', 'url:https', 'max:500'],
+                'repository_url' => ['nullable', 'url:https', 'regex:/^https:\/\/github\.com\//i', 'max:500'],
+                'repository_branch' => ['required', 'string', 'max:120'],
+                'technologies' => ['nullable', 'array', 'max:30'],
+                'technologies.*' => ['string', 'min:1', 'max:80', 'distinct'],
+                'health_url' => ['nullable', 'url:https', 'max:500'],
+                'deploy_provider' => ['nullable', Rule::in(['coolify', 'cpanel', 'manual'])],
+                'coolify_resource_uuid' => ['nullable', 'string', 'max:120', 'regex:/^[A-Za-z0-9._-]+$/'],
+                'publish_to_website' => ['required', 'boolean'],
                 'is_published' => ['required', 'boolean'],
             ]);
 
             if ($validated['distribution_mode'] !== 'download') {
                 $validated['download_enabled'] = false;
             }
+            if ($validated['visibility'] !== 'public') {
+                $validated['is_published'] = false;
+            }
+            $validated['technologies'] = filled($validated['technologies'] ?? null)
+                ? json_encode(array_values($validated['technologies']), JSON_THROW_ON_ERROR)
+                : null;
 
             $validated['published_at'] = $validated['is_published'] ? ($existing->published_at ?: now()) : null;
             $validated['updated_at'] = now();

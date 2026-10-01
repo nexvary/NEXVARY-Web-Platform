@@ -1,0 +1,133 @@
+name: Coolify Deploy and Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_uuid:
+        description: Coolify application/resource UUID
+        required: true
+        type: string
+      deployment_mode:
+        description: Publish to Our Work only after a healthy deployment
+        required: true
+        default: deploy_only
+        type: choice
+        options:
+          - deploy_only
+          - deploy_publish
+      force:
+        description: Force a new Coolify deployment
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coolify-deploy-${{ inputs.resource_uuid }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Validate project manifest
+        run: node scripts/validate-project-manifest.mjs nexvary-project.json
+
+      - name: Require deployment configuration
+        shell: bash
+        env:
+          COOLIFY_BASE_URL: ${{ vars.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$COOLIFY_BASE_URL"
+          test -n "$COOLIFY_API_TOKEN"
+
+      - name: Queue Coolify deployment
+        id: deploy
+        shell: bash
+        env:
+          COOLIFY_BASE_URL: ${{ vars.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          RESOURCE_UUID: ${{ inputs.resource_uuid }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          payload="$(jq -n --arg uuid "$RESOURCE_UUID" --argjson force "$FORCE" '{uuid:$uuid,force:$force}')"
+          response="$(curl --fail-with-body --silent --show-error             -X POST "${COOLIFY_BASE_URL%/}/api/v1/deploy"             -H "Authorization: Bearer $COOLIFY_API_TOKEN"             -H "Accept: application/json"             -H "Content-Type: application/json"             --data "$payload")"
+          deployment_uuid="$(jq -r '.deployment_uuid // .deployments[0].deployment_uuid // .uuid // empty' <<<"$response")"
+          test -n "$deployment_uuid"
+          echo "deployment_uuid=$deployment_uuid" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Coolify completion
+        shell: bash
+        env:
+          COOLIFY_BASE_URL: ${{ vars.COOLIFY_BASE_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          DEPLOYMENT_UUID: ${{ steps.deploy.outputs.deployment_uuid }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..40}; do
+            response="$(curl --fail-with-body --silent --show-error               "${COOLIFY_BASE_URL%/}/api/v1/deployments/$DEPLOYMENT_UUID"               -H "Authorization: Bearer $COOLIFY_API_TOKEN"               -H "Accept: application/json")"
+            status="$(jq -r '.status // .deployment.status // "unknown"' <<<"$response" | tr '[:upper:]' '[:lower:]')"
+            echo "Coolify status: $status"
+            case "$status" in
+              *fail*|*error*|*cancel*) exit 1 ;;
+              *finish*|*success*|*complete*) exit 0 ;;
+            esac
+            sleep 15
+          done
+          echo "Timed out waiting for Coolify deployment." >&2
+          exit 1
+
+      - name: Verify public HTTPS health
+        id: health
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEALTH_URL="$(jq -r '.healthCheck // .website // empty' nexvary-project.json)"
+          test -n "$HEALTH_URL"
+          case "$HEALTH_URL" in
+            https://nexvary.com/*|https://*.nexvary.com/*) ;;
+            *) echo "Health URL must be HTTPS on nexvary.com." >&2; exit 1 ;;
+          esac
+          started="$(date +%s%3N)"
+          for attempt in {1..12}; do
+            code="$(curl --silent --show-error --location --max-time 10 -o /dev/null -w '%{http_code}' "$HEALTH_URL" || true)"
+            if [ "$code" = "200" ]; then
+              ended="$(date +%s%3N)"
+              echo "duration_ms=$((ended-started))" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Health check did not return HTTP 200." >&2
+          exit 1
+
+      - name: Publish verified project metadata
+        if: ${{ inputs.deployment_mode == 'deploy_publish' }}
+        shell: bash
+        env:
+          NEXVARY_DEPLOY_HMAC_SECRET: ${{ secrets.NEXVARY_DEPLOY_HMAC_SECRET }}
+          DEPLOYMENT_UUID: ${{ steps.deploy.outputs.deployment_uuid }}
+          DURATION_MS: ${{ steps.health.outputs.duration_ms }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test -n "$NEXVARY_DEPLOY_HMAC_SECRET"
+          jq --arg mode "deploy_publish" '.deploymentMode=$mode | .publishToWebsite=true' nexvary-project.json > /tmp/manifest.json
+          jq -n             --argjson manifest "$(cat /tmp/manifest.json)"             --arg commit "$COMMIT_SHA"             --arg remote "$DEPLOYMENT_UUID"             --argjson duration "${DURATION_MS:-0}"             '{manifest:$manifest,deployment:{provider:"coolify",environment:"production",commit_sha:$commit,remote_deployment_id:$remote,duration_ms:$duration}}'             > /tmp/publish.json
+          timestamp="$(date +%s)"
+          signature="$(printf '%s.%s' "$timestamp" "$(cat /tmp/publish.json)" | openssl dgst -sha256 -hmac "$NEXVARY_DEPLOY_HMAC_SECRET" | awk '{print $2}')"
+          curl --fail-with-body --silent --show-error             -X POST "https://nexvary.com/api/deployments/publish"             -H "Content-Type: application/json"             -H "X-NEXVARY-Timestamp: $timestamp"             -H "X-NEXVARY-Signature: $signature"             --data-binary @/tmp/publish.json
