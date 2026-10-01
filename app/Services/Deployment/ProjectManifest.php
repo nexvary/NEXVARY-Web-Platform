@@ -9,8 +9,9 @@ use Illuminate\Validation\Rule;
 
 final class ProjectManifest
 {
-    /** @param array<string, mixed> $manifest
-     *  @return array<string, mixed>
+    /**
+     * @param  array<string, mixed>  $manifest
+     * @return array<string, mixed>
      */
     public function validate(array $manifest): array
     {
