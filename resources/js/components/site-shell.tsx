@@ -67,6 +67,8 @@ export default function SiteShell({ children }: PropsWithChildren) {
           <a href="mailto:info@nexvary.com" aria-label="Email"><Mail size={17} aria-hidden="true" /><span>Email</span></a>
           <a href="https://www.youtube.com/@NexvaryInc" rel="noreferrer" target="_blank" aria-label="YouTube"><Youtube size={17} aria-hidden="true" /><span>YouTube</span></a>
           <a href="https://x.com/Nexvary" rel="noreferrer" target="_blank" aria-label="X"><span className="nx-x-icon" aria-hidden="true">X</span><span>X</span></a>
+          <Link href="/privacy">{ar ? 'الخصوصية' : 'Privacy'}</Link>
+          <Link href="/terms">{ar ? 'الشروط' : 'Terms'}</Link>
         </div>
       </footer>
     </div>
