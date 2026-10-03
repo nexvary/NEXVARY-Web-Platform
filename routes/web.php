@@ -17,6 +17,46 @@ Route::get('/services', fn () => Inertia::render('services'))->name('services');
 Route::get('/about', fn () => Inertia::render('about'))->name('about');
 Route::get('/apps', fn () => Inertia::render('apps'))->name('apps');
 Route::get('/safescan', fn () => Inertia::render('safescan'))->name('safescan');
+Route::get('/our-work', fn () => Inertia::render('our-work'))->name('our-work');
+Route::get('/contact', fn () => Inertia::render('contact'))->name('contact');
+Route::post('/contact', function (Request $request): RedirectResponse {
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:160'],
+        'email' => ['required', 'email', 'max:320'],
+        'phone' => ['nullable', 'string', 'max:80'],
+        'company' => ['nullable', 'string', 'max:160'],
+        'country' => ['nullable', 'string', 'max:120'],
+        'reason' => ['required', Rule::in(['general', 'cybersecurity', 'tscm', 'forensics', 'privacy', 'partnership', 'support', 'other'])],
+        'preferred_contact' => ['required', Rule::in(['email', 'phone', 'whatsapp'])],
+        'message' => ['required', 'string', 'min:10', 'max:5000'],
+        'website' => ['nullable', 'string', 'max:255'],
+    ]);
+    if (filled($validated['website'] ?? null)) {
+        return back()->with('contact_success', true);
+    }
+    if (Schema::hasTable('contact_submissions')) {
+        DB::table('contact_submissions')->insert([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+            'company' => $validated['company'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'reason' => $validated['reason'],
+            'preferred_contact' => $validated['preferred_contact'],
+            'message' => $validated['message'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    } else {
+        logger()->notice('Contact request received before contact_submissions migration is available', [
+            'email' => $validated['email'],
+            'reason' => $validated['reason'],
+        ]);
+    }
+    return back()->with('contact_success', true);
+})->middleware('throttle:10,1')->name('contact.submit');
+Route::get('/privacy', fn () => Inertia::render('privacy'))->name('privacy');
+Route::get('/terms', fn () => Inertia::render('terms'))->name('terms');
 
 Route::post('/locale/{locale}', function (Request $request, string $locale): RedirectResponse {
     abort_unless(in_array($locale, config('nexvary.languages', ['en']), true), 404);
