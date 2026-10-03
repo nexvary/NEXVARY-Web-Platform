@@ -17,6 +17,10 @@ Route::get('/services', fn () => Inertia::render('services'))->name('services');
 Route::get('/about', fn () => Inertia::render('about'))->name('about');
 Route::get('/apps', fn () => Inertia::render('apps'))->name('apps');
 Route::get('/safescan', fn () => Inertia::render('safescan'))->name('safescan');
+Route::get('/our-work', fn () => Inertia::render('our-work'))->name('our-work');
+Route::get('/contact', fn () => Inertia::render('contact'))->name('contact');
+Route::get('/privacy', fn () => Inertia::render('privacy'))->name('privacy');
+Route::get('/terms', fn () => Inertia::render('terms'))->name('terms');
 
 Route::post('/locale/{locale}', function (Request $request, string $locale): RedirectResponse {
     abort_unless(in_array($locale, config('nexvary.languages', ['en']), true), 404);
