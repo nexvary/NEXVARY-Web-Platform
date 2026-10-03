@@ -54,7 +54,7 @@ Route::post('/contact', function (Request $request): RedirectResponse {
         ]);
     }
     return back()->with('contact_success', true);
-})->middleware('throttle:contact')->name('contact.submit');
+})->middleware('throttle:10,1')->name('contact.submit');
 Route::get('/privacy', fn () => Inertia::render('privacy'))->name('privacy');
 Route::get('/terms', fn () => Inertia::render('terms'))->name('terms');
 
