@@ -52,6 +52,8 @@ jobs:
           npm ci
           npm run build
 
+          bash scripts/build-cpanel.sh
+
           rm -rf release-stage
           mkdir -p release-stage
           cp artisan composer.json composer.lock package.json package-lock.json release-stage/
@@ -67,6 +69,7 @@ jobs:
           gh release create "$TAG" \
             NEXVARY-update.zip \
             NEXVARY-update.sha256 \
+            NEXVARY-cPanel-Ready.zip \
             --repo "$REPO" \
             --target "$HEAD_SHA" \
             --title "NEXVARY $VERSION" \

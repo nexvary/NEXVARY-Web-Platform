@@ -22,9 +22,9 @@ type PublishedApp = {
   availability_note?: string | null;
 };
 
-type Props = { apps: PublishedApp[] };
+type Props = { apps?: PublishedApp[] };
 
-export default function Apps({ apps }: Props) {
+export default function Apps({ apps = [] }: Props) {
   const ar = document.documentElement.lang.startsWith('ar');
 
   return (
