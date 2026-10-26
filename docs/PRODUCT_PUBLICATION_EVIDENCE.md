@@ -41,3 +41,9 @@ Review date: 2026-10-26. This register is a preliminary source audit, **not a pr
 - Required closing sentence, verbatim: **«والمشروع قيد إضافة مميزات أخرى.»**
 - English equivalent: **“Additional features are currently in development.”**
 - Do not show an unverified download link or suggest automated spoilage classification is validated.
+
+## Owner publication requirements (2026-10-26)
+- Do not publish any outbound links in public product cards or pages: no GitHub, APK, store, beta, release or external URLs without explicit future approval. Internal site navigation may be used to open product detail pages.
+- Show authentic, current product screenshots: one primary image plus a gallery of 3–6 relevant screenshots when assets exist and are verified against the current UI.
+- For Guardian Studio, Net Scan and FoodGuard, inspect repository assets and avoid fictional or outdated screenshots. If insufficient authentic screenshots exist, omit the gallery until real captures are available; illustrations must be clearly labeled.
+- Product descriptions should end with: «والمشروع قيد إضافة مميزات أخرى.»
