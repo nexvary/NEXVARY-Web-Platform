@@ -26,3 +26,11 @@ Review date: 2026-10-26. This register is a preliminary source audit, **not a pr
 
 ## Publication gate
 - No public product feature may be marked Available without implementation evidence and applicable validation. No deployment before successful production build and review.
+
+## NEXVARY FoodGuard — additional product candidate (2026-10-26)
+- Repository: `nexvary/NEXVARY-FoodGuard` (commercial display name: NEXVARY FoodGuard).
+- README states Stage 550 / `0.5.0-stage550`; Kotlin/Jetpack Compose Android application, 220-item food catalog, camera/gallery selection, local photo-quality metrics, manual spoilage checklist, local assessment history, multilingual resources and text sharing.
+- README states local-first privacy posture, with no INTERNET manifest permission. Verify manifest/source before publishing this claim as confirmed.
+- Crucial limitation: **no validated trained food-spoilage classifier**. Photo metrics and educational spoilage guidance do not prove food safety; hazards can be invisible.
+- Build and release readiness: README describes unit tests, lint and debug assembly; **latest Actions run and distributable signed release not checked**.
+- Recommendation: include in Featured Products only as **Active Development** after source and CI audit. Do not advertise automatic food safety detection, laboratory accuracy or a public APK download.
