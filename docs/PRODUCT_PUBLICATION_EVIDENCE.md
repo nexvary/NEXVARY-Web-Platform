@@ -34,3 +34,10 @@ Review date: 2026-10-26. This register is a preliminary source audit, **not a pr
 - Crucial limitation: **no validated trained food-spoilage classifier**. Photo metrics and educational spoilage guidance do not prove food safety; hazards can be invisible.
 - Build and release readiness: README describes unit tests, lint and debug assembly; **latest Actions run and distributable signed release not checked**.
 - Recommendation: include in Featured Products only as **Active Development** after source and CI audit. Do not advertise automatic food safety detection, laboratory accuracy or a public APK download.
+
+## Approved public messaging for FoodGuard
+- Publish as **Active Development**, without waiting for completion of planned features.
+- Arabic public copy: «تعمل NEXVARY على تطوير تطبيق FoodGuard لأجهزة Android لمساعدة المستخدمين على التعرف على مؤشرات فساد الأطعمة، والاطلاع على إرشادات التخزين والفحص الأولي. يتضمن المشروع دليلًا للأطعمة وأدوات تقييم مساعدة، ولا يحل محل الفحص المخبري أو يضمن سلامة الغذاء.»
+- Required closing sentence, verbatim: **«والمشروع قيد إضافة مميزات أخرى.»**
+- English equivalent: **“Additional features are currently in development.”**
+- Do not show an unverified download link or suggest automated spoilage classification is validated.
