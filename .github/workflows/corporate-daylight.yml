@@ -1,0 +1,76 @@
+name: Corporate Daylight Verification
+on:
+  pull_request:
+    branches: [main]
+    paths: ['resources/**', 'public/**', 'routes/**', 'config/**', 'tests/**', '.github/workflows/corporate-daylight.yml']
+  push:
+    branches: ['feature/approved-daylight-corporate']
+permissions:
+  contents: read
+concurrency:
+  group: corporate-daylight-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: '8.4'
+          coverage: none
+          extensions: mbstring, pdo_sqlite, sqlite3
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: npm ci
+      - run: npm run types:check && npm run manifest:validate && npm run security:gate && npm run build
+      - name: Prepare isolated runtime
+        run: |
+          cp .env.example .env
+          printf '\nCACHE_STORE=array\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nDB_CONNECTION=sqlite\nDB_DATABASE=${{ github.workspace }}/database/database.sqlite\n' >> .env
+          php artisan key:generate
+          touch database/database.sqlite
+          php artisan migrate --force
+      - run: php artisan test
+      - run: npx playwright install --with-deps chromium
+      - name: Start test server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 > /tmp/daylight-server.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:8000/health && exit 0
+            sleep 1
+          done
+          exit 1
+      - name: Desktop and Android UI, RTL, links and accessibility
+        run: npx playwright test tests/visual/corporate-daylight.spec.ts tests/visual/navigation-integrity.spec.ts tests/visual/release-gate.spec.ts
+      - name: Mobile Lighthouse lab measurement
+        if: always()
+        run: |
+          mkdir -p artifacts/performance
+          export CHROME_PATH="$(find ~/.cache/ms-playwright -path '*/chrome-linux/chrome' -o -path '*/chrome-linux64/chrome' | head -1)"
+          npx --yes --package=lighthouse@12.8.2 lighthouse http://127.0.0.1:8000/ --chrome-flags='--headless --no-sandbox' --output=json --output=html --output-path=artifacts/performance/mobile --only-categories=performance,accessibility,best-practices,seo
+      - name: Record measured results
+        if: always()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const path='artifacts/performance/mobile.report.json';
+          if (!fs.existsSync(path)) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Lighthouse result unavailable.\n'); process.exit(0); }
+          const r=JSON.parse(fs.readFileSync(path));
+          const result={environment:'GitHub ubuntu-24.04, PHP 8.4, Node 24, Lighthouse 12.8.2, default mobile simulated throttling, localhost Laravel production frontend build',performance:r.categories.performance.score*100,accessibility:r.categories.accessibility.score*100,seo:r.categories.seo.score*100,lcp_ms:r.audits['largest-contentful-paint'].numericValue,cls:r.audits['cumulative-layout-shift'].numericValue,tbt_ms:r.audits['total-blocking-time'].numericValue,inp:'Not measured: field interaction data required',lighthouseVersion:r.lighthouseVersion,fetchTime:r.fetchTime};
+          fs.writeFileSync('artifacts/performance/measured-summary.json',JSON.stringify(result,null,2));
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'```json\n'+JSON.stringify(result,null,2)+'\n```\n');
+          JS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: corporate-daylight-evidence
+          path: |
+            artifacts/
+            test-results/
+            playwright-report/
+          retention-days: 14

@@ -1,106 +1,63 @@
 @php
-    $requestedLocale = app()->getLocale();
-    $publicLocale = in_array($requestedLocale, ['ar', 'en'], true) ? $requestedLocale : 'en';
-    $isRtl = $publicLocale === 'ar';
-    $pageTitle = trim($__env->yieldContent('title'));
-    $pageDescription = trim($__env->yieldContent('description'));
+    $ar = $isRtl = app()->getLocale() === 'ar';
+    $publicLocale = $ar ? 'ar' : 'en';
+    $pageTitle = html_entity_decode(trim($__env->yieldContent('title')), ENT_QUOTES, 'UTF-8');
+    $pageDescription = html_entity_decode(trim($__env->yieldContent('description')), ENT_QUOTES, 'UTF-8');
     $baseCanonical = trim($__env->yieldContent('canonical'));
-    $pageCanonical = $publicLocale === 'ar'
-        ? $baseCanonical.(str_contains($baseCanonical, '?') ? '&' : '?').'lang=ar'
-        : $baseCanonical;
-    $organizationSchema = [
-        '@context' => 'https://schema.org',
-        '@graph' => [
-            [
-                '@type' => 'Organization',
-                '@id' => 'https://nexvary.com/#organization',
-                'name' => 'NEXVARY',
-                'url' => 'https://nexvary.com/',
-                'email' => 'info@nexvary.com',
-                'sameAs' => [
-                    'https://www.facebook.com/share/14p9krEn5ij/',
-                    'https://www.youtube.com/@NexvaryInc',
-                    'https://x.com/Nexvary',
-                    'https://github.com/nexvary',
-                ],
-            ],
-            [
-                '@type' => 'WebSite',
-                '@id' => 'https://nexvary.com/#website',
-                'url' => 'https://nexvary.com/',
-                'name' => 'NEXVARY',
-                'publisher' => ['@id' => 'https://nexvary.com/#organization'],
-                'inLanguage' => ['en', 'ar'],
-            ],
-        ],
-    ];
+    $pageCanonical = $baseCanonical.($ar ? '?lang=ar' : '');
+    $nav = [['/', 'Home', 'الرئيسية'], ['/about', 'Company', 'الشركة'], ['/services', 'Technology', 'التقنية'], ['/research', 'Research', 'الأبحاث'], ['/contact', 'Contact', 'تواصل معنا']];
+    $organization = ['@context'=>'https://schema.org','@type'=>'Organization','@id'=>'https://nexvary.com/#organization','name'=>'Nexvary Inc','legalName'=>'Nexvary Inc','url'=>'https://nexvary.com/','email'=>'info@nexvary.com','logo'=>'https://nexvary.com/assets/corporate/seal-512.png','sameAs'=>['https://github.com/nexvary']];
+    if (config('corporate-identity.registry_verified')) {
+        $organization['foundingDate'] = config('corporate-identity.incorporated');
+        $organization['identifier'] = config('corporate-identity.entity_id');
+    }
 @endphp
 <!doctype html>
-<html lang="{{ $publicLocale }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+<html lang="{{ $publicLocale }}" dir="{{ $ar ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#020817">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="color-scheme" content="dark">
-    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <meta name="robots" content="index,follow,max-image-preview:large">
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
     <link rel="canonical" href="{{ $pageCanonical }}">
     <link rel="alternate" hreflang="en" href="{{ $baseCanonical }}">
-    <link rel="alternate" hreflang="ar" href="{{ $baseCanonical }}{{ str_contains($baseCanonical, '?') ? '&' : '?' }}lang=ar">
+    <link rel="alternate" hreflang="ar" href="{{ $baseCanonical }}?lang=ar">
     <link rel="alternate" hreflang="x-default" href="{{ $baseCanonical }}">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="NEXVARY">
+    <meta property="og:site_name" content="Nexvary Inc">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
     <meta property="og:url" content="{{ $pageCanonical }}">
-    <meta property="og:locale" content="{{ $isRtl ? 'ar_AR' : 'en_US' }}">
+    <meta property="og:locale" content="{{ $ar ? 'ar_AR' : 'en_US' }}">
+    <meta property="og:image" content="https://nexvary.com/assets/corporate/seal-512.png">
+    <meta property="og:image:width" content="512"><meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="{{ $ar ? 'ختم نيكسفاري الرسمي' : 'Official Nexvary corporate seal' }}">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="{{ $pageTitle }}">
-    <meta name="twitter:description" content="{{ $pageDescription }}">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    @vite(['resources/css/public.css', 'resources/js/public.ts'])
-    <script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    @foreach([16,32,48] as $size)<link rel="icon" type="image/png" sizes="{{ $size }}x{{ $size }}" href="/assets/corporate/seal-{{ $size }}.png">@endforeach
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    @vite(['resources/css/public.css', 'resources/css/corporate.css', 'resources/js/public.ts'])
+    <script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">{!! json_encode($organization, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>
     @stack('head')
 </head>
-<body class="antialiased">
-<div class="nx-page">
-    <header class="nx-topbar" data-testid="site-header">
-        <a class="nx-brand" href="/" aria-label="NEXVARY home"><span class="nx-brand-mark" aria-hidden="true">N</span><span>NEXVARY</span></a>
-        <nav class="nx-nav" aria-label="{{ $isRtl ? 'التنقل الرئيسي' : 'Primary navigation' }}">
-            <a href="/">{{ $isRtl ? 'الرئيسية' : 'Home' }}</a>
-            <a href="/services">{{ $isRtl ? 'الخدمات' : 'Services' }}</a>
-            <a href="/our-work">{{ $isRtl ? 'أعمالنا' : 'Our Work' }}</a>
-            <a href="/apps">{{ $isRtl ? 'التطبيقات' : 'Apps' }}</a>
-            <a href="/safescan">SafeScan</a>
-            <a href="/about">{{ $isRtl ? 'عنّا' : 'About' }}</a>
-            <a href="/contact">{{ $isRtl ? 'تواصل معنا' : 'Contact' }}</a>
-        </nav>
-        <label class="nx-language"><span class="sr-only">Language</span><select class="nx-locale-select" data-language-switch aria-label="Language">
-            <option value="en" @selected($publicLocale === 'en')>EN</option>
-            <option value="ar" @selected($publicLocale === 'ar')>AR</option>
-        </select></label>
-    </header>
-
-    @unless(request()->routeIs('home'))
-        <div class="nx-back-row"><button type="button" class="nx-back-button" data-testid="back-button" data-back-button aria-label="{{ $isRtl ? 'رجوع' : 'Back' }}"><span aria-hidden="true">{{ $isRtl ? '→' : '←' }}</span><span>{{ $isRtl ? 'رجوع' : 'Back' }}</span></button></div>
-    @endunless
-
-    @yield('content')
-
-    <footer class="nx-footer">
-        <div><strong>NEXVARY</strong><span>{{ $isRtl ? 'الأمن أبعد مما تراه.' : 'Security beyond the visible.' }}</span></div>
-        <div class="nx-footer-links" aria-label="Official NEXVARY links">
-            <a href="https://nexvary.com/" aria-label="Website"><span>Website</span></a>
-            <a href="https://github.com/nexvary" rel="noreferrer" target="_blank" aria-label="GitHub"><span>GitHub</span></a>
-            <a href="https://www.facebook.com/share/14p9krEn5ij/" rel="noreferrer" target="_blank" aria-label="Facebook"><span>Facebook</span></a>
-            <a href="mailto:info@nexvary.com" aria-label="Email"><span>Email</span></a>
-            <a href="https://www.youtube.com/@NexvaryInc" rel="noreferrer" target="_blank" aria-label="YouTube"><span>YouTube</span></a>
-            <a href="https://x.com/Nexvary" rel="noreferrer" target="_blank" aria-label="X"><span>X</span></a>
-            <a href="/privacy"><span>{{ $isRtl ? 'الخصوصية' : 'Privacy' }}</span></a>
-            <a href="/terms"><span>{{ $isRtl ? 'الشروط' : 'Terms' }}</span></a>
-        </div>
-    </footer>
+<body class="nc-site">
+<a href="#main-content" class="nc-skip">{{ $ar ? 'انتقل إلى المحتوى' : 'Skip to content' }}</a>
+<div class="nc-shell">
+<header class="nc-header" data-testid="site-header">
+    <a class="nc-brand" href="/{{ $ar ? '?lang=ar' : '' }}" aria-label="{{ $ar ? 'نيكسفاري — الرئيسية' : 'Nexvary Inc home' }}"><img src="/assets/corporate/seal-nav.webp" width="72" height="72" alt=""><span>NEXVARY INC<small>{{ $ar ? 'التقنية والبحث والابتكار' : 'TECHNOLOGY · RESEARCH · INNOVATION' }}</small></span></a>
+    <nav class="nc-nav" aria-label="{{ $ar ? 'التنقل الرئيسي' : 'Primary navigation' }}">@foreach($nav as [$url,$en,$arabic])<a href="{{ $url }}{{ $ar ? '?lang=ar' : '' }}" @if(request()->getPathInfo() === $url) aria-current="page" @endif>{{ $ar ? $arabic : $en }}</a>@endforeach</nav>
+    <a class="nc-language" href="{{ request()->getPathInfo() }}?lang={{ $ar ? 'en' : 'ar' }}" lang="{{ $ar ? 'en' : 'ar' }}" aria-label="{{ $ar ? 'Switch to English' : 'التبديل إلى العربية' }}">{{ $ar ? 'English' : 'العربية' }}</a>
+    <details class="nc-menu"><summary>{{ $ar ? 'القائمة' : 'Menu' }}</summary><nav aria-label="{{ $ar ? 'قائمة الهاتف' : 'Mobile navigation' }}">@foreach($nav as [$url,$en,$arabic])<a href="{{ $url }}{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? $arabic : $en }}</a>@endforeach</nav></details>
+</header>
+@unless(request()->routeIs('home'))<div class="nx-back-row"><a class="nx-back-button" data-testid="back-button" href="/{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? '→ الرئيسية' : '← Home' }}</a></div>@endunless
+@yield('content')
+<footer class="nc-footer">
+    <div class="nc-footer-top"><div><img src="/assets/corporate/seal-nav.webp" alt="" width="64" height="64" loading="lazy"><strong>NEXVARY INC</strong><p>{{ $ar ? 'هندسة مستقبل رقمي أكثر أمانًا وذكاءً.' : 'Engineering a safer, smarter digital world.' }}</p></div><nav aria-label="{{ $ar ? 'روابط التذييل' : 'Footer navigation' }}">@foreach($nav as [$url,$en,$arabic])<a href="{{ $url }}{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? $arabic : $en }}</a>@endforeach<a href="/privacy{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'سياسة الخصوصية' : 'Privacy Policy' }}</a><a href="/terms{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'شروط الاستخدام' : 'Terms of Use' }}</a><a href="/our-work{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'أعمالنا' : 'Our Work' }}</a><a href="/apps{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'التطبيقات' : 'Apps' }}</a><a href="/safescan{{ $ar ? '?lang=ar' : '' }}">SafeScan</a></nav><div><a href="mailto:info@nexvary.com">info@nexvary.com</a><a href="https://github.com/nexvary" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://nexvary.com/">{{ $ar ? 'الموقع الرسمي' : 'Website' }}</a><a href="https://www.facebook.com/share/14p9krEn5ij/" target="_blank" rel="noopener noreferrer">Facebook</a><a href="https://www.youtube.com/@NexvaryInc" target="_blank" rel="noopener noreferrer">YouTube</a><a href="https://x.com/Nexvary" target="_blank" rel="noopener noreferrer">X</a><p>{{ $ar ? 'بيانات الشركة كما قدّمها المالك: وايومنغ، الولايات المتحدة.' : 'Owner-supplied company jurisdiction: Wyoming, United States.' }}</p></div></div>
+    <div class="nc-copyright">© {{ date('Y') }} Nexvary Inc. {{ $ar ? 'جميع الحقوق محفوظة.' : 'All rights reserved.' }}</div>
+</footer>
 </div>
-</body>
-</html>
+</body></html>

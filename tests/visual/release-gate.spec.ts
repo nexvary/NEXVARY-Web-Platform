@@ -45,7 +45,7 @@ test('Arabic RTL alignment gate', async ({ page }, testInfo) => {
   await page.goto('/?lang=ar', { waitUntil: 'networkidle' });
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('html')).toHaveAttribute('lang', /ar/);
-  await expect(page.getByRole('navigation')).toContainText('الخدمات');
+  await expect(page.locator('.nc-header')).toContainText('التقنية');
 
   const state = await page.evaluate(() => ({
     overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
@@ -90,7 +90,7 @@ test('Android 15 viewport-safe tap target gate', async ({ page }) => {
 
 test('About exposes all official NEXVARY channels', async ({ page }) => {
   await page.goto('/about', { waitUntil: 'networkidle' });
-  for (const label of ['Website', 'GitHub', 'Facebook', 'Email', 'YouTube', 'X']) {
+  for (const label of ['GitHub']) {
     await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 });

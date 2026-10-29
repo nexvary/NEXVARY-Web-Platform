@@ -33,3 +33,13 @@ ServerSignature Off
 <FilesMatch "(^\.|\.env$|composer\.(json|lock)$|package(-lock)?\.json$|phpunit\.xml$)">
     Require all denied
 </FilesMatch>
+
+# Source-derived corporate images: revalidate after one week; build assets are fingerprinted.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/avif "access plus 7 days"
+    ExpiresByType image/webp "access plus 7 days"
+    ExpiresByType image/png "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 7 days"
+    ExpiresByType image/x-icon "access plus 7 days"
+</IfModule>

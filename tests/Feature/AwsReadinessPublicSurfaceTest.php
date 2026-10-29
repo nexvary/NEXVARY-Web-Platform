@@ -30,11 +30,13 @@ final class AwsReadinessPublicSurfaceTest extends TestCase
     public function test_public_company_surface_exposes_cloud_ready_language_and_policy_pages(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Cloud-ready architecture for scalable deployment')
-            ->assertSee('DEMONSTRATION DATA');
+            ->assertSee('Engineering a safer,')
+            ->assertSee('Conceptual architectural visualization')
+            ->assertDontSee('DEMONSTRATION DATA')
+            ->assertDontSee('Audio Shield');
 
         $this->get('/about')->assertOk()
-            ->assertSee('technology product company')
+            ->assertSee('Nexvary Inc develops software')
             ->assertSee('GitHub');
 
         $this->get('/privacy')->assertOk()->assertSee('Privacy Policy');

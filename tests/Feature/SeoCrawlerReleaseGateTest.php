@@ -80,7 +80,7 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $this->get('/services?lang=tr')
             ->assertOk()
             ->assertSee('<html lang="en" dir="ltr">', false)
-            ->assertSee('<option value="en" selected>EN</option>', false);
+            ->assertSee('lang=ar', false);
 
         $this->get('/services?lang=ar')
             ->assertOk()

@@ -19,6 +19,11 @@ Route::get('/contact', fn () => view('public.contact'))->name('contact');
 Route::get('/privacy', fn () => view('public.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('public.terms'))->name('terms');
 
+foreach (['research', 'cybersecurity', 'artificial-intelligence'] as $page) {
+    Route::get('/'.$page, fn () => view('public.discipline', ['discipline' => $page]))->name('corporate.'.$page);
+}
+
+
 Route::post('/contact', function (Request $request): RedirectResponse {
     if (filled($request->input('website'))) {
         return back()->with('contact_success', true);
@@ -70,7 +75,7 @@ Route::get('/our-work/{slug}', function (string $slug) {
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms'];
+    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms', '/research', '/cybersecurity', '/artificial-intelligence'];
 
     if (Schema::hasTable('portfolio_apps')) {
         foreach (DB::table('portfolio_apps')->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {

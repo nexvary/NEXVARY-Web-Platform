@@ -29,7 +29,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
     <div className="nx-page">
       <header className="nx-topbar" data-testid="site-header">
         <Link className="nx-brand" href="/" aria-label="NEXVARY home">
-          <span className="nx-brand-mark" aria-hidden="true">N</span>
+          <img src="/assets/corporate/seal-nav.webp" width="56" height="56" alt="" />
           <span>NEXVARY</span>
         </Link>
         <nav className="nx-nav" aria-label={ar ? 'التنقل الرئيسي' : 'Primary navigation'}>
