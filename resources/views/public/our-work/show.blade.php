@@ -26,7 +26,7 @@
 
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title"><p>PROJECT</p><h1>{{ $app->name }}</h1>@if($app->tagline)<p class="nx-lead">{{ $app->tagline }}</p>@endif</div>
     <div class="nx-project-meta"><span>{{ $app->lifecycle_status ?? strtoupper(str_replace('_',' ', $app->distribution_mode)) }}</span><span>{{ $app->platform }}</span>@if($app->category)<span>{{ $app->category }}</span>@endif @if($app->version)<span>v{{ $app->version }}</span>@endif @if($app->visibility ?? null)<span>{{ strtoupper($app->visibility) }}</span>@endif</div>
     @if(count($technologies))<div class="nx-project-meta">@foreach($technologies as $technology)<span>{{ $technology }}</span>@endforeach</div>@endif

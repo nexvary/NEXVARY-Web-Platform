@@ -57,7 +57,16 @@ Route::get('/our-work', function () {
     return view('public.our-work.index', ['apps' => $apps]);
 })->name('our-work.index');
 
+foreach (['artificial-intelligence', 'cybersecurity', 'research'] as $page) {
+    Route::get('/'.$page, fn () => view('public.'.$page))->name('corporate.'.$page);
+}
+
 Route::get('/our-work/{slug}', function (string $slug) {
+    $project = collect(config('corporate.projects'))->firstWhere('slug', $slug);
+    if ($project !== null) {
+        return view('public.corporate-product', ['project' => $project]);
+    }
+
     abort_unless(Schema::hasTable('portfolio_apps'), 404);
     $app = DB::table('portfolio_apps')->where('slug', $slug)->where('is_published', true)->first();
     abort_if($app === null, 404);
@@ -70,7 +79,10 @@ Route::get('/our-work/{slug}', function (string $slug) {
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms'];
+    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms', '/artificial-intelligence', '/cybersecurity', '/research'];
+    foreach (config('corporate.projects') as $project) {
+        $urls[] = '/our-work/'.$project['slug'];
+    }
 
     if (Schema::hasTable('portfolio_apps')) {
         foreach (DB::table('portfolio_apps')->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {

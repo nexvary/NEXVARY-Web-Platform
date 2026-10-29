@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan', '/privacy', '/terms'];
+const pages = ['/', '/services', '/our-work', '/about', '/contact', '/apps', '/safescan', '/privacy', '/terms', '/artificial-intelligence', '/cybersecurity', '/research', '/our-work/foodguard', '/our-work/guardian-studio', '/our-work/nexvary-mr'];
 
 for (const path of pages) {
   test(`${path} has no horizontal overflow or clipped controls`, async ({ page }, testInfo) => {
@@ -33,7 +33,9 @@ for (const path of pages) {
 
 test('back button returns to the previous same-origin page', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  await page.getByRole('link', { name: /about|عنّا/i }).click();
+  const menu = page.locator('[data-menu-toggle]');
+  if (await menu.isVisible()) await menu.click();
+  await page.getByRole('navigation').getByRole('link', { name: /about|عنّا/i }).click();
   await expect(page).toHaveURL(/\/about$/);
   const back = page.getByTestId('back-button');
   await expect(back).toBeVisible();
@@ -45,7 +47,7 @@ test('Arabic RTL alignment gate', async ({ page }, testInfo) => {
   await page.goto('/?lang=ar', { waitUntil: 'networkidle' });
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('html')).toHaveAttribute('lang', /ar/);
-  await expect(page.getByRole('navigation')).toContainText('الخدمات');
+  await expect(page.getByRole('navigation')).toContainText('الأبحاث');
 
   const state = await page.evaluate(() => ({
     overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,

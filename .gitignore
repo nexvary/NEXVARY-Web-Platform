@@ -13,3 +13,9 @@
 .phpunit.result.cache
 npm-debug.log*
 .DS_Store
+
+/database/*.sqlite
+/.phpunit.cache/
+/artifacts/
+/playwright-report/
+/test-results/
