@@ -90,7 +90,7 @@ test('Android 15 viewport-safe tap target gate', async ({ page }) => {
 
 test('About exposes all official NEXVARY channels', async ({ page }) => {
   await page.goto('/about', { waitUntil: 'networkidle' });
-  for (const label of ['GitHub']) {
+  for (const label of ['Website', 'GitHub', 'Facebook', 'YouTube', 'X', 'info@nexvary.com']) {
     await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 });
