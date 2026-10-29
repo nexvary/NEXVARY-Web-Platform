@@ -1,5 +1,15 @@
 # Approved daylight corporate implementation
 
+## Current verified follow-up — approved security-gate image
+
+The owner-approved image with the foreground woman removed and the perimeter security gate added is now the responsive home hero (`hero-security-*`). Application commit `268b5f227b401bc3690bb79be9e229af4ec86c0b` passed Corporate Daylight Verification, Fast UI Gate and the cPanel Ready Bundle on GitHub after the repository became public. The missing axe Playwright dependency was declared in package.json/lock; the homepage no longer downloads the unused 75KB legacy stylesheet.
+
+Latest Lighthouse mobile lab result: performance **99**, accessibility **100**, SEO **100**, LCP **2103.2397ms**, CLS **0**, TBT **0ms**. Environment and exact raw summary are in `lighthouse-mobile.json`. INP and production field results remain unmeasured. Evidence run: https://github.com/nexvary/NEXVARY-Web-Platform/actions/runs/40893659959 ; cPanel bundle: https://github.com/nexvary/NEXVARY-Web-Platform/actions/runs/40893659818 ; Fast UI: https://github.com/nexvary/NEXVARY-Web-Platform/actions/runs/40893659775 .
+
+The previous CI billing/pre-start obstacle below is historical; the latest public-repository runs completed successfully. No financial settings were changed. Production deployment is still pending verified hosting access and a reviewed production backup; changing GitHub visibility does not supply those. The separate label-gated Release Gate was skipped, not claimed as passed.
+
+The remaining sections retain the earlier implementation and diagnostic record.
+
 Base: upstream `main` 32f59d0f48e6864e8ac1c9bc6c04f70f809aa769. The local baseline was verified by Git blob hashes against the GitHub recursive tree (only the empty database/.gitkeep differed locally).
 
 ## Scope
