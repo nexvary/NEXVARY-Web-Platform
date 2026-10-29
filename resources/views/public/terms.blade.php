@@ -6,7 +6,7 @@
 
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title"><p>{{ $ar ? 'الشروط' : 'TERMS' }}</p><h1>{{ $ar ? 'شروط الاستخدام' : 'Terms of Use' }}</h1><p class="nx-lead">{{ $ar ? 'شروط عامة لاستخدام الموقع ومعلومات المنتجات المنشورة.' : 'General conditions for use of the website and published product information.' }}</p></div>
     <div class="nx-ssr-copy">
         @if($ar)

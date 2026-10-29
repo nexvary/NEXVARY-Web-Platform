@@ -3,13 +3,17 @@
 @section('description', app()->getLocale() === 'ar' ? 'نيكسفاري تطوّر تقنيات الأمن السيبراني والذكاء الاصطناعي والبرمجيات من خلال البحث والابتكار.' : 'Nexvary Inc develops cybersecurity, artificial intelligence and software through focused engineering, digital research and innovation.')
 @section('canonical', 'https://nexvary.com/')
 @push('head')
-<link rel="preload" as="image" type="image/avif" imagesrcset="/assets/corporate/hero-640.avif 640w, /assets/corporate/hero-960.avif 960w, /assets/corporate/hero-1536.avif 1536w" imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" media="(max-width: 600px)" imagesrcset="/assets/corporate/hero-640.avif 640w, /assets/corporate/hero-960.avif 960w" imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" type="image/avif" media="(min-width: 601px)" imagesrcset="/assets/corporate/hero-640.avif 640w, /assets/corporate/hero-960.avif 960w, /assets/corporate/hero-1536.avif 1536w" imagesizes="100vw" fetchpriority="high">
 @endpush
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main id="main-content" class="nc-home">
 <section class="nc-hero" aria-labelledby="hero-title">
     <picture class="nc-hero-picture">
+        <source media="(max-width: 600px)" type="image/avif" srcset="/assets/corporate/hero-640.avif 640w, /assets/corporate/hero-960.avif 960w" sizes="100vw">
+        <source media="(max-width: 600px)" type="image/webp" srcset="/assets/corporate/hero-640.webp 640w, /assets/corporate/hero-960.webp 960w" sizes="100vw">
+        <source media="(max-width: 600px)" type="image/jpeg" srcset="/assets/corporate/hero-640.jpg 640w, /assets/corporate/hero-960.jpg 960w" sizes="100vw">
         <source type="image/avif" srcset="/assets/corporate/hero-640.avif 640w, /assets/corporate/hero-960.avif 960w, /assets/corporate/hero-1536.avif 1536w" sizes="100vw">
         <source type="image/webp" srcset="/assets/corporate/hero-640.webp 640w, /assets/corporate/hero-960.webp 960w, /assets/corporate/hero-1536.webp 1536w" sizes="100vw">
         <img src="/assets/corporate/hero-960.jpg" srcset="/assets/corporate/hero-640.jpg 640w, /assets/corporate/hero-960.jpg 960w, /assets/corporate/hero-1536.jpg 1536w" sizes="100vw" width="1536" height="1024" fetchpriority="high" alt="{{ $ar ? 'تصور معماري: مدخل نيكسفاري بواجهة حجرية وزجاجية وحدائق ونافورة وعلم الشركة' : 'Architectural concept: Nexvary entrance with stone and glass facade, gardens, fountain and company flag' }}">

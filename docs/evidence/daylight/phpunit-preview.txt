@@ -1,0 +1,44 @@
+Admin Control (Tests\Feature\AdminControl)
+ [x] Every admin tab is connected and opens for owner
+ [x] Owner can promote user to admin role
+ [x] Last owner cannot demote their own account
+ [x] Safescan admin can never enable raw file storage
+ [x] Owner can update site identity and seo settings
+ [x] Session revoke endpoint is scoped to the authenticated user
+ [x] Passkey and totp management routes are registered
+
+Aws Readiness Public Surface (Tests\Feature\AwsReadinessPublicSurface)
+ [x] Verified products are visible without empty portfolio claim
+ [x] Public company surface exposes cloud ready language and policy pages
+
+Deployment Publisher (Tests\Feature\DeploymentPublisher)
+ [x] Healthy public deploy publish updates project and records run
+ [x] External health url is rejected before request
+
+Health (Tests\Feature\Health)
+ [x] Public health endpoint is minimal
+ [x] Security headers are present
+
+Platform Release (Tests\Feature\PlatformRelease)
+ [x] Public platform routes are available
+ [x] Public pages ship crawlable server rendered seo
+ [x] Navigation targets have registered routes
+ [x] Arabic locale sets rtl shell
+ [x] Contact form persists valid request
+ [x] Robots and sitemap only publish public surfaces
+ [x] Private login surface is not indexable or cacheable
+ [x] Csp uses nonce and disallows unsafe inline
+ [x] Non admin user is rejected by admin authorization
+ [x] Admin user is accepted by admin authorization
+ [x] Arabic contact validation is localized
+
+Project Manifest (Tests\Feature\ProjectManifest)
+ [x] Valid manifest is accepted
+ [x] Manifest rejects unapproved status and repository host
+
+Seo Crawler Release Gate (Tests\Feature\SeoCrawlerReleaseGate)
+ [x] Public pages pass raw html seo autopilot gate
+ [x] Official social links are exact and not placeholders
+ [x] Language fallback never declares english content as an untranslated language
+ [x] Dynamic project page is crawlable and linked from sitemap and catalog
+ [x] Every sitemap public url has a crawled internal link

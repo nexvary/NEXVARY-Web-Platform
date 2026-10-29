@@ -14,7 +14,7 @@
     ];
 @endphp
 
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title">
         <p>PROJECTS / OUR WORK</p>
         <h1>{{ $ar ? 'منتجات حقيقية بحالة واضحة' : 'Real products with explicit status' }}</h1>
@@ -29,7 +29,7 @@
                         <span>{{ $fallback[1] }}</span>
                         <span>{{ strtoupper($fallback[2]) }}</span>
                     </div>
-                    <div class="nx-icon" aria-hidden="true">N</div>
+                    <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
                     <h2>{{ $fallback[0] }}</h2>
                     <p>{{ $fallback[3] }}</p>
                     <div class="nx-actions">
@@ -52,7 +52,7 @@
                     @if($app->icon_url)
                         <img src="{{ $app->icon_url }}" alt="{{ $app->name }} visual" loading="lazy" decoding="async" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
                     @else
-                        <div class="nx-icon" aria-hidden="true">N</div>
+                        <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
                     @endif
 
                     <div class="nx-project-meta">
@@ -66,7 +66,7 @@
                         @endif
                     </div>
 
-                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $app->name }}</a></h2>
+                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug], false) }}">{{ $app->name }}</a></h2>
                     @if($app->tagline)
                         <p><strong>{{ $app->tagline }}</strong></p>
                     @endif
@@ -85,7 +85,7 @@
                     </p>
 
                     <div class="nx-actions">
-                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug], false) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
                         @if($app->website_url)
                             <a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>
                         @endif

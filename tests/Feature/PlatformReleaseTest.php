@@ -157,4 +157,12 @@ final class PlatformReleaseTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('allowed', $response->getContent());
     }
+    public function test_arabic_contact_validation_is_localized(): void
+    {
+        $this->from('/contact?lang=ar')->post('/contact?lang=ar', [])
+            ->assertRedirect('/contact?lang=ar')
+            ->assertSessionHasErrors(['name', 'email', 'message']);
+
+        $this->get('/contact?lang=ar')->assertOk()->assertSee('حقل الاسم الكامل مطلوب.');
+    }
 }

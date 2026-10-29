@@ -6,7 +6,7 @@
 
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title"><p>APPLICATION ECOSYSTEM</p><h1>{{ $ar ? 'تطبيقات أمنية بواجهة موحدة' : 'Security applications, one platform' }}</h1><p class="nx-lead">{{ $ar ? 'مجموعة تطبيقات دفاعية وخصوصية مصممة لتقديم معلومات أو إجراءات واضحة دون ادعاءات غير واقعية.' : 'A set of defensive and privacy-first applications designed to provide useful signals, clear workflows and controlled release paths.' }}</p></div>
     <div class="nx-grid">
         @foreach([
@@ -17,7 +17,7 @@
             ['AI Intelligence','AI','Focused AI security and technology intelligence.'],
             ['DFIR Lab','FORENSICS','Structured digital-forensics workflows and investigation support.']
         ] as $product)
-            <article class="nx-card nx-app-card"><div class="nx-icon" aria-hidden="true">N</div><div class="nx-card-tag">{{ $product[1] }}</div><h2>{{ $product[0] }}</h2><p>{{ $product[2] }}</p>@if($product[0] === 'SafeScan')<a class="nx-card-link" href="/safescan">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} →</a>@else<span class="nx-card-status">CONTROLLED RELEASE</span>@endif</article>
+            <article class="nx-card nx-app-card"><img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy"><div class="nx-card-tag">{{ $product[1] }}</div><h2>{{ $product[0] }}</h2><p>{{ $product[2] }}</p>@if($product[0] === 'SafeScan')<a class="nx-card-link" href="/safescan">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} →</a>@else<span class="nx-card-status">CONTROLLED RELEASE</span>@endif</article>
         @endforeach
     </div>
     <div class="nx-ssr-copy" style="margin-top:34px">

@@ -2,7 +2,7 @@ import { Link, router } from '@inertiajs/react';
 import { ArrowLeft, ArrowRight, Facebook, Globe2, Mail, Youtube } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 
-const languages = ['en', 'ar', 'tr', 'ru', 'de', 'it', 'es'] as const;
+const languages = ['en', 'ar'] as const;
 
 export default function SiteShell({ children }: PropsWithChildren) {
   const ar = document.documentElement.lang.startsWith('ar');
@@ -34,11 +34,9 @@ export default function SiteShell({ children }: PropsWithChildren) {
         </Link>
         <nav className="nx-nav" aria-label={ar ? 'التنقل الرئيسي' : 'Primary navigation'}>
           <Link href="/">{ar ? 'الرئيسية' : 'Home'}</Link>
-          <Link href="/services">{ar ? 'الخدمات' : 'Services'}</Link>
-          <Link href="/our-work">{ar ? 'أعمالنا' : 'Our Work'}</Link>
-          <Link href="/apps">{ar ? 'التطبيقات' : 'Apps'}</Link>
-          <Link href="/safescan">SafeScan</Link>
-          <Link href="/about">{ar ? 'عنّا' : 'About'}</Link>
+          <Link href="/services">{ar ? 'التقنية' : 'Technology'}</Link>
+          <Link href="/about">{ar ? 'الشركة' : 'Company'}</Link>
+          <Link href="/research">{ar ? 'الأبحاث' : 'Research'}</Link>
           <Link href="/contact">{ar ? 'تواصل معنا' : 'Contact'}</Link>
         </nav>
         <label className="nx-language">

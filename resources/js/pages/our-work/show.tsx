@@ -32,7 +32,7 @@ export default function OurWorkShow({ app }: { app: AppDetail }) {
         <section className="grid gap-8 rounded-3xl border border-cyan-300/15 bg-slate-950/75 p-6 lg:grid-cols-[1.25fr_.75fr] lg:p-10">
           <div>
             <div className="mb-5 flex items-center gap-4">
-              {app.icon_url ? <img src={app.icon_url} alt="" className="h-20 w-20 rounded-2xl border border-cyan-300/20 object-cover"/> : <div className="grid h-20 w-20 place-items-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 text-3xl font-black text-cyan-200">N</div>}
+              {app.icon_url ? <img src={app.icon_url} alt="" className="h-20 w-20 rounded-2xl border border-cyan-300/20 object-cover"/> : <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" />}
               <div><div className="text-sm font-bold tracking-widest text-cyan-300">NEXVARY PRODUCT</div><h1 className="text-4xl font-black sm:text-5xl">{app.name}</h1><p className="mt-1 text-slate-400">{app.tagline}</p></div>
             </div>
             <p className="max-w-3xl text-lg leading-8 text-slate-200">{app.summary}</p>

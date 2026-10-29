@@ -1,0 +1,58 @@
+{
+  "browser": "Cloud Chrome desktop",
+  "home_languages": [
+    "en",
+    "ar"
+  ],
+  "axe": {
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21aa"
+    ],
+    "english": {
+      "violations": 0,
+      "passes": 21,
+      "incomplete": 1
+    },
+    "arabic": {
+      "violations": 0,
+      "passes": 21,
+      "incomplete": 1
+    },
+    "limitation": "Incomplete contrast checks over background imagery require manual review; not a full accessibility certification."
+  },
+  "responsive_layout": {
+    "method": "Actual server-rendered HTML in srcdoc QA viewport; not a real device or full mobile browser emulation",
+    "layout_width_px": 412,
+    "horizontal_overflow": false,
+    "image_selected": "hero-640.avif",
+    "details_menu_expands": true
+  },
+  "performance": {
+    "method": "Temporary nonce-authorized PerformanceObserver in top-level actual Laravel preview; warm cache and unthrottled desktop Chrome",
+    "lcp_ms": 172,
+    "cls": 0,
+    "long_tasks": 0,
+    "inp": null,
+    "lighthouse_score": null,
+    "production_field_metrics": false
+  },
+  "phpunit": {
+    "php": "8.5.12",
+    "tests": 31,
+    "assertions": 356,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "time_s": 2.756318
+  },
+  "ci": {
+    "run_id": 40886143244,
+    "conclusion": "failure",
+    "steps_started": 0,
+    "runner_id": 0,
+    "reason": "Not exposed by available diagnostic tools"
+  },
+  "production_deployed": false
+}

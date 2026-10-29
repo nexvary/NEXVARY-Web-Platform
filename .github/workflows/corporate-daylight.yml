@@ -2,7 +2,7 @@ name: Corporate Daylight Verification
 on:
   pull_request:
     branches: [main]
-    paths: ['resources/**', 'public/**', 'routes/**', 'config/**', 'tests/**', '.github/workflows/corporate-daylight.yml']
+    paths: ['resources/**', 'public/**', 'routes/**', 'config/**', 'lang/**', 'tests/**', '.github/workflows/corporate-daylight.yml']
   push:
     branches: ['feature/approved-daylight-corporate']
 permissions:
