@@ -6,7 +6,7 @@
 
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title"><p>PRIVACY</p><h1>{{ $ar ? 'سياسة الخصوصية' : 'Privacy Policy' }}</h1><p class="nx-lead">{{ $ar ? 'نص واضح عن البيانات التي يعالجها الموقع العام وكيفية تقليل جمعها.' : 'A clear description of the data handled by the public website and how collection is minimized.' }}</p></div>
     <div class="nx-ssr-copy">
         @if($ar)

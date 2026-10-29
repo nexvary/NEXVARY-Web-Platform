@@ -1,60 +1,8 @@
 @extends('public.layout')
-
-@section('title', app()->getLocale() === 'ar' ? 'عن NEXVARY — شركة منتجات تقنية أمنية' : 'About NEXVARY — Security Technology Product Company')
-@section('description', app()->getLocale() === 'ar' ? 'NEXVARY شركة تقنية تطور منتجات للأمن السيبراني والخصوصية والتحليل الجنائي الرقمي والتطبيقات المتصلة بالسحابة والأمن المدعوم بالذكاء الاصطناعي.' : 'NEXVARY is a technology company developing cybersecurity, privacy, digital forensics, cloud-connected and AI-assisted security software products.')
+@section('title', app()->getLocale() === 'ar' ? 'عن نيكسفاري | الشركة ومبادئ العمل' : 'About Nexvary Inc | Company & Principles')
+@section('description', app()->getLocale() === 'ar' ? 'تعرّف إلى نيكسفاري، شركة منتجات برمجية وأبحاث مسجلة في وايومنغ، تعمل في التطبيقات الذكية والأمن الرقمي والتقنيات التطبيقية.' : 'Meet Nexvary Inc, a Wyoming software product and research company working across intelligent applications, digital security and applied technology.')
 @section('canonical', 'https://nexvary.com/about')
-
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
-<main class="nx-section nx-page-body">
-    <section class="nx-about-hero">
-        <div>
-            <p class="nx-kicker">ABOUT NEXVARY</p>
-            <h1>{{ $ar ? 'شركة منتجات تقنية تركز على البرمجيات الأمنية.' : 'A technology product company focused on security software.' }}</h1>
-            <p class="nx-lead">{{ $ar ? 'تطوّر NEXVARY منتجات برمجية خاصة بها للأمن السيبراني والخصوصية والتحليل الجنائي الرقمي والتطبيقات المتصلة بالسحابة وقدرات أمنية مدعومة بالذكاء الاصطناعي.' : 'NEXVARY is a technology company developing cybersecurity, privacy, digital forensics, and cloud-connected software products. Our focus is building practical security applications and platforms that combine monitoring, analysis, automation, secure cloud services, and AI-assisted capabilities.' }}</p>
-        </div>
-        <div class="nx-about-emblem" aria-hidden="true"><span>N</span></div>
-    </section>
-
-    <div class="nx-grid nx-about-grid">
-        @foreach([
-            ['Cybersecurity','Defensive software, attack-surface reduction, monitoring and secure operational workflows.'],
-            ['Privacy Technology','Products and architecture designed to minimize unnecessary data exposure.'],
-            ['Digital Forensics','Repeatable investigation and evidence-oriented analysis workflows.'],
-            ['Cloud-Connected Applications','Secure APIs, authentication, storage, databases, monitoring and deployment-ready backends.'],
-            ['AI-Assisted Security','AI-supported analysis and automation behind explicit security and data boundaries.'],
-            ['Secure Infrastructure','Health checks, auditability, deployment controls and least-privilege integration patterns.']
-        ] as $pillar)
-            <article class="nx-card"><div class="nx-icon" aria-hidden="true">N</div><h2>{{ $pillar[0] }}</h2><p>{{ $pillar[1] }}</p></article>
-        @endforeach
-    </div>
-
-    <section class="nx-card" style="margin-top:28px">
-        <p class="nx-kicker">CLOUD-READY BY DESIGN</p>
-        <h2>{{ $ar ? 'قابلية التوسع دون ادعاءات سحابية غير مثبتة' : 'Built for scalable cloud infrastructure without unsupported cloud claims' }}</h2>
-        <p class="nx-rich-text">{{ $ar ? 'تُصمم أنظمة NEXVARY لتعمل مع واجهات API سحابية آمنة، المصادقة، تخزين الكائنات، قواعد البيانات، المراقبة، معالجة الأحداث، الإشعارات، الأتمتة ومسارات النشر. وعندما لا يكون مزود بعينه مستخدمًا فعليًا في الإنتاج، نصف البنية بأنها جاهزة للسحابة بدل الادعاء باستخدام ذلك المزود.' : 'NEXVARY systems are designed around secure cloud APIs, authentication, object storage, databases, monitoring, event processing, notifications, automation and deployment workflows. Where a particular cloud provider is not yet an active production dependency, we describe the architecture as cloud-ready rather than claiming provider usage that has not been verified.' }}</p>
-    </section>
-
-    <div class="nx-ssr-copy" style="margin-top:34px">
-        @if($ar)
-            <p>نحن نفرّق بين المنتج البرمجي، والنسخة التجريبية، والأداة الداخلية، والخدمة المهنية. حالة كل مشروع يجب أن تظهر بوضوح، ولا نعتبر وجود مستودع أو شاشة تجريبية دليلًا على أن المنتج متاح للعامة.</p>
-            <p>كما لا نقدم كل إشارة أمنية باعتبارها حكمًا نهائيًا. البرمجيات تساعد على الكشف والتحليل والتوثيق والأتمتة، بينما بعض الحالات تحتاج تحققًا مهنيًا أو معدات ميدانية أو إجراءات حفظ أدلة.</p>
-        @else
-            <p>We distinguish between a software product, a beta, a private preview, an internal tool and a professional service. Repository existence or a demonstration interface is not treated as proof of public availability; project status is communicated explicitly.</p>
-            <p>Security signals are also not presented as absolute conclusions. Software can help detect, analyze, document and automate, while some situations still require professional validation, field equipment or formal evidence-handling procedures.</p>
-        @endif
-    </div>
-
-    <section class="nx-contact-panel">
-        <div><p class="nx-kicker">CONNECT</p><h2>{{ $ar ? 'روابط NEXVARY الرسمية' : 'Official NEXVARY channels' }}</h2></div>
-        <div class="nx-social-grid">
-            <a href="https://nexvary.com/"><strong>Website</strong><small>nexvary.com</small></a>
-            <a href="https://github.com/nexvary" target="_blank" rel="noreferrer"><strong>GitHub</strong><small>github.com/nexvary</small></a>
-            <a href="https://www.facebook.com/share/14p9krEn5ij/" target="_blank" rel="noreferrer"><strong>Facebook</strong><small>Official page</small></a>
-            <a href="mailto:info@nexvary.com"><strong>Email</strong><small>info@nexvary.com</small></a>
-            <a href="https://www.youtube.com/@NexvaryInc" target="_blank" rel="noreferrer"><strong>YouTube</strong><small>@NexvaryInc</small></a>
-            <a href="https://x.com/Nexvary" target="_blank" rel="noreferrer"><strong>X</strong><small>@Nexvary</small></a>
-        </div>
-    </section>
-</main>
+<main id="main-content" class="nx-page-body"><section class="nx-section nx-page-intro"><p class="nx-kicker">{{ $ar ? 'الشركة / تأسست عام ٢٠٢٦' : 'THE COMPANY / EST. 2026' }}</p><h1>{{ $ar ? 'نبني بهدف. ونتحقق بالدليل.' : 'Built with purpose. Guided by evidence.' }}</h1><p class="nx-lead">{{ $ar ? 'نيكسفاري شركة منتجات تقنية تطوّر برمجيات ذكية وتطبيقات Android وWindows وأدوات للأمن السيبراني وأبحاثًا في التحليل الجنائي الرقمي.' : 'Nexvary Inc is a technology product company developing intelligent software, Android and Windows applications, cybersecurity tools and digital-forensics research.' }}</p></section><section class="nx-section nx-section-first"><div class="nx-editorial"><div><h2>{{ $ar ? 'هندسة تجمع التخصصات' : 'Engineering across disciplines' }}</h2><p>{{ $ar ? 'نصل بين هندسة البرمجيات والبحث التطبيقي لبناء أدوات عملية. تشمل أعمالنا إرشادات الأغذية المحلية، وتسجيل الوسائط وإدارتها، وتقنيات تشخيص الأجهزة ومعالجة الأدلة ضمن نطاق مصرح به.' : 'We connect software engineering and applied research to build practical tools. Current work includes local food guidance, media recording and management, and authorized device diagnostics and evidence-processing workflows.' }}</p><p>{{ $ar ? 'نجعل الخصوصية وحدود الصلاحيات وسلامة البيانات جزءًا من قرارات التصميم. ولا ننسب إلى منتج قدرة لمجرد أنها ضمن خارطة الطريق.' : 'Privacy, permission boundaries and data integrity inform our design decisions. A roadmap item is not presented as an implemented product capability.' }}</p></div><div class="nx-inset"><p class="nx-kicker">NEXVARY INC</p><h2>{{ $ar ? 'معلومات الشركة' : 'Company details' }}</h2><dl class="nx-company-facts"><div><dt>{{ $ar ? 'الاسم' : 'Company' }}</dt><dd>Nexvary Inc</dd></div><div><dt>{{ $ar ? 'التسجيل' : 'Jurisdiction' }}</dt><dd>{{ $ar ? 'وايومنغ، الولايات المتحدة الأمريكية' : 'Wyoming, United States of America' }}</dd></div><div><dt>{{ $ar ? 'تاريخ التأسيس' : 'Incorporated' }}</dt><dd><time datetime="2026-10-28">{{ $ar ? '٢٨ أكتوبر ٢٠٢٦' : 'October 28, 2026' }}</time></dd></div><div><dt>{{ $ar ? 'التواصل' : 'Contact' }}</dt><dd><a href="mailto:info@nexvary.com">info@nexvary.com</a></dd></div></dl></div></div><div class="nx-principles"><article><span class="nx-ordinal">01</span><h3>{{ $ar ? 'وصف يمكن مراجعته' : 'Reviewable claims' }}</h3><p>{{ $ar ? 'نربط وصف العمل بالمصدر وحالة التطوير، ونوضح ما لم يتم اختباره بعد.' : 'Descriptions reflect reviewed source and development status, with untested areas stated clearly.' }}</p></article><article><span class="nx-ordinal">02</span><h3>{{ $ar ? 'خصوصية مقصودة' : 'Deliberate privacy' }}</h3><p>{{ $ar ? 'معالجة محلية حيث تسمح الوظيفة، وتحديد واضح للخدمات التي تحتاج اتصالًا.' : 'Local processing where the workflow permits, and explicit boundaries for network-dependent services.' }}</p></article><article><span class="nx-ordinal">03</span><h3>{{ $ar ? 'نضج تدريجي' : 'Measured progress' }}</h3><p>{{ $ar ? 'نفصل بين البحث والتنفيذ وقبول الإصدار، دون ادعاء اعتمادات أو نتائج غير مثبتة.' : 'Research, implementation and release acceptance remain distinct, without unsupported certifications or results.' }}</p></article></div><a class="nx-text-link" href="/our-work{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'استكشف منتجاتنا' : 'Explore our products' }} <span aria-hidden="true">↗</span></a></section></main>
 @endsection

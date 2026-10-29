@@ -13,6 +13,7 @@
     "visual:test": "playwright test tests/visual"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^9.19.0",
     "@playwright/test": "^1.55.0",
     "@types/node": "^22.13.5",

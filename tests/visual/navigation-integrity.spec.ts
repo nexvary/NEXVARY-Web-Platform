@@ -2,17 +2,24 @@ import { expect, test } from '@playwright/test';
 
 const publicTabs = [
   { href: '/', label: /home|الرئيسية/i },
-  { href: '/services', label: /services|الخدمات/i },
-  { href: '/our-work', label: /our work|أعمالنا/i },
-  { href: '/apps', label: /apps|التطبيقات/i },
-  { href: '/safescan', label: /safescan/i },
   { href: '/about', label: /about|عنّا/i },
+  { href: '/our-work', label: /our work|أعمالنا/i },
+  { href: '/artificial-intelligence', label: /^AI$|الذكاء الاصطناعي/i },
+  { href: '/cybersecurity', label: /cybersecurity|الأمن الرقمي/i },
+  { href: '/research', label: /research|الأبحاث/i },
   { href: '/contact', label: /contact|تواصل معنا/i },
 ];
+
+async function openNavigation(page: import('@playwright/test').Page) {
+  const toggle = page.locator('[data-menu-toggle]');
+  if (await toggle.isVisible()) await toggle.click();
+}
+
 
 for (const tab of publicTabs) {
   test(`public tab ${tab.href} opens by clicking the real navigation control`, async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
+    await openNavigation(page);
     const link = page.getByRole('navigation').getByRole('link', { name: tab.label }).first();
     await expect(link).toBeVisible();
     await link.click();
@@ -70,6 +77,7 @@ test('public pages contain no placeholder links or visually dead controls', asyn
 test('every internal page exposes a working Back button', async ({ page }) => {
   for (const tab of publicTabs.filter((item) => item.href !== '/')) {
     await page.goto('/', { waitUntil: 'networkidle' });
+    await openNavigation(page);
     await page.getByRole('navigation').getByRole('link', { name: tab.label }).first().click();
     await expect(page).toHaveURL(new RegExp(`${tab.href.replaceAll('/', '\\/')}$`));
     const back = page.getByTestId('back-button');
