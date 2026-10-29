@@ -16,7 +16,7 @@ for (const locale of ['en', 'ar']) {
     expect(await hero.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBeTruthy();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2)).toBeTruthy();
     const imageSource = await hero.evaluate((image: HTMLImageElement) => image.currentSrc);
-    if (info.project.name === 'android15') expect(imageSource).not.toContain('hero-1536');
+    if (info.project.name === 'android15') expect(imageSource).not.toMatch(/-1536\.(avif|webp|jpg)$/);
     for (const path of ['/favicon.ico', '/assets/corporate/seal-16.png', '/assets/corporate/seal-32.png', '/assets/corporate/seal-48.png', '/apple-touch-icon.png', '/site.webmanifest']) {
       expect((await request.get(path)).ok()).toBeTruthy();
     }
