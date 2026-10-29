@@ -47,7 +47,10 @@ test('Arabic RTL alignment gate', async ({ page }, testInfo) => {
   await page.goto('/?lang=ar', { waitUntil: 'networkidle' });
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('html')).toHaveAttribute('lang', /ar/);
+  const mobileMenu = page.locator('[data-menu-toggle]');
+  if (await mobileMenu.isVisible()) await mobileMenu.click();
   await expect(page.getByRole('navigation')).toContainText('الأبحاث');
+  if (await mobileMenu.isVisible()) await mobileMenu.click();
 
   const state = await page.evaluate(() => ({
     overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,

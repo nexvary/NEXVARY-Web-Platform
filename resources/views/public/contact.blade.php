@@ -11,7 +11,7 @@
 
     @if(session('contact_success'))<div class="nx-success" role="status">{{ $ar ? 'تم استلام طلبك بنجاح. شكرًا لتواصلك معنا.' : 'Your request was received successfully. Thank you for contacting us.' }}</div>@endif
 
-    <form method="post" action="/contact" class="nx-public-form" >
+    <form method="post" action="/contact{{ $ar ? '?lang=ar' : '' }}" class="nx-public-form" >
         @csrf
         <div class="nx-form-grid">
             <label class="nx-field"><span>{{ $ar ? 'الاسم الكامل *' : 'Full name *' }}</span><input name="name" value="{{ old('name') }}" maxlength="120" required autocomplete="name">@error('name')<small class="nx-error">{{ $message }}</small>@enderror</label>

@@ -5,14 +5,14 @@ const paths = ['/', '/about', '/our-work', '/artificial-intelligence', '/cyberse
 
 test('language selection changes live content and preserves Arabic on project navigation', async ({ page }) => {
   await page.goto('/?lang=en');
-  await page.getByLabel('Language', { exact: true }).selectOption('ar');
+  await page.getByRole('link', { name: 'Switch to Arabic', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.getByRole('link', { name: 'اكتشف أعمالنا', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await page.getByRole('link', { name: 'NEXVARY FoodGuard', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
-  await page.getByLabel('Language', { exact: true }).selectOption('en');
+  await page.getByRole('link', { name: 'Switch to English', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
