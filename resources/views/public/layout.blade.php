@@ -40,7 +40,9 @@
     @foreach([16,32,48] as $size)<link rel="icon" type="image/png" sizes="{{ $size }}x{{ $size }}" href="/assets/corporate/seal-{{ $size }}.png">@endforeach
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
-    @vite(['resources/css/public.css', 'resources/css/corporate.css', 'resources/js/public.ts'])
+    @vite(request()->routeIs('home')
+        ? ['resources/css/corporate.css', 'resources/js/public.ts']
+        : ['resources/css/public.css', 'resources/css/corporate.css', 'resources/js/public.ts'])
     <script type="application/ld+json" nonce="{{ Vite::cspNonce() }}">{!! json_encode($organization, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>
     @stack('head')
 </head>
