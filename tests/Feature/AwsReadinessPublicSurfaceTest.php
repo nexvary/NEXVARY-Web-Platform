@@ -37,7 +37,7 @@ final class AwsReadinessPublicSurfaceTest extends TestCase
 
         $this->get('/about')->assertOk()
             ->assertSee('Nexvary Inc develops software')
-            ->assertSee('GitHub');
+            ->assertDontSee('github.com/nexvary');
 
         $this->get('/privacy')->assertOk()->assertSee('Privacy Policy');
         $this->get('/terms')->assertOk()->assertSee('Terms of Use');
