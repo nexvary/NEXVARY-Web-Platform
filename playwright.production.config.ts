@@ -7,5 +7,5 @@ export default defineConfig({
   use: { ...base.use, baseURL: 'https://nexvary.com' },
   workers: 1,
   retries: 0,
-  testMatch: 'corporate-daylight.spec.ts',
+  testMatch: ['corporate-daylight.spec.ts', 'project-showcase.spec.ts'],
 });
