@@ -94,9 +94,6 @@
                         @if($app->website_url)
                             <a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>
                         @endif
-                        @if($app->repository_url)
-                            <a class="nx-btn" href="{{ $app->repository_url }}" target="_blank" rel="noreferrer">GitHub</a>
-                        @endif
                     </div>
                 </article>
             @endforeach
@@ -105,9 +102,9 @@
 
     <div class="nx-ssr-copy" style="margin-top:34px">
         @if($ar)
-            <p>لا يعني ظهور المشروع هنا أنه متاح للتنزيل. حالة المشروع المنشورة هي المرجع: Available أو Beta أو In Development أو Private Preview أو Internal. ولا يظهر رابط GitHub إلا إذا كان المستودع عامًا ومقصودًا للنشر.</p>
+            <p>لا يعني ظهور المشروع هنا أنه متاح للتنزيل. حالة المشروع المنشورة هي المرجع: Available أو Beta أو In Development أو Private Preview أو Internal.</p>
         @else
-            <p>Listing a project does not imply public download access. The published lifecycle state is authoritative: Available, Beta, In Development, Private Preview or Internal. A GitHub link appears only when the repository is intentionally public.</p>
+            <p>Listing a project does not imply public download access. The published lifecycle state is authoritative: Available, Beta, In Development, Private Preview or Internal.</p>
         @endif
     </div>
 </main>
