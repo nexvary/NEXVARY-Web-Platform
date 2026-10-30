@@ -16,8 +16,8 @@
 
 <main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title">
-        <p>PROJECTS / OUR WORK</p>
-        <h1>{{ $ar ? 'منتجات حقيقية بحالة واضحة' : 'Real products with explicit status' }}</h1>
+        <p>{{ $ar ? 'مشروعاتنا وأعمالنا' : 'PROJECTS / OUR WORK' }}</p>
+        <h1>{{ $ar ? 'مشروعاتنا وحالة تطويرها' : 'Our projects and their development status' }}</h1>
         <p class="nx-lead">{{ $ar ? 'نوضح ما هو متاح وما هو تجريبي أو خاص، ونربط المشروع بموقعه أو مستودعه فقط عندما يكون الرابط عامًا ورسميًا.' : 'We distinguish available products from beta, private-preview and internal work, and expose product or repository links only when they are public and official.' }}</p>
     </div>
 
@@ -80,12 +80,17 @@
                         </div>
                     @endif
 
+                    @if($app->updated_at)
                     <p class="nx-rich-text" style="font-size:.82rem">
                         {{ $ar ? 'آخر تحديث:' : 'Last updated:' }} {{ substr((string) $app->updated_at, 0, 10) }}
                     </p>
+                    @endif
+                    @if($app->is_development_showcase ?? false)
+                        <p>{{ $app->availability_note }}</p>
+                    @endif
 
                     <div class="nx-actions">
-                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug], false) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug, ...($ar ? ['lang' => 'ar'] : [])], false) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
                         @if($app->website_url)
                             <a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>
                         @endif

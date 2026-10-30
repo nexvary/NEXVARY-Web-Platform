@@ -33,6 +33,8 @@ Route::get('/our-work/{slug}', function (string $slug) {
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/our-work/{slug}/download', function (string $slug): RedirectResponse {
+    // Curated projects remain introduction-only even if an old DB row enables delivery.
+    abort_if(array_key_exists($slug, config('project-showcase', [])), 404);
     abort_unless(Schema::hasTable('portfolio_apps'), 404);
     $app = DB::table('portfolio_apps')->where('slug', $slug)->where('is_published', true)->first([
         'id', 'apk_url', 'distribution_mode', 'download_enabled',

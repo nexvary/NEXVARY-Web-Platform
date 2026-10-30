@@ -10,9 +10,10 @@
         'url' => 'https://nexvary.com/our-work/'.$app->slug,
         'applicationCategory' => (string) ($app->category ?: 'SecurityApplication'),
         'operatingSystem' => (string) $app->platform,
-        'softwareVersion' => (string) ($app->version ?: 'Current'),
         'publisher' => ['@id' => 'https://nexvary.com/#organization'],
     ];
+    if ($app->version) $projectSchema['softwareVersion'] = (string) $app->version;
+    if ($app->is_development_showcase ?? false) $projectSchema['creativeWorkStatus'] = 'In Development';
 @endphp
 @extends('public.layout')
 
@@ -27,7 +28,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main id="main-content" class="nx-section nx-page-body">
-    <div class="nx-section-title"><p>PROJECT</p><h1>{{ $app->name }}</h1>@if($app->tagline)<p class="nx-lead">{{ $app->tagline }}</p>@endif</div>
+    <div class="nx-section-title"><p>{{ $ar ? 'المشروع' : 'PROJECT' }}</p><h1>{{ $app->name }}</h1>@if($app->tagline)<p class="nx-lead">{{ $app->tagline }}</p>@endif</div>
     <div class="nx-project-meta"><span>{{ $app->lifecycle_status ?? strtoupper(str_replace('_',' ', $app->distribution_mode)) }}</span><span>{{ $app->platform }}</span>@if($app->category)<span>{{ $app->category }}</span>@endif @if($app->version)<span>v{{ $app->version }}</span>@endif @if($app->visibility ?? null)<span>{{ strtoupper($app->visibility) }}</span>@endif</div>
     @if(count($technologies))<div class="nx-project-meta">@foreach($technologies as $technology)<span>{{ $technology }}</span>@endforeach</div>@endif
     <article class="nx-card"><p>{{ $app->summary }}</p>@if($app->description)<div class="nx-rich-text">{{ $app->description }}</div>@endif</article>
@@ -40,6 +41,7 @@
         <section style="margin-top:24px"><div class="nx-section-title"><p>PREVIEW</p><h2>{{ $ar ? 'صور المشروع' : 'Project screenshots' }}</h2></div><div class="nx-screen-grid">@foreach($app->screenshots as $index=>$image)<img src="{{ $image }}" alt="{{ $app->name }} screenshot {{ $index + 1 }}" loading="lazy" decoding="async">@endforeach</div></section>
     @endif
 
+    @if(!($app->is_development_showcase ?? false))
     <div class="nx-ssr-copy" style="margin-top:30px">
         @if($ar)
             <p>تعرض هذه الصفحة المعلومات المنشورة رسميًا عن المشروع وحالة توفره الحالية. قد يكون المشروع متاحًا للتنزيل، مخصصًا للعرض، متاحًا حسب الطلب، للاستخدام الداخلي، أو في مرحلة قادمة. لا يظهر زر تنزيل عام إلا عندما تكون سياسة التوزيع مضبوطة على التنزيل ويكون ملف الإصدار منشورًا بصورة صريحة.</p>
@@ -49,6 +51,7 @@
             <p>The platform, version, capabilities, and availability shown here help visitors verify the identity and intended distribution of the project before use. When a public release includes integrity information, users should verify the published version and checksum where applicable. Internal or restricted projects should not be obtained from unofficial mirrors or redistributed copies that fall outside the controlled NEXVARY release path.</p>
         @endif
     </div>
+    @endif
 
     <div class="nx-actions" style="margin-top:26px">
         @if($app->can_download)<a class="nx-btn nx-btn-primary" href="{{ route('our-work.download', ['slug'=>$app->slug]) }}">{{ $ar ? 'تنزيل الإصدار' : 'Download release' }}</a>
