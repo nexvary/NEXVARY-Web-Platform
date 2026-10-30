@@ -9,3 +9,68 @@
 
 .nc-site[dir=rtl],html[dir=rtl] .nc-site{text-align:right;font-family:Tahoma,Arial,sans-serif}
 .nc-registry-note a,.nc-identity dd a{display:inline-flex;align-items:center;min-height:44px}
+
+/* Premium refinement: preserve the existing corporate layout and assets. */
+.nc-site{background:radial-gradient(ellipse at 50% 0,#24272c55,transparent 60%),#0a0a0a}
+.nc-site :where(a,button,input,textarea,select,summary):focus-visible{outline:3px solid #69b7ff;outline-offset:4px}
+.nc-site :where(main,article,section,div){min-width:0}
+.nc-site :where(h1,h2,h3,p,dd,a,span){overflow-wrap:break-word}
+.nc-site :where(.nc-section,.nx-page-body){scroll-margin-top:24px}
+.nc-site :where(.nc-grid,.nx-grid,.nx-product-list){align-items:stretch;gap:24px}
+.nc-grid>article,.nc-site .nx-card{height:100%;display:flex;flex-direction:column;align-items:flex-start;padding:26px;border:1px solid #bbc6d142;border-radius:14px;background:linear-gradient(135deg,#ffffff08,transparent 48%),linear-gradient(160deg,#1b1e23,#0e1013);box-shadow:inset 0 1px 0 #f3f6ff14,0 6px 20px #0002;transition:border-color .18s,box-shadow .18s}
+.nc-grid>article>:last-child,.nc-site .nx-card>:last-child{margin-bottom:0}
+.nc-grid>article .nc-button,.nc-site .nx-card>.nx-actions,.nc-site .nx-card>.nx-card-link,.nc-site .nx-card>.nx-card-status{margin-top:auto}
+.nc-site .nx-card>.nx-actions{padding-top:20px}
+.nc-site .nc-grid :where(h2,h3),.nc-site .nx-card :where(h2,h3){font-size:clamp(21px,1.7vw,25px);line-height:1.4;margin:20px 0 12px;color:#f3f2ef}
+.nc-site .nx-card p{color:#c5c6cb;line-height:1.8}
+.nc-focus .nc-grid article{padding:26px;border:1px solid #bbc6d142}
+.nc-icon{flex:none;display:block;width:60px;height:60px;padding:12px;border-radius:14px;border-color:#bbc6d14d;background:linear-gradient(145deg,#ffffff0d,#101722);filter:none}
+.nc-site .nc-button .nc-icon,.nc-site .nx-back-button .nc-icon{display:inline-block;width:22px;height:22px;padding:0;border:0;background:none}
+.nc-button-gold .nc-icon{stroke:#1d3551}.nc-button-gold .nc-icon path{stroke:#1d3551}
+.nc-site .nc-button-gold .nc-icon path:first-child{stroke:#594214}
+.nc-section h1{font-size:clamp(32px,4vw,54px);line-height:1.3;margin:16px 0 24px;max-width:1050px}
+.nc-section>p,.nc-section>.nx-ssr-copy{max-width:850px}
+.nc-section>.nc-grid{margin-top:32px}
+.nc-section .nc-heading{margin-bottom:28px}
+.nc-site .nx-section-title h1{line-height:1.35}
+.nc-site .nx-section-title>p,.nc-site .nx-lead{color:#c5c6cb}
+.nc-site .nx-ssr-copy{color:#cbcbd0}
+.nc-site .nx-public-form{border-color:#bbc6d142;background:linear-gradient(145deg,#202329,#101216);box-shadow:inset 0 1px 0 #ffffff14}
+.nc-site .nx-field :where(input,textarea,select){border-color:#aebdcc66;background:#0d1118}
+.nc-site .nx-field :where(input[type=email],input[autocomplete=tel]){direction:ltr;text-align:start}
+.nc-site .nx-btn{border-color:#bac5d169;color:#e8edf5;background:linear-gradient(145deg,#252d38,#111720);white-space:normal;line-height:1.5}
+.nc-site .nx-btn-primary{border-color:#e6c483;background:#eac779;color:#171109}
+.nc-site .nx-project-meta span,.nc-site .nx-card-status,.nc-site .nx-card-tag{color:#c5d3e5;border-color:#aebdcc55}
+.nc-site .nx-back-button{display:inline-flex;align-items:center;gap:10px;color:#e8c681;min-height:44px}
+.nc-site .nx-back-row{max-width:1200px;margin:auto;padding-inline:5%}
+.nc-site .nx-card .nx-actions{flex-wrap:wrap}
+.nc-site .nx-card h2 a{overflow-wrap:anywhere}
+.nc-site .nx-rich-text{color:#c5c6cb}
+.nc-site .nx-product-heading>.nc-icon{margin-inline-end:12px}
+.nc-site .nx-grid .nc-icon{margin-bottom:4px}
+.nc-site .nx-section .nx-section-title>.nc-icon{margin-bottom:16px}
+.nc-site .nx-hero .nc-icon{max-width:60px}
+.nc-footer a{overflow-wrap:anywhere}.nc-footer nav{gap:2px}
+.nc-footer-top>div:last-child>a:first-child{direction:ltr;unicode-bidi:isolate}
+@media(hover:hover){.nc-grid>article:hover,.nc-site .nx-card:hover{border-color:#d3dce68c;box-shadow:inset 0 1px 0 #ffffff26,0 6px 24px #0003}}
+@media(max-width:1150px) and (min-width:901px){.nc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){
+.nc-header{position:relative;inset:auto;margin:12px 16px;max-width:none;background:linear-gradient(120deg,#131b24,#1c2b39);gap:10px}
+.nc-menu{z-index:10}.nc-menu nav{max-width:calc(100vw - 48px)}
+.nc-hero{display:flex;flex-direction:column;min-height:0;padding:0;overflow:visible}
+.nc-hero-picture{position:relative;inset:auto;z-index:0;width:100%;height:auto;aspect-ratio:3/2}
+.nc-hero-picture img{width:100%;height:100%;object-fit:contain;object-position:center}
+.nc-hero:before,.nc-hero:after{display:none}
+.nc-hero-copy,[dir=rtl] .nc-hero-copy{max-width:none;margin:0;padding:28px 5% 20px;text-shadow:none}
+.nc-concept{position:static;max-width:none;margin:0;padding:0 5% 24px;font-size:12px;color:#c5c6cb}
+.nc-hero h1,[dir=rtl] .nc-hero h1{font-size:clamp(32px,6vw,46px);white-space:normal}
+.nc-hero h1 span,[dir=rtl] .nc-hero h1 span{font-size:clamp(26px,4.5vw,34px)}
+.nc-lead{max-width:670px}.nc-capabilities{padding-top:32px}
+.nc-site .nx-back-row{padding-top:12px}.nc-section{padding-block:48px}
+}
+@media(max-width:600px){.nc-header{margin:8px 10px;padding:8px;gap:6px}.nc-brand span{font-size:16px}.nc-brand img{width:44px;height:44px}.nc-brand{gap:7px}.nc-language{min-width:58px;padding-inline:6px}.nc-menu summary{padding-inline:6px}.nc-grid{grid-template-columns:1fr}.nc-grid>article,.nc-focus .nc-grid article,.nc-site .nx-card{padding:22px}.nc-section{padding-inline:22px}.nc-hero-copy,[dir=rtl] .nc-hero-copy{padding:24px 22px 20px}.nc-concept{padding-inline:22px}.nc-actions .nc-button{flex:1;gap:10px}.nc-site .nx-section{padding-inline:22px}.nc-site .nx-public-form{padding:20px}.nc-footer-top{gap:24px}.nc-footer nav{grid-template-columns:1fr 1fr}.nc-icon{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){.nc-grid>article,.nc-site .nx-card{transition:none}}
+.nc-site .nx-card-link{display:inline-flex;align-items:center;gap:12px;min-height:44px;color:#8cc6ff}
+.nc-site .nx-card-link .nc-icon{width:22px;height:22px;padding:0;border:0;background:none}
+[dir=rtl] .nc-site .nx-back-button .nc-icon-arrow{transform:scaleX(-1)}
+.nc-site .nx-actions{display:flex;gap:12px;flex-wrap:wrap}

@@ -7,7 +7,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main id="main-content" class="nx-section nx-page-body">
-    <div class="nx-section-title"><p>{{ $ar ? 'تواصل مع نيكسفاري' : 'CONTACT NEXVARY' }}</p><h1>{{ $ar ? 'أخبرنا كيف يمكننا مساعدتك.' : 'Tell us how we can help.' }}</h1><p class="nx-lead">{{ $ar ? 'أرسل تفاصيل واضحة عن سبب التواصل دون مشاركة كلمات مرور أو مفاتيح سرية أو بيانات دفع.' : 'Send a clear description of your request without sharing passwords, secret keys or payment credentials.' }}</p></div>
+    <div class="nx-section-title">@include('public.icon', ['icon'=>'mail'])<p>{{ $ar ? 'تواصل مع نيكسفاري' : 'CONTACT NEXVARY' }}</p><h1>{{ $ar ? 'أخبرنا كيف يمكننا مساعدتك.' : 'Tell us how we can help.' }}</h1><p class="nx-lead">{{ $ar ? 'أرسل تفاصيل واضحة عن سبب التواصل دون مشاركة كلمات مرور أو مفاتيح سرية أو بيانات دفع.' : 'Send a clear description of your request without sharing passwords, secret keys or payment credentials.' }}</p></div>
 
     @if(session('contact_success'))<div class="nx-success" role="status">{{ $ar ? 'تم استلام طلبك بنجاح. شكرًا لتواصلك معنا.' : 'Your request was received successfully. Thank you for contacting us.' }}</div>@endif
 

@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths: ['resources/**', 'public/**', 'routes/**', 'config/**', 'lang/**', 'tests/**', '.github/workflows/corporate-daylight.yml']
   push:
-    branches: ['feature/approved-daylight-corporate']
+    branches: ['feature/approved-daylight-corporate', 'refine/premium-multicolor-20261030']
 permissions:
   contents: read
 concurrency:
@@ -46,7 +46,7 @@ jobs:
           done
           exit 1
       - name: Desktop and Android UI, RTL, links and accessibility
-        run: npx playwright test tests/visual/corporate-daylight.spec.ts tests/visual/project-showcase.spec.ts tests/visual/navigation-integrity.spec.ts tests/visual/release-gate.spec.ts
+        run: npx playwright test tests/visual/corporate-daylight.spec.ts tests/visual/premium-refinement.spec.ts tests/visual/project-showcase.spec.ts tests/visual/navigation-integrity.spec.ts tests/visual/release-gate.spec.ts
       - name: Mobile Lighthouse lab measurement
         if: always()
         run: |

@@ -7,7 +7,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main id="main-content" class="nx-section nx-page-body">
-    <div class="nx-section-title"><p>{{ $ar ? 'الشروط' : 'TERMS' }}</p><h1>{{ $ar ? 'شروط الاستخدام' : 'Terms of Use' }}</h1><p class="nx-lead">{{ $ar ? 'شروط عامة لاستخدام الموقع ومعلومات المنتجات المنشورة.' : 'General conditions for use of the website and published product information.' }}</p></div>
+    <div class="nx-section-title">@include('public.icon', ['icon'=>'document'])<p>{{ $ar ? 'الشروط' : 'TERMS' }}</p><h1>{{ $ar ? 'شروط الاستخدام' : 'Terms of Use' }}</h1><p class="nx-lead">{{ $ar ? 'شروط عامة لاستخدام الموقع ومعلومات المنتجات المنشورة.' : 'General conditions for use of the website and published product information.' }}</p></div>
     <div class="nx-ssr-copy">
         @if($ar)
             <p>المحتوى العام في NEXVARY مخصص للمعلومات والتعريف بالمنتجات والخدمات. حالة كل مشروع — مثل Available أو Beta أو Private Preview أو Internal — هي التي تحدد مستوى توفره، ولا يعني ظهوره في الموقع وجود حق تلقائي في التنزيل أو الوصول.</p>

@@ -15,7 +15,7 @@
 @endphp
 
 <main id="main-content" class="nx-section nx-page-body">
-    <div class="nx-section-title">
+    <div class="nx-section-title">@include('public.icon', ['icon'=>'desktop'])
         <p>{{ $ar ? 'مشروعاتنا وأعمالنا' : 'PROJECTS / OUR WORK' }}</p>
         <h1>{{ $ar ? 'مشروعاتنا وحالة تطويرها' : 'Our projects and their development status' }}</h1>
         <p class="nx-lead">{{ $ar ? 'نوضح ما هو متاح وما هو تجريبي أو خاص، ونربط المشروع بموقعه أو مستودعه فقط عندما يكون الرابط عامًا ورسميًا.' : 'We distinguish available products from beta, private-preview and internal work, and expose product or repository links only when they are public and official.' }}</p>
@@ -29,11 +29,11 @@
                         <span>{{ $fallback[1] }}</span>
                         <span>{{ strtoupper($fallback[2]) }}</span>
                     </div>
-                    <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
+                    @include('public.project-icon', ['category'=>$fallback[1], 'platform'=>''])
                     <h2>{{ $fallback[0] }}</h2>
                     <p>{{ $fallback[3] }}</p>
                     <div class="nx-actions">
-                        <a class="nx-btn" href="{{ $fallback[4] }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                        <a class="nx-btn" href="{{ $fallback[4] }}{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
                     </div>
                 </article>
             @endforeach
@@ -52,7 +52,7 @@
                     @if($app->icon_url)
                         <img src="{{ $app->icon_url }}" alt="{{ $app->name }} visual" loading="lazy" decoding="async" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
                     @else
-                        <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
+                        @include('public.project-icon', ['category'=>$app->category, 'platform'=>$app->platform])
                     @endif
 
                     <div class="nx-project-meta">
@@ -66,7 +66,7 @@
                         @endif
                     </div>
 
-                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug], false) }}">{{ $app->name }}</a></h2>
+                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug, ...($ar ? ['lang' => 'ar'] : [])], false) }}">{{ $app->name }}</a></h2>
                     @if($app->tagline)
                         <p><strong>{{ $app->tagline }}</strong></p>
                     @endif

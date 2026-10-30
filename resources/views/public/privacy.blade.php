@@ -7,7 +7,7 @@
 @section('content')
 @php($ar = app()->getLocale() === 'ar')
 <main id="main-content" class="nx-section nx-page-body">
-    <div class="nx-section-title"><p>{{ $ar ? 'الخصوصية' : 'PRIVACY' }}</p><h1>{{ $ar ? 'سياسة الخصوصية' : 'Privacy Policy' }}</h1><p class="nx-lead">{{ $ar ? 'نص واضح عن البيانات التي يعالجها الموقع العام وكيفية تقليل جمعها.' : 'A clear description of the data handled by the public website and how collection is minimized.' }}</p></div>
+    <div class="nx-section-title">@include('public.icon', ['icon'=>'privacy'])<p>{{ $ar ? 'الخصوصية' : 'PRIVACY' }}</p><h1>{{ $ar ? 'سياسة الخصوصية' : 'Privacy Policy' }}</h1><p class="nx-lead">{{ $ar ? 'نص واضح عن البيانات التي يعالجها الموقع العام وكيفية تقليل جمعها.' : 'A clear description of the data handled by the public website and how collection is minimized.' }}</p></div>
     <div class="nx-ssr-copy">
         @if($ar)
             <p>يجمع موقع NEXVARY فقط البيانات اللازمة لتشغيل الصفحات العامة والرد على طلبات التواصل. عند إرسال نموذج التواصل، قد نعالج الاسم والبريد ورقم الهاتف والجهة والدولة والرسالة وطريقة التواصل المفضلة. لا ترسل كلمات مرور أو مفاتيح API أو رموز تحقق أو بيانات دفع داخل النماذج العامة.</p>
