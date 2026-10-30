@@ -74,3 +74,7 @@
 .nc-site .nx-card-link .nc-icon{width:22px;height:22px;padding:0;border:0;background:none}
 [dir=rtl] .nc-site .nx-back-button .nc-icon-arrow{transform:scaleX(-1)}
 .nc-site .nx-actions{display:flex;gap:12px;flex-wrap:wrap}
+/* Keep the envelope legible on the gold contact button. */
+.nc-site .nc-button-gold .nc-icon-mail rect{fill:#f5dba2;stroke:#294664}
+.nc-site .nc-button-gold .nc-icon-mail path{stroke:#654915}
+@media(min-width:901px){.nc-footer-top>nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:2px 20px}}
