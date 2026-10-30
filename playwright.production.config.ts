@@ -1,0 +1,11 @@
+import { defineConfig } from '@playwright/test';
+import base from './playwright.config';
+
+// Read-only checks: navigation, asset requests, screenshots and accessibility.
+export default defineConfig({
+  ...base,
+  use: { ...base.use, baseURL: 'https://nexvary.com' },
+  workers: 1,
+  retries: 0,
+  testMatch: ['corporate-daylight.spec.ts', 'project-showcase.spec.ts'],
+});

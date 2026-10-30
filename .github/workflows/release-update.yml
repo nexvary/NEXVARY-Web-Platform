@@ -57,7 +57,7 @@ jobs:
           rm -rf release-stage
           mkdir -p release-stage
           cp artisan composer.json composer.lock package.json package-lock.json release-stage/
-          cp -a app bootstrap config database public resources routes vendor release-stage/
+          cp -a app bootstrap config database lang public resources routes vendor release-stage/
           printf '{"version":"%s","commit":"%s","channel":"stable"}\n' "$VERSION" "$HEAD_SHA" > release-stage/NEXVARY-RELEASE.json
           (cd release-stage && zip -qr ../NEXVARY-update.zip .)
           sha256sum NEXVARY-update.zip | awk '{print $1}' > NEXVARY-update.sha256

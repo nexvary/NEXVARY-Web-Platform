@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/site/phpunit.xml" tests="31" assertions="356" errors="0" failures="0" skipped="0" time="2.756318">
+    <testsuite name="Feature" tests="31" assertions="356" errors="0" failures="0" skipped="0" time="2.756318">
+      <testsuite name="Tests\Feature\AdminControlTest" file="/site/tests/Feature/AdminControlTest.php" tests="7" assertions="51" errors="0" failures="0" skipped="0" time="1.992110">
+        <testcase name="test_every_admin_tab_is_connected_and_opens_for_owner" file="/site/tests/Feature/AdminControlTest.php" line="34" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="30" time="0.301466"/>
+        <testcase name="test_owner_can_promote_user_to_admin_role" file="/site/tests/Feature/AdminControlTest.php" line="57" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="3" time="0.477711"/>
+        <testcase name="test_last_owner_cannot_demote_their_own_account" file="/site/tests/Feature/AdminControlTest.php" line="76" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="2" time="0.222568"/>
+        <testcase name="test_safescan_admin_can_never_enable_raw_file_storage" file="/site/tests/Feature/AdminControlTest.php" line="87" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="5" time="0.233619"/>
+        <testcase name="test_owner_can_update_site_identity_and_seo_settings" file="/site/tests/Feature/AdminControlTest.php" line="106" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="3" time="0.278673"/>
+        <testcase name="test_session_revoke_endpoint_is_scoped_to_the_authenticated_user" file="/site/tests/Feature/AdminControlTest.php" line="127" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="2" time="0.472074"/>
+        <testcase name="test_passkey_and_totp_management_routes_are_registered" file="/site/tests/Feature/AdminControlTest.php" line="158" class="Tests\Feature\AdminControlTest" classname="Tests.Feature.AdminControlTest" assertions="6" time="0.005998"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\AwsReadinessPublicSurfaceTest" file="/site/tests/Feature/AwsReadinessPublicSurfaceTest.php" tests="2" assertions="17" errors="0" failures="0" skipped="0" time="0.023519">
+        <testcase name="test_verified_products_are_visible_without_empty_portfolio_claim" file="/site/tests/Feature/AwsReadinessPublicSurfaceTest.php" line="20" class="Tests\Feature\AwsReadinessPublicSurfaceTest" classname="Tests.Feature.AwsReadinessPublicSurfaceTest" assertions="5" time="0.009147"/>
+        <testcase name="test_public_company_surface_exposes_cloud_ready_language_and_policy_pages" file="/site/tests/Feature/AwsReadinessPublicSurfaceTest.php" line="30" class="Tests\Feature\AwsReadinessPublicSurfaceTest" classname="Tests.Feature.AwsReadinessPublicSurfaceTest" assertions="12" time="0.014372"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\DeploymentPublisherTest" file="/site/tests/Feature/DeploymentPublisherTest.php" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.016802">
+        <testcase name="test_healthy_public_deploy_publish_updates_project_and_records_run" file="/site/tests/Feature/DeploymentPublisherTest.php" line="18" class="Tests\Feature\DeploymentPublisherTest" classname="Tests.Feature.DeploymentPublisherTest" assertions="3" time="0.008631"/>
+        <testcase name="test_external_health_url_is_rejected_before_request" file="/site/tests/Feature/DeploymentPublisherTest.php" line="61" class="Tests\Feature\DeploymentPublisherTest" classname="Tests.Feature.DeploymentPublisherTest" assertions="1" time="0.008171"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\HealthTest" file="/site/tests/Feature/HealthTest.php" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="0.013946">
+        <testcase name="test_public_health_endpoint_is_minimal" file="/site/tests/Feature/HealthTest.php" line="9" class="Tests\Feature\HealthTest" classname="Tests.Feature.HealthTest" assertions="2" time="0.007290"/>
+        <testcase name="test_security_headers_are_present" file="/site/tests/Feature/HealthTest.php" line="16" class="Tests\Feature\HealthTest" classname="Tests.Feature.HealthTest" assertions="4" time="0.006656"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\PlatformReleaseTest" file="/site/tests/Feature/PlatformReleaseTest.php" tests="11" assertions="99" errors="0" failures="0" skipped="0" time="0.614413">
+        <testcase name="test_public_platform_routes_are_available" file="/site/tests/Feature/PlatformReleaseTest.php" line="23" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="7" time="0.018638"/>
+        <testcase name="test_public_pages_ship_crawlable_server_rendered_seo" file="/site/tests/Feature/PlatformReleaseTest.php" line="30" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="49" time="0.018833"/>
+        <testcase name="test_navigation_targets_have_registered_routes" file="/site/tests/Feature/PlatformReleaseTest.php" line="45" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="7" time="0.006581"/>
+        <testcase name="test_arabic_locale_sets_rtl_shell" file="/site/tests/Feature/PlatformReleaseTest.php" line="52" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="4" time="0.007547"/>
+        <testcase name="test_contact_form_persists_valid_request" file="/site/tests/Feature/PlatformReleaseTest.php" line="61" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="2" time="0.008732"/>
+        <testcase name="test_robots_and_sitemap_only_publish_public_surfaces" file="/site/tests/Feature/PlatformReleaseTest.php" line="82" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="9" time="0.008982"/>
+        <testcase name="test_private_login_surface_is_not_indexable_or_cacheable" file="/site/tests/Feature/PlatformReleaseTest.php" line="98" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="6" time="0.009140"/>
+        <testcase name="test_csp_uses_nonce_and_disallows_unsafe_inline" file="/site/tests/Feature/PlatformReleaseTest.php" line="113" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="4" time="0.008566"/>
+        <testcase name="test_non_admin_user_is_rejected_by_admin_authorization" file="/site/tests/Feature/PlatformReleaseTest.php" line="123" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="1" time="0.236396"/>
+        <testcase name="test_admin_user_is_accepted_by_admin_authorization" file="/site/tests/Feature/PlatformReleaseTest.php" line="143" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="2" time="0.277468"/>
+        <testcase name="test_arabic_contact_validation_is_localized" file="/site/tests/Feature/PlatformReleaseTest.php" line="160" class="Tests\Feature\PlatformReleaseTest" classname="Tests.Feature.PlatformReleaseTest" assertions="8" time="0.013531"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ProjectManifestTest" file="/site/tests/Feature/ProjectManifestTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.021020">
+        <testcase name="test_valid_manifest_is_accepted" file="/site/tests/Feature/ProjectManifestTest.php" line="13" class="Tests\Feature\ProjectManifestTest" classname="Tests.Feature.ProjectManifestTest" assertions="2" time="0.008449"/>
+        <testcase name="test_manifest_rejects_unapproved_status_and_repository_host" file="/site/tests/Feature/ProjectManifestTest.php" line="35" class="Tests\Feature\ProjectManifestTest" classname="Tests.Feature.ProjectManifestTest" assertions="1" time="0.012571"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\SeoCrawlerReleaseGateTest" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" tests="5" assertions="176" errors="0" failures="0" skipped="0" time="0.074508">
+        <testcase name="test_public_pages_pass_raw_html_seo_autopilot_gate" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" line="23" class="Tests\Feature\SeoCrawlerReleaseGateTest" classname="Tests.Feature.SeoCrawlerReleaseGateTest" assertions="137" time="0.019746"/>
+        <testcase name="test_official_social_links_are_exact_and_not_placeholders" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" line="61" class="Tests\Feature\SeoCrawlerReleaseGateTest" classname="Tests.Feature.SeoCrawlerReleaseGateTest" assertions="7" time="0.010142"/>
+        <testcase name="test_language_fallback_never_declares_english_content_as_an_untranslated_language" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" line="78" class="Tests\Feature\SeoCrawlerReleaseGateTest" classname="Tests.Feature.SeoCrawlerReleaseGateTest" assertions="7" time="0.010726"/>
+        <testcase name="test_dynamic_project_page_is_crawlable_and_linked_from_sitemap_and_catalog" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" line="92" class="Tests\Feature\SeoCrawlerReleaseGateTest" classname="Tests.Feature.SeoCrawlerReleaseGateTest" assertions="10" time="0.015115"/>
+        <testcase name="test_every_sitemap_public_url_has_a_crawled_internal_link" file="/site/tests/Feature/SeoCrawlerReleaseGateTest.php" line="126" class="Tests\Feature\SeoCrawlerReleaseGateTest" classname="Tests.Feature.SeoCrawlerReleaseGateTest" assertions="15" time="0.018779"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

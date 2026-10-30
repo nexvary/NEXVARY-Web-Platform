@@ -1,0 +1,197 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 13886,
+    "cache": "no-cache, private",
+    "seconds": 6.746,
+    "seal": true,
+    "edited_hero": true,
+    "old_radar": false,
+    "rtl": false
+  },
+  {
+    "path": "/?lang=ar",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 15290,
+    "cache": "no-cache, private",
+    "seconds": 6.602,
+    "seal": true,
+    "edited_hero": true,
+    "old_radar": false,
+    "rtl": true
+  },
+  {
+    "path": "/about",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 7278,
+    "cache": "no-cache, private",
+    "seconds": 6.781
+  },
+  {
+    "path": "/services",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 8248,
+    "cache": "no-cache, private",
+    "seconds": 6.792
+  },
+  {
+    "path": "/research",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 6504,
+    "cache": "no-cache, private",
+    "seconds": 4.078
+  },
+  {
+    "path": "/contact",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 8973,
+    "cache": "no-cache, private",
+    "seconds": 3.968
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 7101,
+    "cache": "no-cache, private",
+    "seconds": 3.965
+  },
+  {
+    "path": "/terms",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 6848,
+    "cache": "no-cache, private",
+    "seconds": 3.947
+  },
+  {
+    "path": "/our-work",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 13823,
+    "cache": "no-cache, private",
+    "seconds": 3.94
+  },
+  {
+    "path": "/apps",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 9117,
+    "cache": "no-cache, private",
+    "seconds": 3.884
+  },
+  {
+    "path": "/safescan",
+    "status": 200,
+    "type": "text/html; charset=utf-8",
+    "bytes": 8167,
+    "cache": "no-cache, private",
+    "seconds": 3.904
+  },
+  {
+    "path": "/robots.txt",
+    "status": 200,
+    "type": "text/plain; charset=UTF-8",
+    "bytes": 100,
+    "cache": "no-cache, private",
+    "seconds": 3.729
+  },
+  {
+    "path": "/sitemap.xml",
+    "status": 200,
+    "type": "application/xml; charset=UTF-8",
+    "bytes": 955,
+    "cache": "no-cache, private",
+    "seconds": 3.876
+  },
+  {
+    "path": "/favicon.svg",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "path": "/nexvary-mark.svg",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "path": "/.env",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "path": "/favicon.ico",
+    "status": 200,
+    "type": "image/x-icon",
+    "bytes": 11502,
+    "cache": "public, max-age=604800",
+    "seconds": 4.104,
+    "source_hash_match": true
+  },
+  {
+    "path": "/apple-touch-icon.png",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 82359,
+    "cache": "public, max-age=604800",
+    "seconds": 4.01,
+    "source_hash_match": true
+  },
+  {
+    "path": "/site.webmanifest",
+    "status": 200,
+    "type": "application/octet-stream",
+    "bytes": 333,
+    "cache": null,
+    "seconds": 3.995,
+    "source_hash_match": true
+  },
+  {
+    "path": "/assets/corporate/hero-security-640.avif",
+    "status": 200,
+    "type": "image/avif",
+    "bytes": 75647,
+    "cache": "public, max-age=604800",
+    "seconds": 4.015,
+    "source_hash_match": true
+  },
+  {
+    "path": "/assets/corporate/hero-security-960.avif",
+    "status": 200,
+    "type": "image/avif",
+    "bytes": 146768,
+    "cache": "public, max-age=604800",
+    "seconds": 3.926,
+    "source_hash_match": true
+  },
+  {
+    "path": "/assets/corporate/hero-security-1536.avif",
+    "status": 200,
+    "type": "image/avif",
+    "bytes": 280706,
+    "cache": "public, max-age=604800",
+    "seconds": 3.983,
+    "source_hash_match": true
+  },
+  {
+    "path": "/assets/corporate/seal-nav.webp",
+    "status": 200,
+    "type": "image/webp",
+    "bytes": 41510,
+    "cache": "public, max-age=604800",
+    "seconds": 3.923,
+    "source_hash_match": true
+  },
+  {
+    "path": "/build/assets/corporate-zsuqWU3M.css",
+    "status": 200,
+    "type": "text/css",
+    "bytes": 10040,
+    "cache": "public, max-age=604800",
+    "seconds": 3.72
+  }
+]

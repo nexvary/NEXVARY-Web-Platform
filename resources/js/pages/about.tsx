@@ -33,7 +33,7 @@ export default function About() {
             <h1>{ar ? 'تقنية أمنية مصممة لما لا يظهر للعين.' : 'Security technology for what is not immediately visible.'}</h1>
             <p className="nx-lead">{ar ? 'تجمع NEXVARY بين الأمن السيبراني، مكافحة التجسس الفني، التحليل الجنائي الرقمي وتقنيات الخصوصية لبناء طبقات حماية مترابطة.' : 'NEXVARY combines cybersecurity, technical counter-surveillance, digital forensics and privacy technology into connected layers of protection.'}</p>
           </div>
-          <div className="nx-about-emblem" aria-hidden="true"><span>N</span></div>
+          <div className="nx-about-emblem" aria-hidden="true"><img src="/assets/corporate/seal-nav.webp" width="160" height="160" alt="" /></div>
         </section>
 
         <div className="nx-grid nx-about-grid">

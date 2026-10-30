@@ -14,10 +14,10 @@
     ];
 @endphp
 
-<main class="nx-section nx-page-body">
+<main id="main-content" class="nx-section nx-page-body">
     <div class="nx-section-title">
-        <p>PROJECTS / OUR WORK</p>
-        <h1>{{ $ar ? 'منتجات حقيقية بحالة واضحة' : 'Real products with explicit status' }}</h1>
+        <p>{{ $ar ? 'مشروعاتنا وأعمالنا' : 'PROJECTS / OUR WORK' }}</p>
+        <h1>{{ $ar ? 'مشروعاتنا وحالة تطويرها' : 'Our projects and their development status' }}</h1>
         <p class="nx-lead">{{ $ar ? 'نوضح ما هو متاح وما هو تجريبي أو خاص، ونربط المشروع بموقعه أو مستودعه فقط عندما يكون الرابط عامًا ورسميًا.' : 'We distinguish available products from beta, private-preview and internal work, and expose product or repository links only when they are public and official.' }}</p>
     </div>
 
@@ -29,7 +29,7 @@
                         <span>{{ $fallback[1] }}</span>
                         <span>{{ strtoupper($fallback[2]) }}</span>
                     </div>
-                    <div class="nx-icon" aria-hidden="true">N</div>
+                    <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
                     <h2>{{ $fallback[0] }}</h2>
                     <p>{{ $fallback[3] }}</p>
                     <div class="nx-actions">
@@ -52,7 +52,7 @@
                     @if($app->icon_url)
                         <img src="{{ $app->icon_url }}" alt="{{ $app->name }} visual" loading="lazy" decoding="async" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
                     @else
-                        <div class="nx-icon" aria-hidden="true">N</div>
+                        <img src="/assets/corporate/seal-nav.webp" width="64" height="64" alt="" loading="lazy">
                     @endif
 
                     <div class="nx-project-meta">
@@ -66,7 +66,7 @@
                         @endif
                     </div>
 
-                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $app->name }}</a></h2>
+                    <h2><a href="{{ route('our-work.show', ['slug' => $app->slug], false) }}">{{ $app->name }}</a></h2>
                     @if($app->tagline)
                         <p><strong>{{ $app->tagline }}</strong></p>
                     @endif
@@ -80,17 +80,19 @@
                         </div>
                     @endif
 
+                    @if($app->updated_at)
                     <p class="nx-rich-text" style="font-size:.82rem">
                         {{ $ar ? 'آخر تحديث:' : 'Last updated:' }} {{ substr((string) $app->updated_at, 0, 10) }}
                     </p>
+                    @endif
+                    @if($app->is_development_showcase ?? false)
+                        <p>{{ $app->availability_note }}</p>
+                    @endif
 
                     <div class="nx-actions">
-                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug]) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
+                        <a class="nx-btn" href="{{ route('our-work.show', ['slug' => $app->slug, ...($ar ? ['lang' => 'ar'] : [])], false) }}">{{ $ar ? 'اعرف المزيد' : 'Learn more' }}</a>
                         @if($app->website_url)
                             <a class="nx-btn" href="{{ $app->website_url }}" target="_blank" rel="noreferrer">{{ $ar ? 'فتح المنتج' : 'Product URL' }}</a>
-                        @endif
-                        @if($app->repository_url)
-                            <a class="nx-btn" href="{{ $app->repository_url }}" target="_blank" rel="noreferrer">GitHub</a>
                         @endif
                     </div>
                 </article>
@@ -100,9 +102,9 @@
 
     <div class="nx-ssr-copy" style="margin-top:34px">
         @if($ar)
-            <p>لا يعني ظهور المشروع هنا أنه متاح للتنزيل. حالة المشروع المنشورة هي المرجع: Available أو Beta أو In Development أو Private Preview أو Internal. ولا يظهر رابط GitHub إلا إذا كان المستودع عامًا ومقصودًا للنشر.</p>
+            <p>لا يعني ظهور المشروع هنا أنه متاح للتنزيل. حالة المشروع المنشورة هي المرجع: Available أو Beta أو In Development أو Private Preview أو Internal.</p>
         @else
-            <p>Listing a project does not imply public download access. The published lifecycle state is authoritative: Available, Beta, In Development, Private Preview or Internal. A GitHub link appears only when the repository is intentionally public.</p>
+            <p>Listing a project does not imply public download access. The published lifecycle state is authoritative: Available, Beta, In Development, Private Preview or Internal.</p>
         @endif
     </div>
 </main>

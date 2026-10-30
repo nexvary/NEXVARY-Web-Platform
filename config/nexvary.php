@@ -10,6 +10,5 @@ return [
         'email' => 'info@nexvary.com',
         'youtube' => 'https://www.youtube.com/@NexvaryInc',
         'x' => 'https://x.com/Nexvary',
-        'github' => 'https://github.com/nexvary',
     ],
 ];

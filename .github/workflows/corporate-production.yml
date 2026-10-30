@@ -1,0 +1,48 @@
+name: Corporate Production Verification
+on:
+  push:
+    branches: ['feature/approved-daylight-corporate']
+    paths: ['.github/workflows/corporate-production.yml', 'playwright.production.config.ts']
+permissions:
+  contents: read
+jobs:
+  verify-live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Live English and Arabic on desktop and Android
+        run: npx playwright test --config=playwright.production.config.ts
+      - name: Mobile Lighthouse on production
+        if: always()
+        run: |
+          mkdir -p artifacts/performance
+          export CHROME_PATH="$(find ~/.cache/ms-playwright -path '*/chrome-linux/chrome' -o -path '*/chrome-linux64/chrome' | head -1)"
+          npx --yes --package=lighthouse@12.8.2 lighthouse 'https://nexvary.com/?lang=en' --chrome-flags='--headless --no-sandbox' --output=json --output=html --output-path=artifacts/performance/production-mobile --only-categories=performance,accessibility,best-practices,seo
+      - name: Report actual production measurement
+        if: always()
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const path='artifacts/performance/production-mobile.report.json';
+          if (!fs.existsSync(path)) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Production Lighthouse result unavailable.\n'); process.exit(0); }
+          const r=JSON.parse(fs.readFileSync(path));
+          const result={url:r.finalDisplayedUrl,environment:'GitHub ubuntu-24.04, Node 24, Lighthouse 12.8.2, Chromium, default mobile simulated throttling, public Namecheap production site',performance:r.categories.performance.score*100,accessibility:r.categories.accessibility.score*100,seo:r.categories.seo.score*100,lcp_ms:r.audits['largest-contentful-paint'].numericValue,cls:r.audits['cumulative-layout-shift'].numericValue,tbt_ms:r.audits['total-blocking-time'].numericValue,inp:'Not measured; real interaction data required',fetchTime:r.fetchTime};
+          fs.writeFileSync('artifacts/performance/production-summary.json',JSON.stringify(result,null,2));
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'```json\n'+JSON.stringify(result,null,2)+'\n```\n');
+          JS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: corporate-production-evidence
+          path: |
+            artifacts/
+            test-results/
+            playwright-report/
+          retention-days: 14

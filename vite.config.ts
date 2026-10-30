@@ -10,6 +10,7 @@ export default defineConfig({
         'resources/css/app.css',
         'resources/js/app.tsx',
         'resources/css/public.css',
+        'resources/css/corporate.css',
         'resources/js/public.ts',
       ],
       refresh: true,

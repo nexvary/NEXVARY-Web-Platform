@@ -1,0 +1,12 @@
+{
+  "url": "https://nexvary.com/?lang=en",
+  "environment": "GitHub ubuntu-24.04, Node 24, Lighthouse 12.8.2, Chromium, default mobile simulated throttling, public Namecheap production site",
+  "performance": 100,
+  "accessibility": 100,
+  "seo": 100,
+  "lcp_ms": 1502.556,
+  "cls": 0,
+  "tbt_ms": 0,
+  "inp": "Not measured; real interaction data required",
+  "fetchTime": "2026-10-30T03:51:10.998Z"
+}

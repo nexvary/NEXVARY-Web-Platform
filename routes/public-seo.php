@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Http\RedirectResponse;
+use App\Support\DevelopmentShowcase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,11 @@ Route::get('/about', fn () => view('public.about'))->name('about');
 Route::get('/contact', fn () => view('public.contact'))->name('contact');
 Route::get('/privacy', fn () => view('public.privacy'))->name('privacy');
 Route::get('/terms', fn () => view('public.terms'))->name('terms');
+
+foreach (['research', 'cybersecurity', 'artificial-intelligence'] as $page) {
+    Route::get('/'.$page, fn () => view('public.discipline', ['discipline' => $page]))->name('corporate.'.$page);
+}
+
 
 Route::post('/contact', function (Request $request): RedirectResponse {
     if (filled($request->input('website'))) {
@@ -50,14 +56,18 @@ Route::post('/contact', function (Request $request): RedirectResponse {
 })->middleware('throttle:10,1')->name('contact.store');
 
 Route::get('/our-work', function () {
+    $development = DevelopmentShowcase::projects();
     $apps = Schema::hasTable('portfolio_apps')
-        ? DB::table('portfolio_apps')->where('is_published', true)->orderByDesc('published_at')->orderByDesc('id')->get()
+        ? DB::table('portfolio_apps')->where('is_published', true)->whereNotIn('slug', $development->keys())->orderByDesc('published_at')->orderByDesc('id')->get()
         : collect();
 
-    return view('public.our-work.index', ['apps' => $apps]);
+    return view('public.our-work.index', ['apps' => $development->values()->concat($apps)]);
 })->name('our-work.index');
 
 Route::get('/our-work/{slug}', function (string $slug) {
+    if ($project = DevelopmentShowcase::projects()->get($slug)) {
+        return view('public.our-work.show', ['app' => $project]);
+    }
     abort_unless(Schema::hasTable('portfolio_apps'), 404);
     $app = DB::table('portfolio_apps')->where('slug', $slug)->where('is_published', true)->first();
     abort_if($app === null, 404);
@@ -70,7 +80,10 @@ Route::get('/our-work/{slug}', function (string $slug) {
 })->where('slug', '[a-z0-9-]+')->name('our-work.show');
 
 Route::get('/sitemap.xml', function (): Response {
-    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms'];
+    $urls = ['/', '/services', '/our-work', '/apps', '/safescan', '/about', '/contact', '/privacy', '/terms', '/research', '/cybersecurity', '/artificial-intelligence'];
+    foreach (array_keys(config('project-showcase', [])) as $slug) {
+        $urls[] = '/our-work/'.$slug;
+    }
 
     if (Schema::hasTable('portfolio_apps')) {
         foreach (DB::table('portfolio_apps')->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {

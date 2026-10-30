@@ -1,0 +1,12 @@
+{
+  "environment": "GitHub ubuntu-24.04, PHP 8.4, Node 24, Lighthouse 12.8.2, default mobile simulated throttling, localhost Laravel production frontend build",
+  "performance": 99,
+  "accessibility": 100,
+  "seo": 100,
+  "lcp_ms": 2103.2397,
+  "cls": 0,
+  "tbt_ms": 0,
+  "inp": "Not measured: field interaction data required",
+  "lighthouseVersion": "12.8.2",
+  "fetchTime": "2026-10-29T14:41:24.230Z"
+}

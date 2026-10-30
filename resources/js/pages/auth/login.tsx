@@ -42,7 +42,7 @@ export default function Login() {
     <main className="nx-auth-page">
       <Head title="Secure Access — NEXVARY"><meta name="robots" content="noindex,nofollow,noarchive" /></Head>
       <section className="nx-auth-card">
-        <div className="nx-about-emblem nx-auth-emblem" aria-hidden="true"><span>N</span></div>
+        <div className="nx-about-emblem nx-auth-emblem" aria-hidden="true"><img src="/assets/corporate/seal-nav.webp" width="160" height="160" alt="" /></div>
         <p className="nx-kicker">PRIVATE ADMIN ACCESS</p>
         <h1>NEXVARY Secure Portal</h1>
         <p className="nx-auth-note">Authentication, verified email, rate limiting, MFA and WebAuthn passkeys protect this portal.</p>
