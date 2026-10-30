@@ -88,9 +88,10 @@ test('Android 15 viewport-safe tap target gate', async ({ page }) => {
   expect(viewportMeta).toContain('viewport-fit=cover');
 });
 
-test('About exposes all official NEXVARY channels', async ({ page }) => {
+test('About exposes approved official NEXVARY channels', async ({ page }) => {
   await page.goto('/about', { waitUntil: 'networkidle' });
-  for (const label of ['Website', 'GitHub', 'Facebook', 'YouTube', 'X', 'info@nexvary.com']) {
+  await expect(page.locator('a[href*="github.com"]')).toHaveCount(0);
+  for (const label of ['Website', 'Facebook', 'YouTube', 'X', 'info@nexvary.com']) {
     await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
   }
 });
