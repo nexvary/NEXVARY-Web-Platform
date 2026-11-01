@@ -4,4 +4,4 @@
 <div><dt>{{ $ar ? 'عام التأسيس' : 'Incorporation year' }}</dt><dd>{{ substr((string) config('corporate-identity.incorporated'), 0, 4) }}</dd></div>
 <div><dt>{{ $ar ? 'البريد الإلكتروني' : 'Contact email' }}</dt><dd><a href="mailto:info@nexvary.com">info@nexvary.com</a></dd></div>
 @if(config('corporate-identity.registry_verified'))<div><dt>{{ $ar ? 'رقم الكيان' : 'Entity ID' }}</dt><dd>{{ config('corporate-identity.entity_id') }}</dd></div>@endif
-</dl><p class="nc-registry-note">{{ $ar ? 'بيانات التأسيس مقدّمة من مالك الشركة؛ لم يكتمل التحقق المستقل من السجل. الرسم المعماري ليس عنوانًا فعليًا للشركة.' : 'Incorporation details are owner-supplied; independent registry verification is pending. The architectural illustration does not identify a physical company address.' }}</p></section>
+</dl></section>

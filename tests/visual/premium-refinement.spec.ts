@@ -30,6 +30,14 @@ for (const locale of ['en', 'ar']) {
         await expect(page.locator('.nc-identity dl')).not.toContainText('October 28');
         await expect(page.locator('.nc-identity dl')).not.toContainText('٢٨ أكتوبر');
       }
+      await expect(page.locator('.nc-registry-note')).toHaveCount(0);
+      if (path === '/safescan') {
+        await expect(page.locator('.nx-radar-dial')).toHaveCount(1);
+        await expect(page.locator('.nx-command-meta > span')).toHaveCount(3);
+        for (const fact of await page.locator('.nx-command-meta > span').all()) await expect(fact).toBeVisible();
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await expect(page.locator('.nx-safescan-radar .nx-sweep')).toHaveCSS('animation-name','none');
+      }
       const icons = page.locator('main svg.nc-icon');
       expect(await icons.count(), path).toBeGreaterThan(0);
       const colors = await icons.evaluateAll(nodes => nodes.map(svg => {

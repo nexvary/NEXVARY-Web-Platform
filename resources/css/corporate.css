@@ -97,3 +97,21 @@
 
 .nc-footer .nc-footer-social>a:last-child{grid-column:1/-1}
 @media(min-width:601px) and (max-width:1100px){.nc-footer .nc-footer-social>a:last-child{grid-column:auto}}
+
+/* SafeScan's decorative dial scales as one instrument; privacy facts remain readable. */
+.nc-site .nx-safescan-radar{min-height:0;display:grid;grid-template-rows:auto 1fr auto;gap:20px;padding:22px;border:1px solid #536574;border-radius:24px;background:radial-gradient(ellipse at 50% 40%,#102c40 0,#081725 55%,#080e14 100%);box-shadow:inset 0 1px 0 #b6c7d224,0 18px 40px #0003}
+.nx-radar-heading{display:flex;align-items:center;gap:9px;width:100%;font:600 11px/1.5 Arial,sans-serif;letter-spacing:.07em;color:#d9ebf2}
+.nx-radar-status{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#66e4ae;box-shadow:0 0 9px #66e4ae55}
+.nx-radar-mode{margin-inline-start:auto;color:#94c9e0;letter-spacing:.03em}
+.nc-site .nx-safescan-radar .nx-radar{width:min(100%,340px);aspect-ratio:1;justify-self:center;isolation:isolate;border:0;background:radial-gradient(circle,#15364a55,transparent 68%);box-shadow:none}
+.nx-radar-dial{display:block;width:100%;height:100%}
+.nc-site .nx-safescan-radar .nx-sweep{inset:5%;z-index:-1;background:conic-gradient(from 0deg,transparent 0 300deg,#45d9ee08 315deg,#45d9ee40 359deg,transparent 360deg);animation-duration:7s}
+.nc-site .nx-safescan-radar .nx-core{width:62px;height:62px;border:1px solid #79c5d9;border-radius:18px;background:linear-gradient(145deg,#203e50,#071727);box-shadow:inset 0 1px 1px #c7f5ff66,0 0 22px #34bddd2b}
+.nc-site .nx-safescan-radar .nx-core .nc-icon{width:36px;height:36px;padding:0;margin:0;border:0;background:none}
+.nc-site .nx-safescan-radar .nx-command-meta{position:static;inset:auto;width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nc-site .nx-safescan-radar .nx-command-meta>span{display:flex;align-items:center;gap:8px;margin:0;padding:10px;border:1px solid #3f5a6d;border-radius:12px;background:#08131d;color:#becfd9;min-width:0}
+.nc-site .nx-safescan-radar .nx-command-meta>span>span{display:block;padding:0;border:0;background:none;font-size:11px;line-height:1.55}
+.nc-site .nx-safescan-radar .nx-command-meta b{color:#ddf3fa;font-size:11px;letter-spacing:.04em;margin-bottom:2px}
+.nc-site .nx-safescan-radar .nx-command-meta .nc-icon{width:23px;height:23px;flex:0 0 23px;padding:0;border:0;background:none}
+@media(max-width:600px){.nc-site .nx-safescan-radar{gap:16px;padding:18px}.nc-site .nx-safescan-radar .nx-radar{width:min(100%,300px)}.nc-site .nx-safescan-radar .nx-command-meta{grid-template-columns:minmax(0,1fr)}.nc-site .nx-safescan-radar .nx-command-meta>span>span{font-size:12px}.nc-site .nx-safescan-radar .nx-command-meta b{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.nc-site .nx-safescan-radar .nx-sweep{animation:none}}
