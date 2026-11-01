@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
-// Live checks include published project visuals and strict CSP console validation.
+// Also verifies the published footer card icons, link removals and year-only identity.
 // Read-only checks: navigation, asset requests, screenshots and accessibility.
 export default defineConfig({
   ...base,
