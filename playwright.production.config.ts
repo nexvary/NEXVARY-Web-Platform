@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
-// Verifies the approved entrance image, simplified identity and accessible SafeScan dial.
+// Checks the approved entrance assets and every accessible SafeScan privacy fact.
 // Read-only checks: navigation, asset requests, screenshots and accessibility.
 export default defineConfig({
   ...base,
