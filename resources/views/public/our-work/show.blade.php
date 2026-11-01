@@ -34,15 +34,15 @@
     <article class="nx-card"><p>{{ $app->summary }}</p>@if($app->description)<div class="nx-rich-text">{{ $app->description }}</div>@endif</article>
 
     @if(!empty($app->features))
-        <section style="margin-top:24px"><div class="nx-section-title"><p>{{ $ar ? 'الخصائص' : 'FEATURES' }}</p><h2>{{ $ar ? 'القدرات الرئيسية' : 'Key capabilities' }}</h2></div><div class="nx-grid">@foreach($app->features as $feature)<article class="nx-card">@include('public.project-icon', ['category'=>$app->category, 'platform'=>$app->platform])<h3>{{ $feature }}</h3></article>@endforeach</div></section>
+        <section class="nx-space-24"><div class="nx-section-title"><p>{{ $ar ? 'الخصائص' : 'FEATURES' }}</p><h2>{{ $ar ? 'القدرات الرئيسية' : 'Key capabilities' }}</h2></div><div class="nx-grid">@foreach($app->features as $feature)<article class="nx-card">@include('public.project-icon', ['category'=>$app->category, 'platform'=>$app->platform])<h3>{{ $feature }}</h3></article>@endforeach</div></section>
     @endif
 
     @if(!empty($app->screenshots))
-        <section style="margin-top:24px"><div class="nx-section-title"><p>{{ $ar ? 'معاينة' : 'PREVIEW' }}</p><h2>{{ $ar ? 'صور المشروع' : 'Project screenshots' }}</h2></div><div class="nx-screen-grid">@foreach($app->screenshots as $index=>$image)<img src="{{ $image }}" alt="{{ $app->name }} screenshot {{ $index + 1 }}" loading="lazy" decoding="async">@endforeach</div></section>
+        <section class="nx-space-24"><div class="nx-section-title"><p>{{ $ar ? 'معاينة' : 'PREVIEW' }}</p><h2>{{ $ar ? 'صور المشروع' : 'Project screenshots' }}</h2></div><div class="nx-screen-grid">@foreach($app->screenshots as $index=>$image)<img src="{{ $image }}" alt="{{ $app->name }} screenshot {{ $index + 1 }}" loading="lazy" decoding="async">@endforeach</div></section>
     @endif
 
     @if(!($app->is_development_showcase ?? false))
-    <div class="nx-ssr-copy" style="margin-top:30px">
+    <div class="nx-space-30 nx-ssr-copy">
         @if($ar)
             <p>تعرض هذه الصفحة المعلومات المنشورة رسميًا عن المشروع وحالة توفره الحالية. قد يكون المشروع متاحًا للتنزيل، مخصصًا للعرض، متاحًا حسب الطلب، للاستخدام الداخلي، أو في مرحلة قادمة. لا يظهر زر تنزيل عام إلا عندما تكون سياسة التوزيع مضبوطة على التنزيل ويكون ملف الإصدار منشورًا بصورة صريحة.</p>
             <p>معلومات الإصدار والمنصة والخصائص المعروضة هنا تساعد على التحقق من هوية المشروع قبل استخدامه. عند توفر ملف عام يُفضّل التحقق من معلومات الإصدار والبصمة المنشورة إن وجدت. أما المشروعات الداخلية أو المقيدة فلا ينبغي الاعتماد على روابط غير رسمية أو نسخ معاد توزيعها خارج قنوات NEXVARY.</p>
@@ -53,7 +53,7 @@
     </div>
     @endif
 
-    <div class="nx-actions" style="margin-top:26px">
+    <div class="nx-space-26 nx-actions">
         @if($app->can_download)<a class="nx-btn nx-btn-primary" href="{{ route('our-work.download', ['slug'=>$app->slug]) }}">{{ $ar ? 'تنزيل الإصدار' : 'Download release' }}</a>
         @elseif($app->distribution_mode === 'request' && filled($app->request_url ?? null))<a class="nx-btn nx-btn-primary" href="{{ $app->request_url }}" rel="noreferrer">{{ $ar ? 'طلب الوصول' : 'Request access' }}</a>
         @else<a class="nx-btn" href="/contact{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'استفسر عن المشروع' : 'Ask about this project' }}</a>@endif

@@ -20,7 +20,7 @@
             <article class="nx-card nx-app-card">@include('public.icon', ['icon'=>$product[4]])<div class="nx-card-tag">{{ $product[1] }}</div><h2>{{ $product[0] }}</h2><p>{{ $ar ? $product[3] : $product[2] }}</p>@if($product[0] === 'SafeScan')<a class="nx-card-link" href="/safescan{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'فتح SafeScan' : 'Open SafeScan' }} @include('public.icon', ['icon'=>'arrow'])</a>@else<span class="nx-card-status">{{ $ar ? 'إصدار مقيّد' : 'CONTROLLED RELEASE' }}</span>@endif</article>
         @endforeach
     </div>
-    <div class="nx-ssr-copy" style="margin-top:34px">
+    <div class="nx-space-34 nx-ssr-copy">
         @if($ar)
             <p>تم تصميم منظومة تطبيقات NEXVARY بحيث لا تختلط وظائف الخصوصية مع أدوات الفحص أو الاستخبارات. بعض الأدوات تعمل محليًا في المتصفح لتقليل مشاركة البيانات، وبعضها يقدم طبقة تحليل أو توعية تساعد المستخدم على فهم المخاطر قبل طلب فحص متخصص. كل تطبيق يوضح ما يفعله وما لا يفعله، حتى لا تتحول الواجهة الأمنية إلى وعود غير قابلة للتحقق.</p>
             <p>يمكنك تجربة SafeScan كنموذج لنهج التخزين الصفري، ثم الانتقال إلى صفحة أعمالنا لمراجعة المشاريع المنشورة وحالة التوزيع لكل مشروع. بعض التطبيقات قد تكون للعرض فقط، وبعضها متاح حسب الطلب أو للاستخدام الداخلي، بينما تتوفر التطبيقات القابلة للتنزيل فقط عندما يجتاز الإصدار اختبارات الأمان والجودة والتوافق.</p>

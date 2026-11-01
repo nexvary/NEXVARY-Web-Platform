@@ -81,7 +81,7 @@
                     @endif
 
                     @if($app->updated_at)
-                    <p class="nx-rich-text" style="font-size:.82rem">
+                    <p class="nx-project-note nx-rich-text">
                         {{ $ar ? 'آخر تحديث:' : 'Last updated:' }} {{ substr((string) $app->updated_at, 0, 10) }}
                     </p>
                     @endif
@@ -100,7 +100,7 @@
         </div>
     @endif
 
-    <div class="nx-ssr-copy" style="margin-top:34px">
+    <div class="nx-space-34 nx-ssr-copy">
         @if($ar)
             <p>لا يعني ظهور المشروع هنا أنه متاح للتنزيل. حالة المشروع المنشورة هي المرجع: Available أو Beta أو In Development أو Private Preview أو Internal.</p>
         @else

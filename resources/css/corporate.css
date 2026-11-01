@@ -78,3 +78,6 @@
 .nc-site .nc-button-gold .nc-icon-mail rect{fill:#f5dba2;stroke:#294664}
 .nc-site .nc-button-gold .nc-icon-mail path{stroke:#654915}
 @media(min-width:901px){.nc-footer-top>nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:2px 20px}}
+
+/* External utilities preserve spacing under the strict production CSP. */
+.nc-site .nx-space-24{margin-top:24px}.nc-site .nx-space-26{margin-top:26px}.nc-site .nx-space-30{margin-top:30px}.nc-site .nx-space-34{margin-top:34px}.nc-site .nx-project-visual{width:64px;height:64px;object-fit:cover;border-radius:14px}.nc-site .nx-project-note{font-size:.82rem}
