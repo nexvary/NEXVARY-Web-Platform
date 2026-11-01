@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
+// The premium suite also checks browser console errors under the production CSP.
 // Read-only checks: navigation, asset requests, screenshots and accessibility.
 export default defineConfig({
   ...base,
