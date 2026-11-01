@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
-// Checks the final footer grid, colored icons and simplified company year.
+// Verifies the approved entrance image, simplified identity and accessible SafeScan dial.
 // Read-only checks: navigation, asset requests, screenshots and accessibility.
 export default defineConfig({
   ...base,
