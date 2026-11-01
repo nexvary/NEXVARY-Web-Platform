@@ -21,6 +21,15 @@ for (const locale of ['en', 'ar']) {
       await expect(page.locator('h1')).toHaveCount(1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2), path).toBeTruthy();
       await expect(page.locator('.nc-footer a[href*="github.com"]')).toHaveCount(0);
+      await expect(page.locator('.nc-footer-card')).toHaveCount(14);
+      await expect(page.locator('.nc-footer-card svg')).toHaveCount(14);
+      await expect(page.locator('.nc-footer a[href="https://nexvary.com/"]')).toHaveCount(0);
+      await expect(page.locator('a[href*="wyobiz.wyo.gov"]')).toHaveCount(0);
+      if (await page.locator('.nc-identity').count()) {
+        await expect(page.locator('.nc-identity dl')).toContainText('2026');
+        await expect(page.locator('.nc-identity dl')).not.toContainText('October 28');
+        await expect(page.locator('.nc-identity dl')).not.toContainText('٢٨ أكتوبر');
+      }
       const icons = page.locator('main svg.nc-icon');
       expect(await icons.count(), path).toBeGreaterThan(0);
       const colors = await icons.evaluateAll(nodes => nodes.map(svg => {

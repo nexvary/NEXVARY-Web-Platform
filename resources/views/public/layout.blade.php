@@ -58,7 +58,37 @@
 @unless(request()->routeIs('home'))<div class="nx-back-row"><a class="nx-back-button" data-testid="back-button" href="/{{ $ar ? '?lang=ar' : '' }}">@include('public.icon', ['icon'=>'arrow']) {{ $ar ? 'الرئيسية' : 'Home' }}</a></div>@endunless
 @yield('content')
 <footer class="nc-footer">
-    <div class="nc-footer-top"><div><img src="/assets/corporate/seal-nav.webp" alt="" width="64" height="64" loading="lazy"><strong>NEXVARY INC</strong><p>{{ $ar ? 'هندسة مستقبل رقمي أكثر أمانًا وذكاءً.' : 'Engineering a safer, smarter digital world.' }}</p></div><nav aria-label="{{ $ar ? 'روابط التذييل' : 'Footer navigation' }}">@foreach($nav as [$url,$en,$arabic])<a href="{{ $url }}{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? $arabic : $en }}</a>@endforeach<a href="/privacy{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'سياسة الخصوصية' : 'Privacy Policy' }}</a><a href="/terms{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'شروط الاستخدام' : 'Terms of Use' }}</a><a href="/our-work{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'أعمالنا' : 'Our Work' }}</a><a href="/apps{{ $ar ? '?lang=ar' : '' }}">{{ $ar ? 'التطبيقات' : 'Apps' }}</a><a href="/safescan{{ $ar ? '?lang=ar' : '' }}">SafeScan</a></nav><div><a href="mailto:info@nexvary.com">info@nexvary.com</a><a href="https://nexvary.com/">{{ $ar ? 'الموقع الرسمي' : 'Website' }}</a><a href="https://www.facebook.com/share/14p9krEn5ij/" target="_blank" rel="noopener noreferrer">Facebook</a><a href="https://www.youtube.com/@NexvaryInc" target="_blank" rel="noopener noreferrer">YouTube</a><a href="https://x.com/Nexvary" target="_blank" rel="noopener noreferrer">X</a><p>{{ $ar ? 'بيانات الشركة كما قدّمها المالك: وايومنغ، الولايات المتحدة.' : 'Owner-supplied company jurisdiction: Wyoming, United States.' }}</p></div></div>
+    @php
+        $footerLinks = [
+            ['/', 'Home', 'الرئيسية', 'building'],
+            ['/about', 'Company', 'الشركة', 'building'],
+            ['/services', 'Technology', 'التقنية', 'code'],
+            ['/research', 'Research', 'الأبحاث', 'research'],
+            ['/contact', 'Contact', 'تواصل معنا', 'mail'],
+            ['/privacy', 'Privacy Policy', 'سياسة الخصوصية', 'privacy'],
+            ['/terms', 'Terms of Use', 'شروط الاستخدام', 'document'],
+            ['/our-work', 'Our Work', 'أعمالنا', 'desktop'],
+            ['/apps', 'Apps', 'التطبيقات', 'mobile'],
+            ['/safescan', 'SafeScan', 'SafeScan', 'shield'],
+        ];
+    @endphp
+    <div class="nc-footer-top">
+        <div class="nc-footer-brand"><img src="/assets/corporate/seal-nav.webp" alt="" width="64" height="64" loading="lazy"><strong>NEXVARY INC</strong><p>{{ $ar ? 'هندسة مستقبل رقمي أكثر أمانًا وذكاءً.' : 'Engineering a safer, smarter digital world.' }}</p></div>
+        <nav class="nc-footer-links" aria-label="{{ $ar ? 'روابط التذييل' : 'Footer navigation' }}">
+            @foreach($footerLinks as [$url, $en, $arabic, $icon])
+                <a class="nc-footer-card" href="{{ $url }}{{ $ar ? '?lang=ar' : '' }}">@include('public.icon', ['icon'=>$icon])<span>{{ $ar ? $arabic : $en }}</span></a>
+            @endforeach
+        </nav>
+        <div class="nc-footer-contact">
+            <nav class="nc-footer-social" aria-label="{{ $ar ? 'التواصل وحسابات الشركة' : 'Contact and company profiles' }}">
+                <a class="nc-footer-card nc-footer-email" href="mailto:info@nexvary.com">@include('public.icon', ['icon'=>'mail'])<span dir="ltr">info@nexvary.com</span></a>
+                <a class="nc-footer-card" href="https://www.facebook.com/share/14p9krEn5ij/" target="_blank" rel="noopener noreferrer">@include('public.footer-brand-icon', ['brand'=>'facebook'])<span>Facebook</span></a>
+                <a class="nc-footer-card" href="https://www.youtube.com/@NexvaryInc" target="_blank" rel="noopener noreferrer">@include('public.footer-brand-icon', ['brand'=>'youtube'])<span>YouTube</span></a>
+                <a class="nc-footer-card" href="https://x.com/Nexvary" target="_blank" rel="noopener noreferrer">@include('public.footer-brand-icon', ['brand'=>'x'])<span>X</span></a>
+            </nav>
+            <p>{{ $ar ? 'بيانات الشركة كما قدّمها المالك: وايومنغ، الولايات المتحدة.' : 'Owner-supplied company jurisdiction: Wyoming, United States.' }}</p>
+        </div>
+    </div>
     <div class="nc-copyright">© {{ date('Y') }} Nexvary Inc. {{ $ar ? 'جميع الحقوق محفوظة.' : 'All rights reserved.' }}</div>
 </footer>
 </div>

@@ -81,3 +81,16 @@
 
 /* External utilities preserve spacing under the strict production CSP. */
 .nc-site .nx-space-24{margin-top:24px}.nc-site .nx-space-26{margin-top:26px}.nc-site .nx-space-30{margin-top:30px}.nc-site .nx-space-34{margin-top:34px}.nc-site .nx-project-visual{width:64px;height:64px;object-fit:cover;border-radius:14px}.nc-site .nx-project-note{font-size:.82rem}
+
+/* Footer links and company profiles share a compact, accessible card grid. */
+.nc-footer-top{grid-template-columns:minmax(180px,.85fr) minmax(300px,1.35fr) minmax(240px,1fr);gap:32px;align-items:start}
+.nc-footer .nc-footer-links,.nc-footer-social{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nc-footer .nc-footer-card{display:flex;align-items:center;gap:10px;min-width:0;min-height:56px;margin:0;padding:12px;border:1px solid #59616b;border-radius:12px;background:linear-gradient(135deg,#1b2026,#0d1014);color:#e9edf2;text-decoration:none;transition:border-color .18s ease,background .18s ease}
+.nc-footer-card span{min-width:0;overflow-wrap:anywhere;line-height:1.45}
+.nc-footer .nc-footer-card .nc-icon{flex:0 0 26px;width:26px;height:26px;margin:0;padding:0;border:0;border-radius:0;background:none}
+.nc-footer .nc-footer-card:hover{border-color:#b8c4d0;background:linear-gradient(135deg,#252d36,#12171d)}
+.nc-footer .nc-footer-card:focus-visible{outline:2px solid #edc77f;outline-offset:3px}
+.nc-footer-email{grid-column:1/-1}.nc-footer-contact>p{margin-block:16px 0}
+@media(max-width:1100px){.nc-footer-top{grid-template-columns:1fr 1.5fr}.nc-footer-contact{grid-column:1/-1}.nc-footer-social{grid-template-columns:repeat(4,minmax(0,1fr))}.nc-footer-email{grid-column:auto}}
+@media(max-width:600px){.nc-footer-top{grid-template-columns:minmax(0,1fr);gap:24px}.nc-footer .nc-footer-links,.nc-footer-social{grid-template-columns:repeat(2,minmax(0,1fr))}.nc-footer-email{grid-column:1/-1}.nc-footer .nc-footer-card{padding:10px;gap:8px}.nc-footer-brand{max-width:34rem}}
+@media(prefers-reduced-motion:reduce){.nc-footer .nc-footer-card{transition:none}}
