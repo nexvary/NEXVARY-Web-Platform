@@ -7,9 +7,12 @@ for (const locale of ['en', 'ar']) {
     test.setTimeout(180_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    // Capture the actual production baseline separately from the candidate.
-    await page.goto(`https://nexvary.com/?lang=${locale}`, { waitUntil: 'networkidle' });
-    await page.screenshot({ path: `artifacts/screenshots/premium-before-${locale}-${info.project.name}.png`, fullPage: true });
+    page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+    // Production checks must not label a post-deployment capture as a before image.
+    if (!String(info.project.use.baseURL).startsWith('https://nexvary.com')) {
+      await page.goto(`https://nexvary.com/?lang=${locale}`, { waitUntil: 'networkidle' });
+      await page.screenshot({ path: `artifacts/screenshots/premium-before-${locale}-${info.project.name}.png`, fullPage: true });
+    }
     for (const path of paths) {
       const response = await page.goto(`${path}?lang=${locale}`, { waitUntil: 'networkidle' });
       expect(response?.status(), path).toBe(200);

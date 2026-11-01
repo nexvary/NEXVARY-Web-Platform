@@ -1,7 +1,7 @@
 name: Corporate Production Verification
 on:
   push:
-    branches: ['feature/approved-daylight-corporate']
+    branches: ['feature/approved-daylight-corporate', 'refine/premium-multicolor-20261030']
     paths: ['.github/workflows/corporate-production.yml', 'playwright.production.config.ts']
 permissions:
   contents: read
@@ -33,6 +33,7 @@ jobs:
           const path='artifacts/performance/production-mobile.report.json';
           if (!fs.existsSync(path)) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Production Lighthouse result unavailable.\n'); process.exit(0); }
           const r=JSON.parse(fs.readFileSync(path));
+          if(r.runtimeError){fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Lighthouse failed: '+r.runtimeError.message+'\n');process.exit(1);}
           const result={url:r.finalDisplayedUrl,environment:'GitHub ubuntu-24.04, Node 24, Lighthouse 12.8.2, Chromium, default mobile simulated throttling, public Namecheap production site',performance:r.categories.performance.score*100,accessibility:r.categories.accessibility.score*100,seo:r.categories.seo.score*100,lcp_ms:r.audits['largest-contentful-paint'].numericValue,cls:r.audits['cumulative-layout-shift'].numericValue,tbt_ms:r.audits['total-blocking-time'].numericValue,inp:'Not measured; real interaction data required',fetchTime:r.fetchTime};
           fs.writeFileSync('artifacts/performance/production-summary.json',JSON.stringify(result,null,2));
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'```json\n'+JSON.stringify(result,null,2)+'\n```\n');
@@ -45,4 +46,16 @@ jobs:
             artifacts/
             test-results/
             playwright-report/
+          retention-days: 14
+      - name: Save compact live evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: premium-production-selected
+          path: |
+            artifacts/performance/production-summary.json
+            artifacts/screenshots/premium-after-_-en-desktop.png
+            artifacts/screenshots/premium-after-_-ar-android15.png
+            artifacts/screenshots/premium-after-_apps-ar-desktop.png
+            artifacts/screenshots/premium-after-_contact-ar-android15.png
           retention-days: 14
