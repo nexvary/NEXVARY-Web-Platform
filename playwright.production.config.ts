@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 import base from './playwright.config';
 
-// Also verifies the published footer card icons, link removals and year-only identity.
+// Checks the final footer grid, colored icons and simplified company year.
 // Read-only checks: navigation, asset requests, screenshots and accessibility.
 export default defineConfig({
   ...base,
