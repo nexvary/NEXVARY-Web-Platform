@@ -4,7 +4,7 @@ on:
     branches: [main]
     paths: ['resources/**', 'public/**', 'routes/**', 'config/**', 'lang/**', 'tests/**', '.github/workflows/corporate-daylight.yml']
   push:
-    branches: ['feature/approved-daylight-corporate']
+    branches: ['feature/approved-daylight-corporate', 'refine/premium-multicolor-20261030']
 permissions:
   contents: read
 concurrency:
@@ -38,6 +38,7 @@ jobs:
       - run: php artisan test
       - run: npx playwright install --with-deps chromium
       - name: Start test server
+        id: server
         run: |
           php artisan serve --host=127.0.0.1 --port=8000 > /tmp/daylight-server.log 2>&1 &
           for i in {1..20}; do
@@ -46,9 +47,9 @@ jobs:
           done
           exit 1
       - name: Desktop and Android UI, RTL, links and accessibility
-        run: npx playwright test tests/visual/corporate-daylight.spec.ts tests/visual/project-showcase.spec.ts tests/visual/navigation-integrity.spec.ts tests/visual/release-gate.spec.ts
+        run: npx playwright test tests/visual/corporate-daylight.spec.ts tests/visual/premium-refinement.spec.ts tests/visual/project-showcase.spec.ts tests/visual/navigation-integrity.spec.ts tests/visual/release-gate.spec.ts
       - name: Mobile Lighthouse lab measurement
-        if: always()
+        if: ${{ !cancelled() && steps.server.outcome == 'success' }}
         run: |
           mkdir -p artifacts/performance
           export CHROME_PATH="$(find ~/.cache/ms-playwright -path '*/chrome-linux/chrome' -o -path '*/chrome-linux64/chrome' | head -1)"
@@ -61,6 +62,7 @@ jobs:
           const path='artifacts/performance/mobile.report.json';
           if (!fs.existsSync(path)) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Lighthouse result unavailable.\n'); process.exit(0); }
           const r=JSON.parse(fs.readFileSync(path));
+          if (r.runtimeError) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'Lighthouse failed: '+r.runtimeError.message+'\n'); process.exit(1); }
           const result={environment:'GitHub ubuntu-24.04, PHP 8.4, Node 24, Lighthouse 12.8.2, default mobile simulated throttling, localhost Laravel production frontend build',performance:r.categories.performance.score*100,accessibility:r.categories.accessibility.score*100,seo:r.categories.seo.score*100,lcp_ms:r.audits['largest-contentful-paint'].numericValue,cls:r.audits['cumulative-layout-shift'].numericValue,tbt_ms:r.audits['total-blocking-time'].numericValue,inp:'Not measured: field interaction data required',lighthouseVersion:r.lighthouseVersion,fetchTime:r.fetchTime};
           fs.writeFileSync('artifacts/performance/measured-summary.json',JSON.stringify(result,null,2));
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,'```json\n'+JSON.stringify(result,null,2)+'\n```\n');

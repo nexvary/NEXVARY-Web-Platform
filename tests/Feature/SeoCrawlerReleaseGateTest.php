@@ -63,7 +63,6 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $html = (string) $this->get('/about')->assertOk()->getContent();
 
         foreach ([
-            'https://nexvary.com/',
             'https://www.facebook.com/share/14p9krEn5ij/',
             'mailto:info@nexvary.com',
             'https://www.youtube.com/@NexvaryInc',
@@ -72,6 +71,8 @@ final class SeoCrawlerReleaseGateTest extends TestCase
             $this->assertStringContainsString(sprintf('href="%s"', $href), $html, "Missing official channel: {$href}");
         }
 
+        $this->assertStringNotContainsString('href="https://nexvary.com/"', $html);
+        $this->assertStringNotContainsString('href="https://wyobiz.wyo.gov/', $html);
         $this->assertDoesNotMatchRegularExpression('/href="(?:#|javascript:|\s*)"/i', $html);
     }
 
@@ -142,6 +143,22 @@ final class SeoCrawlerReleaseGateTest extends TestCase
                 continue;
             }
             $this->assertArrayHasKey($normalized, $linked, "Sitemap orphan candidate: {$normalized}");
+        }
+    }
+
+    public function test_approved_hero_formats_are_nonempty_and_have_expected_dimensions(): void
+    {
+        foreach ([640, 960, 1536] as $width) {
+            foreach (['avif', 'webp', 'jpg'] as $format) {
+                $name = $width === 1536 && $format === 'webp' ? 'hero-seal-r2-1536.webp' : "hero-seal-{$width}.{$format}";
+                $path = public_path("assets/corporate/{$name}");
+                $this->assertFileExists($path);
+                $this->assertGreaterThan(1000, filesize($path));
+                $size = getimagesize($path);
+                $this->assertNotFalse($size);
+                $this->assertSame($width, $size[0]);
+                $this->assertSame(intdiv($width * 2, 3), $size[1]);
+            }
         }
     }
 }
