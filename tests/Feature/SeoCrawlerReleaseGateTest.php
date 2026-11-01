@@ -63,7 +63,6 @@ final class SeoCrawlerReleaseGateTest extends TestCase
         $html = (string) $this->get('/about')->assertOk()->getContent();
 
         foreach ([
-            'https://nexvary.com/',
             'https://www.facebook.com/share/14p9krEn5ij/',
             'mailto:info@nexvary.com',
             'https://www.youtube.com/@NexvaryInc',
@@ -72,6 +71,8 @@ final class SeoCrawlerReleaseGateTest extends TestCase
             $this->assertStringContainsString(sprintf('href="%s"', $href), $html, "Missing official channel: {$href}");
         }
 
+        $this->assertStringNotContainsString('href="https://nexvary.com/"', $html);
+        $this->assertStringNotContainsString('href="https://wyobiz.wyo.gov/', $html);
         $this->assertDoesNotMatchRegularExpression('/href="(?:#|javascript:|\s*)"/i', $html);
     }
 
