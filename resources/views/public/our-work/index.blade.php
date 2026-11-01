@@ -50,7 +50,7 @@
                 @endphp
                 <article class="nx-card">
                     @if($app->icon_url)
-                        <img src="{{ $app->icon_url }}" alt="{{ $app->name }} visual" loading="lazy" decoding="async" style="width:64px;height:64px;object-fit:cover;border-radius:14px">
+                        <img src="{{ $app->icon_url }}" alt="{{ $app->name }} visual" loading="lazy" decoding="async" class="nx-project-visual">
                     @else
                         @include('public.project-icon', ['category'=>$app->category, 'platform'=>$app->platform])
                     @endif
